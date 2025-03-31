@@ -72,10 +72,10 @@ export function LearningTopicsCarousel() {
           What are you going to learn?
         </h2>
 
-        <div className="mx-auto max-w-6xl">
+        <div className="">
           <Slider {...settings}>
             {topics.map((topic, index) => (
-              <div key={index} className="px-4">
+              <div key={index} className="">
                 <div className="flex flex-col items-center">
                   <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-full border border-gray-200 p-3 text-gray-600">
                     {topic.icon}
