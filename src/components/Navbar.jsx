@@ -83,16 +83,55 @@ export function Navbar() {
               </div>
             </Link>
             {/* Menu Button (Always Visible) */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="lg:block"
-              onClick={toggleMenu}
-              aria-label="Toggle menu"
-              aria-expanded={isMenuOpen}
-            >
-              <Menu className="h-6 w-6" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative"
+                  aria-label="User menu"
+                  aria-expanded={isMenuOpen}
+                >
+                  <Menu />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="w-56 bg-white border-0 shadow-2xl"
+              >
+                {/* Always show menuLinks */}
+                {menuLinks.map((option) => (
+                  <DropdownMenuItem
+                    key={option.href}
+                    className="flex items-center gap-2 cursor-pointer"
+                    asChild
+                  >
+                    <Link to={option.href}>
+                      <span>{option.title}</span>
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+
+                {/* Conditionally show lgScreenLinks on smaller screens */}
+                {isMobile && (
+                  <>
+                    <div className="border-t border-gray-200 my-2"></div>{" "}
+                    {/* Divider */}
+                    {lgScreenLinks.map((option) => (
+                      <DropdownMenuItem
+                        key={option.href}
+                        className="flex items-center gap-2 cursor-pointer"
+                        asChild
+                      >
+                        <Link to={option.href}>
+                          <span>{option.title}</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           {/* Search and Icons */}
@@ -106,9 +145,6 @@ export function Navbar() {
                 aria-label="Search website"
               />
             </div>
-            <Button variant="ghost" size="icon" aria-label="Location">
-              <MapPin className="h-5 w-5" />
-            </Button>
             {!lgScreenLinks.find((link) => link.title === "Contact Us") && (
               <Button variant="ghost" size="icon" aria-label="Call us">
                 <Phone className="h-5 w-5" />
@@ -116,8 +152,17 @@ export function Navbar() {
             )}
           </div>
 
+          {/* Phone Icon for Small Screens */}
+          {isMobile && (
+            <div className="flex items-center gap-4 lg:hidden">
+              <Button variant="ghost" size="icon" aria-label="Call us">
+                <Phone className="h-5 w-5" />
+              </Button>
+            </div>
+          )}
+
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex lg:items-center lg:gap-6">
+          <div className="hidden lg:flex lg:items-center lg:gap-4">
             {lgScreenLinks.map((link) => (
               <Link
                 key={link.href}
@@ -127,6 +172,51 @@ export function Navbar() {
                 {link.title}
               </Link>
             ))}
+
+            <div className="flex items-center gap-4">
+              {isMobile && (
+                <Button variant="ghost" size="icon" aria-label="Call us">
+                  <Phone className="h-5 w-5" />
+                </Button>
+              )}
+
+              <DropdownMenu
+                open={isProfileOpen}
+                onOpenChange={setIsProfileOpen}
+              >
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative"
+                    aria-label="User menu"
+                    aria-expanded={isProfileOpen}
+                  >
+                    <User className="h-5 w-5" />
+                    <span className="absolute -right-1 -top-1 flex h-3 w-3 items-center justify-center rounded-full bg-orange-500 text-[8px] text-white">
+                      ▼
+                    </span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  className="w-56 bg-white border-0 shadow-2xl"
+                >
+                  {profileOptions.map((option) => (
+                    <DropdownMenuItem
+                      key={option.href}
+                      className="flex items-center gap-2 cursor-pointer"
+                      asChild
+                    >
+                      <Link to={option.href}>
+                        <option.icon className="h-4 w-4 text-gray-500" />
+                        <span>{option.title}</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
       </div>
