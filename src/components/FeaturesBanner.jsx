@@ -10,7 +10,7 @@ export function FeaturesBanner() {
               <BarChart2 className="h-8 w-8" />
             </div>
             <span className="text-lg font-medium text-white">
-              Live Digital Projects
+              Real-Time Digital Creations
             </span>
           </div>
 
@@ -19,7 +19,7 @@ export function FeaturesBanner() {
               <Star className="h-8 w-8" />
             </div>
             <span className="text-lg font-medium text-white">
-              Experienced Mentors
+              Skilled Mentors
             </span>
           </div>
 
@@ -28,7 +28,7 @@ export function FeaturesBanner() {
               <CheckCircle className="h-8 w-8" />
             </div>
             <span className="text-lg font-medium text-white">
-              Anywhere, Anytime
+              Global Access, Your Pace
             </span>
           </div>
         </div>

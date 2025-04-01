@@ -1,6 +1,6 @@
 import { FeaturesBanner } from "@/components/FeaturesBanner";
 import { Hero } from "@/components/Hero";
-import { LearningTopicsCarousel } from "@/components/LearningTopicsCarousel";
+import { CompanyLogosCarousel } from "@/components/CompanyLogosCarousel";
 import PartnerShowcase from "@/components/PartnerShowcase";
 import { ProjectsCarousel } from "@/components/ProjectsCarousel";
 import { PromoSection } from "@/components/PromoSection";
@@ -11,7 +11,7 @@ function HomePage() {
     <>
       <Hero />
       <FeaturesBanner />
-      <LearningTopicsCarousel />
+      <CompanyLogosCarousel />
       <StatsSection />
       <ProjectsCarousel />
       <PromoSection />
