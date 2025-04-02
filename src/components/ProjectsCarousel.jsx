@@ -6,41 +6,46 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-const projects = [
+const services = [
   {
     id: 1,
-    title: "Gamification",
-    description: "Interactive learning experiences through game-based elements",
+    title: "Identity Verification",
+    description:
+      "Advanced biometric and document verification solutions to ensure customer authenticity and prevent fraud",
     image:
-      "https://images.unsplash.com/photo-1511512578047-dfb367046420?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
   },
   {
     id: 2,
-    title: "First Bank Nigeria",
-    description: "Mobile friendly website for the multiscreen user",
-    image:
-      "https://images.unsplash.com/photo-1563986768609-322da13575f3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
-  },
-  {
-    id: 3,
-    title: "Data Analytics Dashboard",
-    description: "Real-time visualization of complex business metrics",
+    title: "Transaction Monitoring",
+    description:
+      "Real-time monitoring systems to detect suspicious activities and ensure compliance with regulations",
     image:
       "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
   },
   {
-    id: 4,
-    title: "E-Commerce Platform",
-    description: "Seamless shopping experience with advanced features",
+    id: 3,
+    title: "Risk Assessment",
+    description:
+      "Comprehensive risk profiling and assessment tools to identify high-risk customers and transactions",
     image:
-      "https://images.unsplash.com/photo-1556742077-0a6b6a4a4ac4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1518186285589-2f7649de83e0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+  },
+  {
+    id: 4,
+    title: "Compliance Training",
+    description:
+      "Interactive training programs to ensure your team understands and implements KYC & AML best practices",
+    image:
+      "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
   },
   {
     id: 5,
-    title: "Mobile App Development",
-    description: "Cross-platform applications with intuitive user interfaces",
+    title: "Regulatory Reporting",
+    description:
+      "Automated solutions for accurate and timely reporting to regulatory authorities worldwide",
     image:
-      "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
   },
 ];
 
@@ -78,7 +83,7 @@ export function ProjectsCarousel() {
     <section className="py-16 bg-gray-50">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-orange-500 text-center mb-12">
-          Our Digital Projects
+          Our Compliance Solutions
         </h2>
 
         <div className="relative pb-12">
@@ -93,26 +98,26 @@ export function ProjectsCarousel() {
 
           <div className="mx-6">
             <Slider ref={sliderRef} {...settings}>
-              {projects.map((project) => (
-                <div key={project.id} className="px-2">
+              {services.map((service) => (
+                <div key={service.id} className="px-2">
                   <div className="relative h-[400px] overflow-hidden rounded-lg group cursor-pointer">
-                    {/* Project Image */}
+                    {/* Service Image */}
                     <div
                       className="absolute inset-0 bg-cover bg-center transition-transform duration-500 ease-in-out group-hover:scale-110"
-                      style={{ backgroundImage: `url(${project.image})` }}
+                      style={{ backgroundImage: `url(${service.image})` }}
                     >
                       {/* Overlay for better text visibility */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
                     </div>
 
-                    {/* Project Title and Description */}
+                    {/* Service Title and Description */}
                     <div className="absolute inset-x-0 bottom-0 p-6 text-white">
-                      <h3 className="text-2xl font-bold">{project.title}</h3>
+                      <h3 className="text-2xl font-bold">{service.title}</h3>
 
                       {/* Description that slides up on hover */}
                       <div className="transform translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 ease-in-out">
                         <p className="mt-2 text-white/90">
-                          {project.description}
+                          {service.description}
                         </p>
                         <button className="mt-4 inline-flex items-center text-sm font-medium text-orange-400 hover:text-orange-300">
                           Learn more

@@ -5,9 +5,9 @@ export function Hero() {
   return (
     <section className="relative h-[500px] w-full overflow-hidden">
       <div
-        className="absolute inset-0 bg-auto bg-no-repeat"
+        className="absolute inset-0 bg-no-repeat bg-cover"
         style={{
-          backgroundImage: "url('/bg.jpg')",
+          backgroundImage: "url('/src/assets/img/images (2).jpg')",
           filter: "brightness(0.5)",
         }}
       />
@@ -22,13 +22,13 @@ export function Hero() {
         </div>
 
         <h1 className="mt-6 text-4xl font-bold text-white md:text-3xl lg:text-5xl">
-          Your work experience
-          <span className="text-white">starts here</span>
+          Master KYC & AML Compliance and Unlock High-Paying Opportunities
+          Today!
         </h1>
 
         <p className="mt-4 max-w-2xl text-lg text-white">
-          The most innovative integrated learning platform for digital work
-          experience
+          The Most Innovative KYC/AML Learning Platform for Digital Compliance
+          Experience
         </p>
 
         <div className="mt-8 flex flex-col gap-4 sm:flex-row">
@@ -41,7 +41,7 @@ export function Hero() {
           </Button>
 
           <Button className="rounded-full bg-orange-500 px-6 py-6 text-white hover:bg-orange-600">
-            Discover Your Digital Talent
+            Enrol Now
           </Button>
         </div>
       </div>
