@@ -5,6 +5,7 @@ import PartnerShowcase from "@/components/PartnerShowcase";
 import { ProjectsCarousel } from "@/components/ProjectsCarousel";
 import { PromoSection } from "@/components/PromoSection";
 import { StatsSection } from "@/components/StatsSection";
+import { PlatformFeatures } from "@/components/PlatformFeatures";
 
 function HomePage() {
   return (
@@ -16,6 +17,7 @@ function HomePage() {
       <ProjectsCarousel />
       <PromoSection />
       <PartnerShowcase />
+      <PlatformFeatures />
     </>
   );
 }
