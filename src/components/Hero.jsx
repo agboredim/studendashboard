@@ -1,5 +1,6 @@
 import { Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import bgImage from "@/assets/img/hero.jpg";
 
 export function Hero() {
   return (
@@ -7,7 +8,7 @@ export function Hero() {
       <div
         className="absolute inset-0 bg-no-repeat bg-cover"
         style={{
-          backgroundImage: "url('/src/assets/img/images (2).jpg')",
+          backgroundImage: `url(${bgImage})`,
           filter: "brightness(0.5)",
         }}
       />
