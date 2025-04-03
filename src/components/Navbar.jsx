@@ -2,7 +2,15 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Search, Phone, User, Menu, Grid } from "lucide-react";
+import {
+  Search,
+  Phone,
+  User,
+  Menu,
+  Grid,
+  Layout,
+  SquareMenu,
+} from "lucide-react"; // Import the new square menu icon
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -85,19 +93,18 @@ export function Navbar() {
                 />
               </div>
             </Link>
-            {/* Menu Button (Always Visible) */}
+          </div>
+          {/* Menu Button (Always Visible) */}
+          <div className="">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="relative"
+                <button
+                  className="relative flex items-center justify-center"
                   aria-label="User menu"
                   aria-expanded={isMenuOpen}
                 >
-                  <Grid className="h-6 w-6 text-gray-700" />{" "}
-                  {/* New menu icon */}
-                </Button>
+                  <SquareMenu size={24} className="text-gray-700" />{" "}
+                </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="end"
