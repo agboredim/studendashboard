@@ -1,11 +1,11 @@
 import { FeaturesBanner } from "@/components/FeaturesBanner";
 import { Hero } from "@/components/Hero";
 import { CompanyLogosCarousel } from "@/components/CompanyLogosCarousel";
-import PartnerShowcase from "@/components/PartnerShowcase";
+// import PartnerShowcase from "@/components/PartnerShowcase";
 import { ProjectsCarousel } from "@/components/ProjectsCarousel";
-import { PromoSection } from "@/components/PromoSection";
 import { StatsSection } from "@/components/StatsSection";
 import { PlatformFeatures } from "@/components/PlatformFeatures";
+import { CompliancePromo } from "@/components/CompliancePromo";
 
 function HomePage() {
   return (
@@ -15,8 +15,7 @@ function HomePage() {
       <CompanyLogosCarousel />
       <StatsSection />
       <ProjectsCarousel />
-      <PromoSection />
-      <PartnerShowcase />
+      <CompliancePromo />
       <PlatformFeatures />
     </>
   );

@@ -1,6 +1,16 @@
-import { useState, useEffect, useRef, useCallback, memo } from "react";
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Search, Phone, MapPin, User, Menu, Sun } from "lucide-react";
+import {
+  Search,
+  Phone,
+  User,
+  Menu,
+  Grid,
+  Layout,
+  SquareMenu,
+} from "lucide-react"; // Import the new square menu icon
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -11,19 +21,18 @@ import {
 
 // Constants
 const menuLinks = [
+  { title: "Home", href: "/team" },
   { title: "About Us", href: "/about" },
-  { title: "Meet the Team", href: "/team" },
   { title: "Our Story", href: "/story" },
-  { title: "In the Press", href: "/press" },
-  { title: "Our Projects", href: "/projects" },
-  { title: "Support", href: "/support" },
+  { title: "Partner with Us", href: "/press" },
+  { title: "Get Started", href: "/projects" },
 ];
 
 const lgScreenLinks = [
-  { title: "Our Framework", href: "/framework" },
-  { title: "Accreditation", href: "/accreditation" },
-  { title: "DBT Awards", href: "/awards" },
-  { title: "Success Stories", href: "/success-stories" },
+  { title: "Services", href: "/framework" },
+  { title: "Student Portal", href: "/accreditation" },
+  { title: "Blog", href: "/awards" },
+  { title: "Projects", href: "/success-stories" },
   { title: "Contact Us", href: "/contact" },
 ];
 
@@ -74,26 +83,28 @@ export function Navbar() {
           <div className="flex items-center gap-4">
             <Link to="/" className="flex items-center" aria-label="Home">
               <div className="flex items-center">
-                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-white">
-                  <span className="font-bold bg-blue-500">PT</span>
-                </div>
-                <span className="bg-secondary ml-2 w-full text-lg font-semibold">
-                  Pro-Trainer
-                </span>
+                <video
+                  src="/src/assets/img/icon1.mp4"
+                  className="w-48 rounded-md"
+                  autoPlay
+                  loop
+                  muted
+                  aria-label="Logo"
+                />
               </div>
             </Link>
-            {/* Menu Button (Always Visible) */}
+          </div>
+          {/* Menu Button (Always Visible) */}
+          <div className="">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="relative"
+                <button
+                  className="relative flex items-center justify-center"
                   aria-label="User menu"
                   aria-expanded={isMenuOpen}
                 >
-                  <Menu />
-                </Button>
+                  <SquareMenu size={24} className="text-gray-700" />{" "}
+                </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="end"
@@ -136,17 +147,19 @@ export function Navbar() {
 
           {/* Search and Icons */}
           <div className="hidden md:flex items-center gap-4">
-            <div className="relative">
+            <div className="relative w-96">
+              {" "}
+              {/* Adjusted width */}
               <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
               <input
                 type="search"
                 placeholder="Search"
-                className="h-10 rounded-md bg-gray-100 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                className="h-10 w-full rounded-md bg-gray-100 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-navy-800"
                 aria-label="Search website"
               />
             </div>
             {!lgScreenLinks.find((link) => link.title === "Contact Us") && (
-              <Button variant="ghost" size="icon" aria-label="Call us">
+              <Button variant="ghost" size="icon" aria-label="Callus">
                 <Phone className="h-5 w-5" />
               </Button>
             )}
@@ -165,9 +178,9 @@ export function Navbar() {
           <div className="hidden lg:flex lg:items-center lg:gap-4">
             {lgScreenLinks.map((link) => (
               <Link
-                key={link.href}
+                key={link.title}
                 to={link.href}
-                className="text-sm font-medium text-gray-700 hover:text-orange-500"
+                className="text-sm font-medium text-gray-700 hover:text-navy-800"
               >
                 {link.title}
               </Link>
@@ -188,12 +201,12 @@ export function Navbar() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="relative"
+                    className="relative flex items-center gap-1"
                     aria-label="User menu"
                     aria-expanded={isProfileOpen}
                   >
-                    <User className="h-5 w-5" />
-                    <span className="absolute -right-1 -top-1 flex h-3 w-3 items-center justify-center rounded-full bg-orange-500 text-[8px] text-white">
+                    <User className="h-5 w-5 text-gray-700" />
+                    <span className="flex items-center justify-center text-xs text-gray-700">
                       ▼
                     </span>
                   </Button>
@@ -232,7 +245,7 @@ export function Navbar() {
               <Link
                 key={link.href}
                 to={link.href}
-                className="px-4 py-2 text-sm hover:bg-gray-100"
+                className="px-4 py-2 text-sm hover:bg-gray-100 hover:text-navy-800"
                 onClick={() => setIsMenuOpen(false)}
               >
                 {link.title}
