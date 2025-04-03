@@ -115,8 +115,8 @@ function StatItem({ stat, index }) {
             value={percentage}
             text={displayText}
             styles={buildStyles({
-              pathColor: "#0A1A35", // Navy blue
-              textColor: "#333",
+              pathColor: "#F59E0B", // Navy blue
+              textColor: "#F59E0B",
               trailColor: "#f5f5f5",
               strokeLinecap: "round",
               // Use ease-out for smoother animation
@@ -139,10 +139,10 @@ export function StatsSection() {
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-2xl font-bold text-gray-700 mb-4">
+          <h2 className="text-2xl font-bold text-yellow-600 mb-4">
             INDUSTRY-LEADING KYC & AML COMPLIANCE SOLUTIONS
           </h2>
-          <p className="text-3xl font-medium">
+          <p className="text-3xl font-medium text-yellow-600">
             Over{" "}
             <span className="text-primary">
               10,000 Compliance Professionals
