@@ -45,12 +45,12 @@ export function PlatformFeatures() {
     <section className="py-16 bg-gray-100">
       <div className="container mx-auto px-4">
         <div className="text-center mb-6">
-          <span className="inline-block px-6 py-2 bg-white rounded-full text-gray-800 font-semibold text-sm uppercase tracking-wider">
+          <span className="inline-block px-6 py-2 bg-white rounded-full text-navy-800 font-semibold text-sm uppercase tracking-wider">
             PLATFORM FEATURES
           </span>
         </div>
 
-        <h2 className="text-4xl md:text-5xl font-bold text-center text-gray-800 mb-4">
+        <h2 className="text-4xl md:text-5xl font-bold text-center text-navy-800 mb-4">
           Main features
         </h2>
 
@@ -60,14 +60,17 @@ export function PlatformFeatures() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
-            <div key={index} className="bg-white p-6 rounded-lg shadow-sm">
-              <h3 className="text-xl font-semibold mb-3 text-gray-800">
+            <div
+              key={index}
+              className="bg-white p-6 rounded-lg shadow-sm hover-lift transition-all duration-300"
+            >
+              <h3 className="text-xl font-semibold mb-3 text-navy-800">
                 {feature.title}
               </h3>
               <p className="text-gray-600 mb-4">{feature.description}</p>
               <Link
                 to={feature.link}
-                className="inline-flex items-center text-orange-500 hover:text-orange-600 font-medium"
+                className="inline-flex items-center text-cyan-600 hover:text-cyan-700 font-medium transition-colors duration-300"
               >
                 Learn more <ArrowRight className="ml-1 h-4 w-4" />
               </Link>
