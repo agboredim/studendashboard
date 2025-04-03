@@ -18,6 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import logoVideo from "@/assets/img/icon1.mp4";
 
 // Constants
 const menuLinks = [
@@ -84,7 +85,7 @@ export function Navbar() {
             <Link to="/" className="flex items-center" aria-label="Home">
               <div className="flex items-center">
                 <video
-                  src="/src/assets/img/icon1.mp4"
+                  src={logoVideo}
                   className="w-48 rounded-md"
                   autoPlay
                   loop
