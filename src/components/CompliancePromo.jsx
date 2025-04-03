@@ -59,12 +59,12 @@ export function CompliancePromo() {
           {/* Left side content */}
           <div className="mb-10 md:mb-0 text-white max-w-xl">
             <h2 className="text-5xl md:text-6xl font-bold mb-4">
-              <span className="text-blue-800">Compliance</span> Excellence
+              <span className="text-yellow-600">Compliance</span> Excellence
             </h2>
             <p className="text-2xl md:text-3xl font-light mb-2">
               Transforming KYC & AML challenges into opportunities
             </p>
-            <p className="text-xl text-blue-300 font-medium">
+            <p className="text-xl text-yellow-300 font-medium">
               #ComplianceMatters
             </p>
           </div>
