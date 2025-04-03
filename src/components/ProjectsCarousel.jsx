@@ -82,7 +82,7 @@ export function ProjectsCarousel() {
   return (
     <section className="py-16 bg-gray-50">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-orange-500 text-center mb-12">
+        <h2 className="text-3xl font-bold text-blue-950 text-center mb-12">
           Our Compliance Solutions
         </h2>
 
@@ -119,7 +119,7 @@ export function ProjectsCarousel() {
                         <p className="mt-2 text-white/90">
                           {service.description}
                         </p>
-                        <button className="mt-4 inline-flex items-center text-sm font-medium text-orange-400 hover:text-orange-300">
+                        <button className="mt-4 inline-flex items-center text-sm font-medium text-blue-400 hover:text-blue-300">
                           Learn more
                           <svg
                             className="ml-1 h-4 w-4"
