@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -30,10 +28,10 @@ const menuLinks = [
 ];
 
 const lgScreenLinks = [
-  { title: "Services", href: "/framework" },
-  { title: "Student Portal", href: "/accreditation" },
-  { title: "Blog", href: "/awards" },
-  { title: "Projects", href: "/success-stories" },
+  { title: "Courses", href: "/get-started" },
+  { title: "Student Portal", href: "/portal" },
+  { title: "Blog", href: "/blog" },
+  { title: "Projects", href: "/project" },
   { title: "Contact Us", href: "/contact" },
 ];
 
