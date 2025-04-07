@@ -3,6 +3,10 @@ import "./App.css";
 import Layout from "./components/Layout";
 import HomePage from "./pages/HomePage";
 import { WhatsAppButton } from "./components/WhatsAppButton";
+import LoginPage from "./components/LoginPage";
+import SignupPage from "./components/SignupUp";
+import CoursesPage from "./pages/CoursesPage";
+import CourseDetailPage from "./pages/CourseDetailPage";
 
 function App() {
   return (
@@ -11,7 +15,11 @@ function App() {
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<HomePage />} />
+            <Route path="courses/:courseId" element={<CourseDetailPage />} />
+            <Route path="courses" element={<CoursesPage />} />
           </Route>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
         </Routes>
         <WhatsAppButton />
       </Router>
