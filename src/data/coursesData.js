@@ -1,7 +1,7 @@
 export const coursesData = [
   {
     id: 1,
-    title: "KYC & AML Compliance Fundamentals",
+    title: "AML/KYC Compliance Certification",
     shortDescription:
       "Master the essential principles and practices of Know Your Customer (KYC) and Anti-Money Laundering (AML) compliance.",
     description:
@@ -9,7 +9,7 @@ export const coursesData = [
     price: 199,
     image:
       "https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", // Replace with actual video URL
+    videoUrl: "https://fast.wistia.net/embed/iframe/9u2a745qwe",
     duration: "12 hours",
     level: "Beginner",
     category: "Compliance",
@@ -86,283 +86,280 @@ export const coursesData = [
   },
   {
     id: 2,
-    title: "Advanced Transaction Monitoring & Reporting",
+    title: "Data Analysis for Financial Services",
     shortDescription:
-      "Develop expertise in detecting suspicious activities and implementing effective transaction monitoring systems.",
+      "Learn how to analyze financial data, identify patterns, and generate actionable insights for business decision-making.",
     description:
-      "Take your compliance skills to the next level with this advanced course focused on transaction monitoring and suspicious activity reporting. Learn sophisticated techniques for identifying unusual patterns, implementing automated monitoring systems, and fulfilling regulatory reporting requirements. This course provides hands-on experience with case studies and simulation exercises to prepare you for complex compliance scenarios.",
+      "This comprehensive data analysis course is specifically designed for professionals in the financial services industry. You'll learn how to collect, clean, and analyze financial data using industry-standard tools and techniques. The course covers statistical analysis, data visualization, predictive modeling, and how to communicate findings effectively to stakeholders. By the end of this course, you'll be able to transform raw financial data into valuable insights that drive business decisions.",
     price: 249,
     image:
       "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", // Replace with actual video URL
+    videoUrl: "https://fast.wistia.net/embed/iframe/9u2a745qwe",
     duration: "15 hours",
     level: "Intermediate",
-    category: "Compliance",
+    category: "Data Analysis",
     modules: 10,
     resources: 22,
     instructor: "Michael Chen",
-    instructorTitle: "AML Specialist & Former FinCEN Advisor",
+    instructorTitle: "Data Scientist & Financial Analyst",
     instructorImage:
       "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
     instructorBio:
-      "Michael Chen is a recognized expert in AML compliance with over 20 years of experience, including advisory roles at FinCEN. He specializes in transaction monitoring systems and has helped design compliance programs for some of the world's largest financial institutions.",
+      "Michael Chen is a data scientist with over 10 years of experience in the financial sector. He has worked with major banks and investment firms, helping them leverage data to improve decision-making, detect fraud, and optimize operations. He holds a Ph.D. in Statistics and is certified in several data analysis platforms.",
     instructorCourses: 7,
     instructorStudents: 18750,
     rating: 4.9,
     reviews: 487,
     learningOutcomes: [
-      "Design and implement effective transaction monitoring systems",
-      "Identify complex money laundering patterns and typologies",
-      "Conduct thorough investigations of suspicious activities",
-      "Prepare comprehensive Suspicious Activity Reports (SARs)",
-      "Develop alert scenarios and thresholds",
-      "Evaluate and optimize monitoring system effectiveness",
+      "Master data collection, cleaning, and preparation techniques",
+      "Apply statistical analysis methods to financial datasets",
+      "Create compelling data visualizations that tell a story",
+      "Build predictive models for financial forecasting",
+      "Identify patterns and anomalies in financial transactions",
+      "Present data-driven insights to non-technical stakeholders",
     ],
     requirements: [
-      "Basic understanding of KYC and AML principles",
-      "Some experience in compliance or related fields",
-      "Familiarity with financial transactions and banking operations",
+      "Basic understanding of statistics and mathematics",
+      "Familiarity with spreadsheets (Excel or Google Sheets)",
+      "No programming experience required, but helpful",
     ],
     targetAudience: [
-      "Compliance officers and managers",
-      "AML specialists and analysts",
-      "Risk management professionals",
-      "Regulatory technology specialists",
-      "Financial crime investigators",
+      "Financial analysts and professionals",
+      "Risk management specialists",
+      "Compliance officers looking to enhance their analytical skills",
+      "Business intelligence professionals",
+      "Anyone interested in financial data analysis",
     ],
     curriculum: [
       {
-        title: "Transaction Monitoring Fundamentals",
+        title: "Foundations of Financial Data Analysis",
         lessons: [
+          { title: "Introduction to Financial Data Types", duration: "30 min" },
+          { title: "Data Collection Methods in Finance", duration: "45 min" },
+          { title: "Data Cleaning and Preparation", duration: "40 min" },
           {
-            title: "Objectives and Components of Transaction Monitoring",
-            duration: "30 min",
-          },
-          { title: "Rule-Based vs. AI-Powered Monitoring", duration: "45 min" },
-          {
-            title: "Setting Appropriate Thresholds and Parameters",
-            duration: "40 min",
-          },
-          {
-            title: "Data Quality and Integration Challenges",
+            title: "Statistical Concepts for Financial Analysis",
             duration: "35 min",
           },
         ],
       },
       {
-        title: "Detecting Suspicious Patterns",
+        title: "Analytical Techniques",
         lessons: [
-          { title: "Common Money Laundering Typologies", duration: "50 min" },
-          { title: "Structuring and Smurfing Detection", duration: "40 min" },
+          { title: "Descriptive Statistics in Finance", duration: "50 min" },
           {
-            title: "Trade-Based Money Laundering Indicators",
-            duration: "45 min",
+            title: "Time Series Analysis for Financial Data",
+            duration: "40 min",
           },
+          { title: "Correlation and Regression Analysis", duration: "45 min" },
           {
-            title: "Cryptocurrency and Digital Asset Risks",
+            title: "Anomaly Detection in Financial Transactions",
             duration: "55 min",
           },
         ],
       },
       {
-        title: "Regulatory Reporting",
+        title: "Data Visualization and Reporting",
         lessons: [
           {
-            title: "SAR Filing Requirements and Deadlines",
+            title: "Creating Effective Financial Dashboards",
             duration: "35 min",
           },
-          { title: "Crafting Effective SAR Narratives", duration: "50 min" },
-          { title: "Currency Transaction Reports (CTRs)", duration: "30 min" },
-          { title: "Cross-Border Reporting Obligations", duration: "40 min" },
+          {
+            title: "Visualization Techniques for Financial Data",
+            duration: "50 min",
+          },
+          { title: "Storytelling with Financial Data", duration: "30 min" },
+          { title: "Building Automated Reports", duration: "40 min" },
         ],
       },
     ],
   },
   {
     id: 3,
-    title: "Regulatory Compliance for Financial Institutions",
+    title: "Business Analysis & Project Management",
     shortDescription:
-      "Navigate the complex landscape of financial regulations and ensure your institution maintains compliance with global standards.",
+      "Develop the skills to analyze business needs, manage projects effectively, and deliver successful outcomes in financial services.",
     description:
-      "This comprehensive course covers the regulatory requirements that financial institutions must adhere to, including international standards, national regulations, and industry best practices. Learn how to develop and implement a robust compliance program that addresses all relevant regulations while maintaining operational efficiency. The course includes practical guidance on compliance audits, examinations, and remediation strategies.",
+      "This dual-focus course combines business analysis and project management skills specifically for the financial services sector. Learn how to identify business requirements, analyze processes, and manage projects from initiation to closure. The course covers key methodologies including Agile, Waterfall, and hybrid approaches, with a special emphasis on regulatory compliance considerations in project delivery. You'll gain practical experience through real-world case studies and simulations.",
     price: 299,
     image:
       "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", // Replace with actual video URL
+    videoUrl: "https://fast.wistia.net/embed/iframe/9u2a745qwe",
     duration: "18 hours",
-    level: "Advanced",
-    category: "Regulation",
+    level: "Intermediate",
+    category: "Business",
     modules: 12,
     resources: 30,
     instructor: "Dr. Priya Patel",
-    instructorTitle: "Former Regulator & Compliance Consultant",
+    instructorTitle: "Senior Business Analyst & PMP Certified",
     instructorImage:
       "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
     instructorBio:
-      "Dr. Priya Patel has worked with regulatory bodies in the UK, US, and Singapore, and now consults for global financial institutions on regulatory compliance. She holds a PhD in Financial Regulation and has published extensively on compliance frameworks and regulatory evolution.",
+      "Dr. Priya Patel has over 15 years of experience in business analysis and project management within the financial sector. She has led major transformation projects at global banks and insurance companies, specializing in regulatory compliance initiatives. She holds PMP, CBAP, and Six Sigma Black Belt certifications.",
     instructorCourses: 6,
     instructorStudents: 15200,
     rating: 4.7,
     reviews: 312,
     learningOutcomes: [
-      "Interpret and apply complex financial regulations",
-      "Develop comprehensive compliance policies and procedures",
-      "Prepare for and navigate regulatory examinations",
-      "Implement effective compliance training programs",
-      "Manage regulatory change and stay current with evolving requirements",
-      "Conduct thorough compliance risk assessments",
+      "Conduct comprehensive business needs analysis",
+      "Develop detailed business requirements documentation",
+      "Create and manage project plans, schedules, and budgets",
+      "Apply appropriate project methodologies based on project type",
+      "Manage stakeholder expectations and communication",
+      "Navigate regulatory considerations in financial projects",
     ],
     requirements: [
-      "Intermediate knowledge of financial compliance",
-      "Understanding of banking or financial services operations",
-      "Experience in a compliance-related role is recommended",
+      "Basic understanding of business operations",
+      "Familiarity with financial services is helpful but not required",
+      "No prior project management experience needed",
     ],
     targetAudience: [
-      "Compliance officers and directors",
-      "Risk management executives",
-      "Legal counsel for financial institutions",
-      "Regulatory affairs specialists",
-      "Senior management of financial institutions",
+      "Aspiring business analysts and project managers",
+      "Financial services professionals looking to expand their skill set",
+      "Team leaders and managers in financial institutions",
+      "Compliance professionals involved in implementation projects",
+      "Anyone interested in business analysis or project management",
     ],
     curriculum: [
       {
-        title: "Global Regulatory Framework",
+        title: "Business Analysis Fundamentals",
         lessons: [
           {
-            title: "FATF Recommendations and Implementation",
+            title: "The Role of a Business Analyst in Financial Services",
             duration: "45 min",
           },
-          { title: "Basel Committee Standards", duration: "40 min" },
           {
-            title: "Regional Regulatory Bodies and Their Requirements",
-            duration: "50 min",
-          },
-          {
-            title: "Extraterritorial Application of Regulations",
-            duration: "35 min",
-          },
-        ],
-      },
-      {
-        title: "Building a Compliance Program",
-        lessons: [
-          {
-            title: "Key Components of an Effective Compliance Program",
-            duration: "55 min",
-          },
-          {
-            title: "Compliance Risk Assessment Methodologies",
-            duration: "50 min",
-          },
-          { title: "Developing Policies and Procedures", duration: "45 min" },
-          {
-            title: "Compliance Technology Selection and Implementation",
-            duration: "60 min",
-          },
-        ],
-      },
-      {
-        title: "Regulatory Examinations",
-        lessons: [
-          {
-            title: "Preparing for Regulatory Examinations",
+            title: "Stakeholder Identification and Analysis",
             duration: "40 min",
           },
-          { title: "Managing the Examination Process", duration: "35 min" },
-          { title: "Responding to Regulatory Findings", duration: "45 min" },
+          { title: "Requirements Elicitation Techniques", duration: "50 min" },
+          { title: "Process Modeling and Documentation", duration: "35 min" },
+        ],
+      },
+      {
+        title: "Project Management Essentials",
+        lessons: [
           {
-            title: "Remediation Strategies and Implementation",
-            duration: "50 min",
+            title: "Project Initiation and Charter Development",
+            duration: "55 min",
           },
+          { title: "Project Planning and Scheduling", duration: "50 min" },
+          {
+            title: "Risk Management in Financial Projects",
+            duration: "45 min",
+          },
+          { title: "Budget Management and Cost Control", duration: "60 min" },
+        ],
+      },
+      {
+        title: "Project Execution and Control",
+        lessons: [
+          { title: "Leading Project Teams Effectively", duration: "40 min" },
+          { title: "Managing Project Changes and Issues", duration: "35 min" },
+          {
+            title: "Quality Assurance in Financial Projects",
+            duration: "45 min",
+          },
+          { title: "Project Closure and Lessons Learned", duration: "50 min" },
         ],
       },
     ],
   },
   {
     id: 4,
-    title: "KYC for Digital Banking & Fintech",
+    title: "Cyber Security for Financial Institutions",
     shortDescription:
-      "Learn specialized KYC approaches for digital banking platforms, fintech companies, and online financial services.",
+      "Learn how to protect financial data and systems from cyber threats and implement robust security measures.",
     description:
-      "As financial services increasingly move online, compliance professionals need specialized knowledge to address the unique challenges of digital KYC. This course focuses on digital identity verification, remote onboarding processes, and compliance considerations specific to fintech and digital banking. Learn how to implement effective KYC procedures while maintaining a seamless customer experience in digital environments.",
-    price: 229,
+      "This comprehensive cyber security course is tailored specifically for the financial services industry. You'll learn about the unique security challenges facing financial institutions, regulatory requirements, and best practices for protecting sensitive financial data. The course covers threat detection, vulnerability assessment, incident response, and security governance. Through hands-on exercises and case studies, you'll develop practical skills to strengthen your organization's security posture.",
+    price: 329,
     image:
       "https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", // Replace with actual video URL
-    duration: "14 hours",
+    videoUrl: "https://fast.wistia.net/embed/iframe/9u2a745qwe",
+    duration: "20 hours",
     level: "Intermediate",
-    category: "Digital",
-    modules: 9,
-    resources: 18,
+    category: "Security",
+    modules: 12,
+    resources: 25,
     instructor: "James Wilson",
-    instructorTitle: "Digital Compliance Expert & Fintech Advisor",
+    instructorTitle: "CISO & Cyber Security Expert",
     instructorImage:
       "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
     instructorBio:
-      "James Wilson specializes in digital compliance solutions for fintech companies and digital banks. With experience at several successful fintech startups and traditional banks undergoing digital transformation, he brings practical insights into balancing compliance requirements with digital user experience.",
+      "James Wilson is a former Chief Information Security Officer with over 20 years of experience in cyber security for financial institutions. He has helped major banks and financial services companies build robust security programs and respond to sophisticated cyber attacks. He holds CISSP, CISM, and CEH certifications.",
     instructorCourses: 4,
     instructorStudents: 9800,
-    rating: 4.6,
+    rating: 4.8,
     reviews: 278,
     learningOutcomes: [
-      "Implement digital identity verification solutions",
-      "Design compliant remote customer onboarding processes",
-      "Evaluate and select appropriate regtech solutions",
-      "Address compliance challenges specific to digital financial services",
-      "Balance user experience with regulatory requirements",
-      "Apply data protection principles to KYC processes",
+      "Identify and assess cyber security risks specific to financial institutions",
+      "Implement security controls aligned with financial regulations",
+      "Develop incident response plans for financial cyber attacks",
+      "Conduct effective security awareness training for financial staff",
+      "Protect sensitive financial and customer data",
+      "Establish security governance frameworks for financial organizations",
     ],
     requirements: [
-      "Basic understanding of KYC principles",
-      "Familiarity with digital financial services",
-      "Interest in financial technology and digital transformation",
+      "Basic understanding of IT concepts",
+      "Familiarity with financial services operations",
+      "No prior security experience required, but helpful",
     ],
     targetAudience: [
-      "Compliance professionals in digital banks and fintech",
-      "Product managers for financial services",
-      "Digital transformation specialists in traditional banks",
-      "Regtech developers and implementers",
-      "Risk managers in digital financial services",
+      "IT professionals in financial institutions",
+      "Compliance and risk management specialists",
+      "Security professionals new to the financial sector",
+      "Financial services managers responsible for security",
+      "Anyone interested in financial cyber security",
     ],
     curriculum: [
       {
-        title: "Digital Identity Verification",
+        title: "Financial Sector Security Landscape",
         lessons: [
-          { title: "Digital ID Verification Technologies", duration: "45 min" },
-          { title: "Biometric Verification Methods", duration: "40 min" },
           {
-            title: "Document Verification in Digital Environments",
+            title: "Unique Security Challenges in Financial Services",
+            duration: "45 min",
+          },
+          {
+            title: "Regulatory Requirements (GLBA, PCI DSS, GDPR)",
+            duration: "40 min",
+          },
+          {
+            title: "Common Attack Vectors Against Financial Institutions",
+            duration: "35 min",
+          },
+          { title: "Security Framework Implementation", duration: "30 min" },
+        ],
+      },
+      {
+        title: "Threat Detection and Prevention",
+        lessons: [
+          {
+            title: "Security Monitoring for Financial Systems",
+            duration: "50 min",
+          },
+          { title: "Fraud Detection and Prevention", duration: "45 min" },
+          { title: "Vulnerability Management", duration: "40 min" },
+          {
+            title: "Secure Development Practices for Financial Applications",
+            duration: "35 min",
+          },
+        ],
+      },
+      {
+        title: "Incident Response and Recovery",
+        lessons: [
+          { title: "Financial Incident Response Planning", duration: "40 min" },
+          {
+            title: "Managing Security Breaches in Financial Institutions",
+            duration: "45 min",
+          },
+          {
+            title: "Digital Forensics for Financial Crimes",
             duration: "35 min",
           },
           {
-            title: "Liveness Detection and Anti-Spoofing Measures",
-            duration: "30 min",
-          },
-        ],
-      },
-      {
-        title: "Remote Onboarding Compliance",
-        lessons: [
-          {
-            title: "Regulatory Requirements for Remote Onboarding",
-            duration: "50 min",
-          },
-          { title: "Designing Compliant Digital Journeys", duration: "45 min" },
-          {
-            title: "Risk-Based Approach in Digital Environments",
-            duration: "40 min",
-          },
-          { title: "Managing Non-Face-to-Face Risks", duration: "35 min" },
-        ],
-      },
-      {
-        title: "Regtech Solutions",
-        lessons: [
-          { title: "Evaluating KYC Technology Providers", duration: "40 min" },
-          { title: "API Integration for KYC Processes", duration: "45 min" },
-          { title: "Automated Monitoring Solutions", duration: "35 min" },
-          {
-            title: "Measuring Effectiveness of Digital KYC",
+            title: "Business Continuity and Disaster Recovery",
             duration: "30 min",
           },
         ],
@@ -371,170 +368,201 @@ export const coursesData = [
   },
   {
     id: 5,
-    title: "Sanctions Compliance Masterclass",
+    title: "Regulatory Technology (RegTech) Solutions",
     shortDescription:
-      "Develop expertise in navigating the complex world of global sanctions and implementing effective screening programs.",
+      "Explore how technology is transforming regulatory compliance and learn to implement RegTech solutions in financial institutions.",
     description:
-      "Sanctions compliance has become increasingly complex with overlapping regimes and frequent changes. This masterclass provides in-depth knowledge of major sanctions programs, screening methodologies, and compliance strategies. Learn how to implement and maintain an effective sanctions compliance program that addresses the full range of sanctions risks while minimizing false positives and operational friction.",
+      "This innovative course focuses on the rapidly evolving field of Regulatory Technology (RegTech). Learn how AI, machine learning, blockchain, and other technologies are revolutionizing compliance processes in financial institutions. The course covers RegTech solutions for KYC/AML, regulatory reporting, risk management, and transaction monitoring. You'll gain hands-on experience with leading RegTech platforms and develop strategies for successful implementation.",
     price: 279,
     image:
       "https://images.unsplash.com/photo-1507679799987-c73779587ccf?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", // Replace with actual video URL
+    videoUrl: "https://fast.wistia.net/embed/iframe/9u2a745qwe",
     duration: "16 hours",
     level: "Advanced",
-    category: "Compliance",
+    category: "Technology",
     modules: 10,
     resources: 25,
     instructor: "Robert Thompson",
-    instructorTitle: "Sanctions Specialist & Former OFAC Advisor",
+    instructorTitle: "RegTech Specialist & Innovation Lead",
     instructorImage:
       "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
     instructorBio:
-      "Robert Thompson has specialized in sanctions compliance for over 25 years, including advisory roles with OFAC. He has helped numerous global financial institutions develop and enhance their sanctions compliance programs and has provided expert testimony in sanctions-related legal proceedings.",
+      "Robert Thompson specializes in regulatory technology innovation and implementation. With experience at both major financial institutions and RegTech startups, he brings a unique perspective on how technology can transform compliance operations. He has led numerous successful RegTech implementations that have significantly improved efficiency and effectiveness.",
     instructorCourses: 3,
     instructorStudents: 7500,
     rating: 4.9,
     reviews: 186,
     learningOutcomes: [
-      "Understand major global sanctions regimes and their requirements",
-      "Implement effective sanctions screening systems",
-      "Develop procedures for investigating potential sanctions matches",
-      "Create a comprehensive sanctions compliance program",
-      "Navigate complex sanctions scenarios involving multiple jurisdictions",
-      "Stay current with evolving sanctions requirements",
+      "Understand the RegTech landscape and key solution categories",
+      "Evaluate and select appropriate RegTech solutions for specific compliance needs",
+      "Implement AI and machine learning for compliance automation",
+      "Leverage blockchain for regulatory reporting and verification",
+      "Develop strategies for successful RegTech adoption",
+      "Measure ROI and effectiveness of RegTech implementations",
     ],
     requirements: [
-      "Intermediate knowledge of compliance principles",
-      "Understanding of international banking operations",
-      "Familiarity with regulatory compliance frameworks",
+      "Understanding of regulatory compliance in financial services",
+      "Basic familiarity with financial technology concepts",
+      "Experience with compliance processes is helpful but not required",
     ],
     targetAudience: [
-      "Sanctions compliance specialists",
-      "Compliance officers and managers",
-      "Risk management professionals",
-      "International trade specialists",
-      "Legal advisors to financial institutions",
+      "Compliance professionals seeking to leverage technology",
+      "Technology leaders in financial institutions",
+      "Innovation managers and digital transformation specialists",
+      "Risk and compliance consultants",
+      "Financial regulators interested in technology solutions",
     ],
     curriculum: [
       {
-        title: "Global Sanctions Landscape",
+        title: "RegTech Fundamentals",
         lessons: [
+          { title: "The Evolution of RegTech", duration: "55 min" },
           {
-            title: "US Sanctions Programs and OFAC Requirements",
-            duration: "55 min",
-          },
-          { title: "EU Sanctions Framework", duration: "45 min" },
-          { title: "UN Sanctions and Implementation", duration: "40 min" },
-          { title: "Other Major Sanctions Regimes", duration: "35 min" },
-        ],
-      },
-      {
-        title: "Sanctions Screening Systems",
-        lessons: [
-          {
-            title: "Screening Technology and Methodologies",
-            duration: "50 min",
-          },
-          { title: "List Management and Updates", duration: "35 min" },
-          {
-            title: "Optimizing Match Rules and Thresholds",
+            title: "RegTech Solution Categories and Use Cases",
             duration: "45 min",
           },
-          { title: "Managing False Positives", duration: "40 min" },
-        ],
-      },
-      {
-        title: "Sanctions Compliance Program",
-        lessons: [
           {
-            title: "Key Components of a Sanctions Program",
-            duration: "45 min",
-          },
-          { title: "Sanctions Risk Assessment", duration: "50 min" },
-          {
-            title: "Testing and Auditing Sanctions Controls",
+            title: "Key Technologies Driving RegTech Innovation",
             duration: "40 min",
           },
-          { title: "Sanctions Training and Awareness", duration: "35 min" },
+          {
+            title:
+              "The RegTech Ecosystem: Vendors, Regulators, and Institutions",
+            duration: "35 min",
+          },
+        ],
+      },
+      {
+        title: "RegTech Applications",
+        lessons: [
+          {
+            title: "AI-Powered KYC and Customer Onboarding",
+            duration: "50 min",
+          },
+          {
+            title: "Automated Regulatory Reporting Solutions",
+            duration: "35 min",
+          },
+          {
+            title: "Advanced Analytics for Risk Management",
+            duration: "45 min",
+          },
+          {
+            title: "Blockchain for Compliance Verification",
+            duration: "40 min",
+          },
+        ],
+      },
+      {
+        title: "Implementation and Optimization",
+        lessons: [
+          {
+            title: "Building a RegTech Implementation Strategy",
+            duration: "45 min",
+          },
+          { title: "Integration with Legacy Systems", duration: "50 min" },
+          {
+            title: "Change Management for RegTech Adoption",
+            duration: "40 min",
+          },
+          {
+            title: "Measuring RegTech Effectiveness and ROI",
+            duration: "35 min",
+          },
         ],
       },
     ],
   },
   {
     id: 6,
-    title: "Compliance Officer Certification Program",
+    title: "ESG Compliance and Reporting",
     shortDescription:
-      "Comprehensive training program to prepare for a career as a certified compliance officer in financial institutions.",
+      "Master the growing field of Environmental, Social, and Governance (ESG) compliance and reporting for financial institutions.",
     description:
-      "This certification program provides all the knowledge and skills needed to excel as a compliance officer in today's complex regulatory environment. Covering all aspects of financial compliance from KYC/AML to regulatory reporting, this program combines theoretical knowledge with practical applications and case studies. Upon completion, participants will be prepared to take on compliance leadership roles and navigate the full spectrum of compliance challenges.",
-    price: 499,
+      "This forward-looking course addresses the rapidly expanding area of ESG compliance and reporting in the financial sector. Learn about evolving ESG regulations, frameworks for sustainable finance, climate risk assessment, and ESG data management. The course covers reporting standards such as TCFD, SASB, and GRI, as well as strategies for integrating ESG considerations into financial products and services. You'll develop practical skills for implementing effective ESG compliance programs.",
+    price: 249,
     image:
       "https://images.unsplash.com/photo-1591696205602-2f950c417cb9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", // Replace with actual video URL
-    duration: "40 hours",
-    level: "All Levels",
-    category: "Certification",
-    modules: 20,
-    resources: 50,
+    videoUrl: "https://fast.wistia.net/embed/iframe/9u2a745qwe",
+    duration: "14 hours",
+    level: "Intermediate",
+    category: "Compliance",
+    modules: 8,
+    resources: 20,
     instructor: "Emma Rodriguez",
-    instructorTitle: "Chief Compliance Officer & Certified Trainer",
+    instructorTitle: "ESG Compliance Expert & Sustainable Finance Advisor",
     instructorImage:
       "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
     instructorBio:
-      "Emma Rodriguez has served as Chief Compliance Officer at multiple financial institutions and now leads a team of compliance trainers. She holds multiple compliance certifications and has developed compliance training programs adopted by major financial institutions worldwide.",
-    instructorCourses: 8,
-    instructorStudents: 22000,
-    rating: 4.8,
-    reviews: 524,
+      "Emma Rodriguez is a specialist in ESG compliance and sustainable finance with experience at global financial institutions and regulatory bodies. She has helped numerous organizations develop and implement ESG frameworks, reporting processes, and sustainable investment strategies. She holds certifications in ESG investing and sustainable finance.",
+    instructorCourses: 4,
+    instructorStudents: 6500,
+    rating: 4.7,
+    reviews: 175,
     learningOutcomes: [
-      "Master all core compliance domains including KYC, AML, sanctions, and regulatory reporting",
-      "Develop and implement comprehensive compliance programs",
-      "Lead compliance teams and initiatives effectively",
-      "Communicate compliance requirements to stakeholders at all levels",
-      "Navigate complex compliance scenarios and regulatory examinations",
-      "Stay current with evolving regulatory requirements and industry best practices",
+      "Understand the regulatory landscape for ESG in financial services",
+      "Implement ESG data collection and management processes",
+      "Develop compliant ESG reporting aligned with major standards",
+      "Assess and manage climate-related financial risks",
+      "Integrate ESG considerations into financial products and services",
+      "Build effective ESG governance frameworks",
     ],
     requirements: [
-      "No prior compliance experience required for beginners track",
-      "Advanced modules require basic compliance knowledge",
-      "Commitment to complete all program modules and assessments",
+      "Basic understanding of financial regulations and compliance",
+      "Familiarity with financial reporting concepts",
+      "No prior ESG experience required",
     ],
     targetAudience: [
-      "Aspiring compliance professionals",
-      "Current compliance officers seeking certification",
-      "Financial professionals transitioning to compliance roles",
-      "Risk and audit professionals expanding their expertise",
-      "Legal professionals specializing in financial regulations",
+      "Compliance professionals in financial institutions",
+      "Sustainability officers and ESG specialists",
+      "Risk management professionals",
+      "Financial reporting managers",
+      "Investment professionals interested in sustainable finance",
     ],
     curriculum: [
       {
-        title: "Compliance Fundamentals",
+        title: "ESG Regulatory Landscape",
         lessons: [
-          { title: "The Role of the Compliance Officer", duration: "40 min" },
-          { title: "Regulatory Framework Overview", duration: "55 min" },
-          { title: "Compliance Risk Management", duration: "50 min" },
-          { title: "Building a Compliance Culture", duration: "45 min" },
-        ],
-      },
-      {
-        title: "Core Compliance Domains",
-        lessons: [
-          { title: "KYC and Customer Due Diligence", duration: "60 min" },
-          { title: "Anti-Money Laundering Compliance", duration: "65 min" },
-          { title: "Sanctions and Watchlist Screening", duration: "55 min" },
-          { title: "Regulatory Reporting Requirements", duration: "50 min" },
-        ],
-      },
-      {
-        title: "Compliance Leadership",
-        lessons: [
-          { title: "Managing a Compliance Team", duration: "45 min" },
           {
-            title: "Compliance Training and Communication",
+            title: "Evolution of ESG Regulations in Finance",
             duration: "40 min",
           },
-          { title: "Working with Regulators and Auditors", duration: "50 min" },
-          { title: "Measuring Compliance Effectiveness", duration: "45 min" },
+          {
+            title: "Key Regulatory Frameworks and Standards",
+            duration: "55 min",
+          },
+          { title: "Sustainable Finance Taxonomies", duration: "50 min" },
+          {
+            title: "Regulatory Trends and Future Developments",
+            duration: "45 min",
+          },
+        ],
+      },
+      {
+        title: "ESG Data and Reporting",
+        lessons: [
+          { title: "ESG Data Collection and Management", duration: "60 min" },
+          { title: "TCFD Reporting Implementation", duration: "65 min" },
+          {
+            title: "SASB and GRI Standards for Financial Institutions",
+            duration: "55 min",
+          },
+          { title: "ESG Disclosure Quality and Assurance", duration: "50 min" },
+        ],
+      },
+      {
+        title: "ESG Integration",
+        lessons: [
+          {
+            title: "Climate Risk Assessment for Financial Institutions",
+            duration: "45 min",
+          },
+          { title: "ESG in Investment Processes", duration: "40 min" },
+          {
+            title: "Sustainable Financial Products Development",
+            duration: "50 min",
+          },
+          { title: "Building an ESG Governance Framework", duration: "45 min" },
         ],
       },
     ],

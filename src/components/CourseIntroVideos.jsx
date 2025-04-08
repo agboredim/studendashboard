@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { Play, X } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -110,11 +112,11 @@ export function CourseIntroVideos() {
               <X className="h-6 w-6" />
             </button>
 
-            {/* This would be a real video in production. Using an iframe placeholder for demo */}
+            {/* Using the Wistia iframe for the video */}
             <div className="relative pb-[56.25%] h-0">
               <iframe
                 className="absolute top-0 left-0 w-full h-full"
-                src={`https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1`} // Replace with actual course video URLs
+                src={coursesData.find((c) => c.id === activeVideo)?.videoUrl}
                 title={`${
                   coursesData.find((c) => c.id === activeVideo)?.title
                 } Preview`}
