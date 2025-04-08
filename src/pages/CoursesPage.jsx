@@ -1,13 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Star, Clock, BarChart, Filter } from "lucide-react";
 import { coursesData } from "../data/coursesData";
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
-function CoursesPage() {
+function CoursesPage({url}) {
+
+ 
+
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+
+
+   const fetchList = async () => {
+    const response = await axios.get(`${url}/courses/courses/`);    
+    if (response.data.success){
+       setFilter(response.data.data);
+    }
+    else{
+      toast.error("Error")
+    }
+  }
 
   const filteredCourses = coursesData.filter((course) => {
     const matchesFilter =
@@ -17,6 +33,10 @@ function CoursesPage() {
       course.shortDescription.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesFilter && matchesSearch;
   });
+
+   useEffect(() => {
+     fetchList(); 
+}, [])
 
   return (
     <div className="container mx-auto px-4 py-12">

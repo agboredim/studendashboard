@@ -9,6 +9,9 @@ import CoursesPage from "./pages/CoursesPage";
 import CourseDetailPage from "./pages/CourseDetailPage";
 
 function App() {
+
+    const url = ' http://127.0.0.1:8000/'
+
   return (
     <>
       <Router>
