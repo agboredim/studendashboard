@@ -7,6 +7,8 @@ import LoginPage from "./components/LoginPage";
 import SignupPage from "./components/SignupUp";
 import CoursesPage from "./pages/CoursesPage";
 import CourseDetailPage from "./pages/CourseDetailPage";
+import BlogPage from './pages/BlogPage'
+import BlogPostPage from './pages/BlogPostPage'
 
 function App() {
 
@@ -20,6 +22,8 @@ function App() {
             <Route index element={<HomePage />} />
             <Route path="courses/:courseId" element={<CourseDetailPage />} />
             <Route path="courses" element={<CoursesPage />} />
+            <Route path="blog" element={<BlogPage />} />
+            <Route path="blog/:slug" element={<BlogPostPage />} />
           </Route>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />

@@ -1,18 +1,16 @@
 import { useState } from "react";
-import axios from "axios"
+import axios from "axios";
 import { Link } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { toast } from 'react-toastify'
+import { toast } from "react-toastify";
 
 function LoginPage() {
-
-  const add = ({url})
-
+  // const add = { url };
 
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    username: "",    
+    username: "",
     email: "",
     password: "",
     phone_number: "",
@@ -30,17 +28,16 @@ function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle login logic here
-    const formData = new FormData();
-    formData.append("username",data.username)
-    formData.append("email",data.email)
-    formData.append("phone_number",Number(data.phone_number))
-    formData.append("password", data.password)
+    const formData = new FormData({data});
+    formData.append("username", data.username);
+    formData.append("email", data.email);
+    formData.append("phone_number", Number(data.phone_number));
+    formData.append("password", data.password);
 
     console.log("Login form submitted:", formData);
     // You would typically make an API call here
-    const response = await axios.post(`${url}/customuser/signup/`)
-    }
-
+    // const response = await axios.post(`${url}/customuser/signup/`)
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
