@@ -19,22 +19,21 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import logoVideo from "@/assets/img/icon1.mp4";
+import logoImage from "@/assets/img/logo.jpeg"; // Import the image
 
 // Constants
 const menuLinks = [
   { title: "Home", href: "/team" },
   { title: "About Us", href: "/about" },
-  { title: "Our Story", href: "/story" },
   { title: "Partner with Us", href: "/press" },
-  { title: "Get Started", href: "/projects" },
+  { title: "Get Started", href: "/courses" },
 ];
 
 const lgScreenLinks = [
-  { title: "Courses", href: "/get-started" },
+  { title: "Courses", href: "/courses" },
   { title: "Student Portal", href: "/portal" },
   { title: "Blog", href: "/blog" },
-  { title: "Projects", href: "/project" },
+  { title: "Our Story", href: "/story" },
   { title: "Contact Us", href: "/contact" },
 ];
 
@@ -85,12 +84,10 @@ export function Navbar() {
           <div className="flex items-center gap-4">
             <Link to="/" className="flex items-center" aria-label="Home">
               <div className="flex items-center">
-                <video
-                  src={logoVideo}
+                <img
+                  src={logoImage}
+                  alt="Logo"
                   className="w-48 rounded-md"
-                  autoPlay
-                  loop
-                  muted
                   aria-label="Logo"
                 />
               </div>
@@ -120,7 +117,7 @@ export function Navbar() {
                 {menuLinks.map((option) => (
                   <DropdownMenuItem
                     key={option.href}
-                    className="flex items-center gap-2 cursor-pointer text-blue-950 hover:bg-gray-50 hover:text-[#FDBC00] transition-colors duration-300"
+                    className="flex items-center gap-2 cursor-pointer text-blue-950 hover:bg-gray-50 hover:text-[#FDBC00] lg:hover:bg-gray-50 lg:hover:text-[#FDBC00] transition-colors duration-300"
                     asChild
                   >
                     <Link to={option.href}>
@@ -221,14 +218,12 @@ export function Navbar() {
                   {profileOptions.map((option) => (
                     <DropdownMenuItem
                       key={option.href}
-                      className="flex items-center gap-2 "
+                      className="flex items-center gap-2 text-blue-950 hover:bg-gray-50 hover:text-[#FDBC00] transition-colors duration-300 lg:hover:bg-gray-50 lg:hover:text-[#FDBC00]"
                       asChild
                     >
                       <Link to={option.href}>
                         <option.icon className="h-4 w-4 text-blue-950" />
-                        <span className="text-blue-950 hover:bg-gray-50 hover:text-[#FDBC00] transition-colors duration-300">
-                          {option.title}
-                        </span>
+                        <span className="">{option.title}</span>
                       </Link>
                     </DropdownMenuItem>
                   ))}

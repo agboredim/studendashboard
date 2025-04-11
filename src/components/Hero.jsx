@@ -1,5 +1,6 @@
 import { Play, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom"; // Import Link
 import bgImage from "@/assets/img/hero.jpg";
 
 export function Hero() {
@@ -43,9 +44,11 @@ export function Hero() {
           </Button>
 
           {/* Enrol Now Button */}
-          <Button className="w-full sm:w-48 rounded-full bg-blue-950 px-6 py-6 text-white hover:bg-blue-900 hover:shadow-lg transition-all duration-300">
-            Enrol Now
-          </Button>
+          <Link to="/courses">
+            <Button className="w-full sm:w-48 rounded-full bg-blue-950 px-6 py-6 text-white hover:bg-blue-900 hover:shadow-lg transition-all duration-300">
+              Enrol Now
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
