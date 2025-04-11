@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Play, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import Slider from "react-slick";
@@ -12,6 +12,8 @@ export function CourseIntroVideos() {
   const sliderRef = useRef(null);
   const [sectionRef, isInView] = useInView({ threshold: 0.3 });
   const hasInitializedRef = useRef(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [slideCount, setSlideCount] = useState(0);
 
   // Handle autoplay of first video when section comes into view
   useEffect(() => {
@@ -27,26 +29,49 @@ export function CourseIntroVideos() {
   }, [isInView]);
 
   // Function to toggle video play state
-  const toggleVideo = (courseId) => {
+  const toggleVideo = useCallback((courseId) => {
     setActiveVideoId((prevId) => (prevId === courseId ? null : courseId));
-  };
+  }, []);
 
-  const goToPrev = () => {
-    sliderRef.current.slickPrev();
-  };
+  // Stop video when slider changes
+  const handleBeforeChange = useCallback(() => {
+    setActiveVideoId(null);
+  }, []);
 
-  const goToNext = () => {
-    sliderRef.current.slickNext();
-  };
+  // Update current slide index
+  const handleAfterChange = useCallback((index) => {
+    setCurrentSlide(index);
+  }, []);
+
+  const goToPrev = useCallback(() => {
+    if (sliderRef.current) {
+      sliderRef.current.slickPrev();
+    }
+  }, []);
+
+  const goToNext = useCallback(() => {
+    if (sliderRef.current) {
+      sliderRef.current.slickNext();
+    }
+  }, []);
+
+  // Initialize slide count after slider is mounted
+  useEffect(() => {
+    if (sliderRef.current) {
+      setSlideCount(coursesData.length);
+    }
+  }, []);
 
   const sliderSettings = {
     dots: true,
-    infinite: true,
+    infinite: false,
     speed: 500,
     slidesToShow: 3,
     slidesToScroll: 1,
     arrows: false,
     autoplay: false,
+    beforeChange: handleBeforeChange,
+    afterChange: handleAfterChange,
     responsive: [
       {
         breakpoint: 1024,
@@ -87,21 +112,26 @@ export function CourseIntroVideos() {
             onClick={goToPrev}
             className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full p-2 shadow-md -ml-4 transition-all duration-200 ease-in-out focus:outline-none"
             aria-label="Previous slide"
+            disabled={currentSlide === 0}
           >
-            <ChevronLeft className="h-6 w-6 text-blue-950" />
+            <ChevronLeft
+              className={`h-6 w-6 ${
+                currentSlide === 0 ? "text-gray-400" : "text-blue-950"
+              }`}
+            />
           </button>
 
           <div className="mx-6">
             <Slider ref={sliderRef} {...sliderSettings}>
-              {coursesData.map((course) => (
-                <div key={course.id} className="px-3">
+              {coursesData.map((course, index) => (
+                <div key={`course-${course.id}`} className="px-3">
                   <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group h-full">
                     {/* Video Container */}
-                    <div className="relative h-48 overflow-hidden">
+                    <div className="relative h-52 overflow-hidden">
                       {activeVideoId === course.id ? (
                         // Key is important to force remount when active video changes
                         <iframe
-                          key={`video-${course.id}-active`}
+                          key={`video-${course.id}-active-${index}`}
                           className="w-full h-full"
                           src={`${course.videoUrl}?time=2&autoPlay=true`}
                           title={`${course.title} Preview`}
@@ -118,7 +148,7 @@ export function CourseIntroVideos() {
                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                           />
                           <div
-                            className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center cursor-pointer"
+                            className="absolute inset-0 bg-opacit flex items-center justify-center cursor-pointer"
                             onClick={() => toggleVideo(course.id)}
                           >
                             <div className="w-14 h-14 rounded-full bg-white bg-opacity-80 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
@@ -166,8 +196,15 @@ export function CourseIntroVideos() {
             onClick={goToNext}
             className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full p-2 shadow-md -mr-4 transition-all duration-200 ease-in-out focus:outline-none"
             aria-label="Next slide"
+            disabled={currentSlide === slideCount - sliderSettings.slidesToShow}
           >
-            <ChevronRight className="h-6 w-6 text-blue-950" />
+            <ChevronRight
+              className={`h-6 w-6 ${
+                currentSlide === slideCount - sliderSettings.slidesToShow
+                  ? "text-gray-400"
+                  : "text-blue-950"
+              }`}
+            />
           </button>
         </div>
 
