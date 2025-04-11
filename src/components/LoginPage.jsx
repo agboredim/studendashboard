@@ -1,13 +1,19 @@
 import { useState } from "react";
+import axios from "axios";
 import { Link } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "react-toastify";
 
 function LoginPage() {
+  // const add = { url };
+
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
+    username: "",
     email: "",
     password: "",
+    phone_number: "",
     rememberMe: false,
   });
 
@@ -19,11 +25,18 @@ function LoginPage() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle login logic here
+    const formData = new FormData({data});
+    formData.append("username", data.username);
+    formData.append("email", data.email);
+    formData.append("phone_number", Number(data.phone_number));
+    formData.append("password", data.password);
+
     console.log("Login form submitted:", formData);
     // You would typically make an API call here
+    // const response = await axios.post(`${url}/customuser/signup/`)
   };
 
   return (
@@ -51,7 +64,7 @@ function LoginPage() {
                 type="email"
                 autoComplete="email"
                 required
-                value={formData.email}
+                value={data.email}
                 onChange={handleChange}
                 className="appearance-none relative block w-full px-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-950 focus:border-blue-950 focus:z-10 sm:text-sm"
                 placeholder="Email address"
@@ -69,7 +82,7 @@ function LoginPage() {
                 type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
                 required
-                value={formData.password}
+                value={data.password}
                 onChange={handleChange}
                 className="appearance-none relative block w-full px-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-950 focus:border-blue-950 focus:z-10 sm:text-sm"
                 placeholder="Password"
