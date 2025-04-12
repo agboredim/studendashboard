@@ -1,43 +1,69 @@
-import { useState } from "react";
-import axios from "axios";
-import { Link } from "react-router-dom";
+"use client";
+
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { toast } from "react-toastify";
+import { loginSchema } from "../schemas/authSchemas";
+import { useLoginMutation } from "../services/api";
+import Spinner from "../components/Spinner";
 
 function LoginPage() {
-  // const add = { url };
-
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    password: "",
-    phone_number: "",
-    rememberMe: false,
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const dispatch = useDispatch();
+
+  // Get redirect path from location state or default to dashboard
+  const from = location.state?.from?.pathname || "/dashboard";
+
+  // Use the login mutation hook
+  const [login, { isLoading, isError, error, isSuccess, data }] =
+    useLoginMutation();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: false,
+    },
   });
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+  useEffect(() => {
+    // if (isError) {
+    //   toast.error(data.error || "Login failed. Please try again.");
+    // }
+
+    // Redirect when logged in
+    if (isSuccess) {
+      navigate(from, { replace: true });
+      toast.success("Login successful!");
+    }
+  }, [isError, isSuccess, data, navigate, from]);
+
+  const onSubmit = async (formData) => {
+    try {
+      await login(formData).unwrap();
+    } catch (err) {
+      toast.error(err.error);
+      toast.error(err.data.error);
+      // Error is handled in the useEffect above
+    }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    // Handle login logic here
-    const formData = new FormData({data});
-    formData.append("username", data.username);
-    formData.append("email", data.email);
-    formData.append("phone_number", Number(data.phone_number));
-    formData.append("password", data.password);
-
-    console.log("Login form submitted:", formData);
-    // You would typically make an API call here
-    // const response = await axios.post(`${url}/customuser/signup/`)
-  };
+  // if (isLoading) {
+  //   return <Spinner />;
+  // }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -51,8 +77,9 @@ function LoginPage() {
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="rounded-md shadow-sm space-y-4">
+            {/* Email field */}
             <div className="relative">
               <label htmlFor="email" className="sr-only">
                 Email address
@@ -60,17 +87,21 @@ function LoginPage() {
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
                 id="email"
-                name="email"
                 type="email"
-                autoComplete="email"
-                required
-                value={data.email}
-                onChange={handleChange}
-                className="appearance-none relative block w-full px-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-950 focus:border-blue-950 focus:z-10 sm:text-sm"
+                {...register("email")}
+                className={`appearance-none relative block w-full px-10 py-3 border ${
+                  errors.email ? "border-red-500" : "border-gray-300"
+                } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-950 focus:border-blue-950 focus:z-10 sm:text-sm`}
                 placeholder="Email address"
               />
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
 
+            {/* Password field */}
             <div className="relative">
               <label htmlFor="password" className="sr-only">
                 Password
@@ -78,13 +109,11 @@ function LoginPage() {
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
                 id="password"
-                name="password"
                 type={showPassword ? "text" : "password"}
-                autoComplete="current-password"
-                required
-                value={data.password}
-                onChange={handleChange}
-                className="appearance-none relative block w-full px-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-950 focus:border-blue-950 focus:z-10 sm:text-sm"
+                {...register("password")}
+                className={`appearance-none relative block w-full px-10 py-3 border ${
+                  errors.password ? "border-red-500" : "border-gray-300"
+                } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-950 focus:border-blue-950 focus:z-10 sm:text-sm`}
                 placeholder="Password"
               />
               <button
@@ -98,6 +127,11 @@ function LoginPage() {
                   <Eye className="h-5 w-5" />
                 )}
               </button>
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
           </div>
 
@@ -105,10 +139,8 @@ function LoginPage() {
             <div className="flex items-center">
               <input
                 id="remember-me"
-                name="rememberMe"
                 type="checkbox"
-                checked={formData.rememberMe}
-                onChange={handleChange}
+                {...register("rememberMe")}
                 className="h-4 w-4 text-blue-950 focus:ring-blue-950 border-gray-300 rounded"
               />
               <label

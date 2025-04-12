@@ -1,49 +1,75 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { toast } from "react-toastify";
+import { Eye, EyeOff, Mail, Lock, User, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { signupSchema } from "../schemas/authSchemas";
+import { useRegisterMutation } from "../services/api";
+import Spinner from "../components/Spinner";
 
 function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    agreeToTerms: false,
+
+  const navigate = useNavigate();
+
+  // Use the register mutation hook
+  const [register, { isLoading, isError, error, isSuccess }] =
+    useRegisterMutation();
+
+  const {
+    register: registerField,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(signupSchema),
+    defaultValues: {
+      username: "",
+      email: "",
+      phone_number: "",
+      password: "",
+      confirmPassword: "",
+      agreeToTerms: false,
+    },
   });
-  const [passwordMatch, setPasswordMatch] = useState(true);
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+  useEffect(() => {
+    if (isError) {
+      toast.error(
+        error?.data?.message || "Registration failed. Please try again."
+      );
+    }
 
-    // Check if passwords match when either password field changes
-    if (name === "password" || name === "confirmPassword") {
-      if (name === "password") {
-        setPasswordMatch(
-          value === formData.confirmPassword || formData.confirmPassword === ""
-        );
-      } else {
-        setPasswordMatch(value === formData.password || value === "");
-      }
+    // Redirect when registered
+    if (isSuccess) {
+      navigate("/student-portal", { replace: true });
+      toast.success("Registration successful!");
+    }
+  }, [isError, isSuccess, error, navigate]);
+
+  const onSubmit = async (data) => {
+    const { username, email, phone_number, password } = data;
+
+    const userData = {
+      username,
+      email,
+      phone_number,
+      password,
+    };
+
+    try {
+      await register(userData).unwrap();
+    } catch (err) {
+      console.log(err);
+      // Error is handled in the useEffect above
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      setPasswordMatch(false);
-      return;
-    }
-    // Handle signup logic here
-    console.log("Signup form submitted:", formData);
-    // You would typically make an API call here
-  };
+  // if (isLoading) {
+  //   return <Spinner />;
+  // }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -57,26 +83,31 @@ function SignupPage() {
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="rounded-md shadow-sm space-y-4">
+            {/* Username field */}
             <div className="relative">
-              <label htmlFor="name" className="sr-only">
-                Full Name
+              <label htmlFor="username" className="sr-only">
+                Username
               </label>
               <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
-                id="name"
-                name="name"
+                id="username"
                 type="text"
-                autoComplete="name"
-                required
-                value={formData.name}
-                onChange={handleChange}
-                className="appearance-none relative block w-full px-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-950 focus:border-blue-950 focus:z-10 sm:text-sm"
-                placeholder="Full Name"
+                {...registerField("username")}
+                className={`appearance-none relative block w-full px-10 py-3 border ${
+                  errors.username ? "border-red-500" : "border-gray-300"
+                } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-950 focus:border-blue-950 focus:z-10 sm:text-sm`}
+                placeholder="Username"
               />
+              {errors.username && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.username.message}
+                </p>
+              )}
             </div>
 
+            {/* Email field */}
             <div className="relative">
               <label htmlFor="email" className="sr-only">
                 Email address
@@ -84,17 +115,43 @@ function SignupPage() {
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
                 id="email"
-                name="email"
                 type="email"
-                autoComplete="email"
-                required
-                value={formData.email}
-                onChange={handleChange}
-                className="appearance-none relative block w-full px-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-950 focus:border-blue-950 focus:z-10 sm:text-sm"
+                {...registerField("email")}
+                className={`appearance-none relative block w-full px-10 py-3 border ${
+                  errors.email ? "border-red-500" : "border-gray-300"
+                } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-950 focus:border-blue-950 focus:z-10 sm:text-sm`}
                 placeholder="Email address"
               />
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
 
+            {/* Phone Number field */}
+            <div className="relative">
+              <label htmlFor="phone_number" className="sr-only">
+                Phone Number
+              </label>
+              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                id="phone_number"
+                type="tel"
+                {...registerField("phone_number")}
+                className={`appearance-none relative block w-full px-10 py-3 border ${
+                  errors.phone_number ? "border-red-500" : "border-gray-300"
+                } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-950 focus:border-blue-950 focus:z-10 sm:text-sm`}
+                placeholder="Phone number"
+              />
+              {errors.phone_number && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.phone_number.message}
+                </p>
+              )}
+            </div>
+
+            {/* Password field */}
             <div className="relative">
               <label htmlFor="password" className="sr-only">
                 Password
@@ -102,13 +159,11 @@ function SignupPage() {
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
                 id="password"
-                name="password"
                 type={showPassword ? "text" : "password"}
-                autoComplete="new-password"
-                required
-                value={formData.password}
-                onChange={handleChange}
-                className="appearance-none relative block w-full px-10 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-950 focus:border-blue-950 focus:z-10 sm:text-sm"
+                {...registerField("password")}
+                className={`appearance-none relative block w-full px-10 py-3 border ${
+                  errors.password ? "border-red-500" : "border-gray-300"
+                } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-950 focus:border-blue-950 focus:z-10 sm:text-sm`}
                 placeholder="Password"
               />
               <button
@@ -122,8 +177,14 @@ function SignupPage() {
                   <Eye className="h-5 w-5" />
                 )}
               </button>
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
+            {/* Confirm Password field */}
             <div className="relative">
               <label htmlFor="confirmPassword" className="sr-only">
                 Confirm Password
@@ -131,21 +192,11 @@ function SignupPage() {
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
                 id="confirmPassword"
-                name="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
-                autoComplete="new-password"
-                required
-                value={formData.confirmPassword}
-                onChange={handleChange}
+                {...registerField("confirmPassword")}
                 className={`appearance-none relative block w-full px-10 py-3 border ${
-                  !passwordMatch && formData.confirmPassword
-                    ? "border-red-500"
-                    : "border-gray-300"
-                } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 ${
-                  !passwordMatch && formData.confirmPassword
-                    ? "focus:ring-red-500 focus:border-red-500"
-                    : "focus:ring-blue-950 focus:border-blue-950"
-                } focus:z-10 sm:text-sm`}
+                  errors.confirmPassword ? "border-red-500" : "border-gray-300"
+                } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-950 focus:border-blue-950 focus:z-10 sm:text-sm`}
                 placeholder="Confirm Password"
               />
               <button
@@ -159,20 +210,19 @@ function SignupPage() {
                   <Eye className="h-5 w-5" />
                 )}
               </button>
+              {errors.confirmPassword && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.confirmPassword.message}
+                </p>
+              )}
             </div>
-            {!passwordMatch && formData.confirmPassword && (
-              <p className="text-sm text-red-600">Passwords do not match</p>
-            )}
           </div>
 
           <div className="flex items-center">
             <input
               id="agree-terms"
-              name="agreeToTerms"
               type="checkbox"
-              required
-              checked={formData.agreeToTerms}
-              onChange={handleChange}
+              {...registerField("agreeToTerms")}
               className="h-4 w-4 text-blue-950 focus:ring-blue-950 border-gray-300 rounded"
             />
             <label
@@ -195,14 +245,19 @@ function SignupPage() {
               </Link>
             </label>
           </div>
+          {errors.agreeToTerms && (
+            <p className="mt-1 text-sm text-red-600">
+              {errors.agreeToTerms.message}
+            </p>
+          )}
 
           <div>
-            <Button
+            <button
               type="submit"
               className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-950 hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-950"
             >
               Create Account
-            </Button>
+            </button>
           </div>
         </form>
 
