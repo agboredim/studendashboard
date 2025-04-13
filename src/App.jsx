@@ -10,6 +10,7 @@ import CourseDetailPage from "./pages/CourseDetailPage";
 import BlogPage from "./pages/BlogPage";
 import BlogPostPage from "./pages/BlogPostPage";
 import AboutPage from "./pages/AboutPage";
+import Portal from "./pages/Portal";
 
 function App() {
   const url = " http://127.0.0.1:8000/";
@@ -28,6 +29,7 @@ function App() {
           </Route>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/portal" element={<Portal/>}/>
         </Routes>
         <WhatsAppButton />
       </Router>
