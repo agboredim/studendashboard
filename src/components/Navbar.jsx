@@ -1,16 +1,18 @@
+"use client";
+
 import { useState, useEffect, useCallback } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Search,
   Phone,
   User,
-  Menu,
-  Grid,
   Layout,
   SquareMenu,
   LogIn,
   UserPlus,
   Rocket,
+  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +21,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { logout } from "../store/slices/authSlice";
+import { toast } from "react-toastify";
 import logoImage from "@/assets/img/logo.jpeg"; // Import the image
 
 // Constants
@@ -31,16 +35,10 @@ const menuLinks = [
 
 const lgScreenLinks = [
   { title: "Courses", href: "/courses" },
-  { title: "Student Portal", href: "/portal" },
+  { title: "Student Portal", href: "/student-portal" },
   { title: "Blog", href: "/blog" },
   { title: "Our Story", href: "/story" },
   { title: "Contact Us", href: "/contact" },
-];
-
-const profileOptions = [
-  { title: "Login", href: "/login", icon: LogIn },
-  { title: "Sign Up", href: "/signup", icon: UserPlus },
-  { title: "Get Started", href: "/courses", icon: Rocket },
 ];
 
 function useResponsive() {
@@ -65,6 +63,11 @@ export function Navbar() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const { isMobile } = useResponsive();
   const location = useLocation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  // Get user from Redux store
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     setIsMenuOpen(false);
@@ -75,6 +78,33 @@ export function Navbar() {
     () => setIsProfileOpen((prev) => !prev),
     []
   );
+
+  const handleLogout = () => {
+    if (user) {
+      try {
+        // Dispatch the local logout action
+        dispatch(logout());
+        toast.success("Logged out successfully");
+        navigate("/");
+        setIsProfileOpen(false);
+      } catch (error) {
+        toast.error("Logout failed. Please try again.");
+      }
+    }
+  };
+
+  // Profile options based on authentication status
+  const profileOptions = user
+    ? [
+        { title: "My Profile", href: "/profile", icon: User },
+        { title: "Student Portal", href: "/student-portal", icon: Layout },
+        { title: "Logout", action: handleLogout, icon: LogOut },
+      ]
+    : [
+        { title: "Login", href: "/login", icon: LogIn },
+        { title: "Sign Up", href: "/signup", icon: UserPlus },
+        { title: "Get Started", href: "/courses", icon: Rocket },
+      ];
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white shadow-sm">
@@ -215,16 +245,38 @@ export function Navbar() {
                   align="end"
                   className="w-56 bg-white border-0 shadow-2xl"
                 >
-                  {profileOptions.map((option) => (
+                  {user && (
+                    <div className="px-4 py-3 border-b border-gray-100">
+                      <p className="text-sm font-medium text-blue-950">
+                        Welcome,
+                      </p>
+                      <p className="text-sm text-gray-700 truncate">
+                        {user.username || user.email}
+                      </p>
+                    </div>
+                  )}
+
+                  {profileOptions.map((option, index) => (
                     <DropdownMenuItem
-                      key={option.href}
+                      key={index}
                       className="flex items-center gap-2 text-blue-950 hover:bg-gray-50 hover:text-[#FDBC00] transition-colors duration-300 lg:hover:bg-gray-50 lg:hover:text-[#FDBC00]"
-                      asChild
+                      onClick={option.action ? option.action : undefined}
+                      asChild={!option.action}
                     >
-                      <Link to={option.href}>
-                        <option.icon className="h-4 w-4 text-blue-950" />
-                        <span className="">{option.title}</span>
-                      </Link>
+                      {option.action ? (
+                        <div className="flex items-center gap-2 cursor-pointer">
+                          <option.icon className="h-4 w-4 text-blue-950" />
+                          <span>{option.title}</span>
+                        </div>
+                      ) : (
+                        <Link
+                          to={option.href}
+                          className="flex items-center gap-2"
+                        >
+                          <option.icon className="h-4 w-4 text-blue-950" />
+                          <span>{option.title}</span>
+                        </Link>
+                      )}
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
