@@ -20,12 +20,14 @@ export function Hero() {
           <span className="flex h-8 w-8 items-center justify-center rounded-md bg-white text-blue-950">
             <Shield className="h-5 w-5" />
           </span>
-          <span className="text-xl font-bold text-white">AML Pro</span>
+          <span className="text-xl font-bold text-white">Career Titans</span>
         </div>
 
         <h1 className="mt-6 text-2xl font-bold text-white md:text-3xl lg:text-5xl">
-          Master KYC & AML Compliance and Unlock High-Paying Opportunities
-          Today!
+          Accelerate your career with expert-led training in Business Analysis
+          Cybersecurity, Data Analytics, and Compliance . Join thousands of
+          learners building the future through our powerful, easy-to-use online
+          platform
         </h1>
 
         <p className="mt-4 max-w-2xl text-lg text-white">
