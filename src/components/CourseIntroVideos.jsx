@@ -72,6 +72,7 @@ export function CourseIntroVideos() {
     autoplay: false,
     beforeChange: handleBeforeChange,
     afterChange: handleAfterChange,
+    adaptiveHeight: false,
     responsive: [
       {
         breakpoint: 1024,
@@ -124,8 +125,8 @@ export function CourseIntroVideos() {
           <div className="mx-6">
             <Slider ref={sliderRef} {...sliderSettings}>
               {coursesData.map((course, index) => (
-                <div key={`course-${course.id}`} className="px-3">
-                  <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group h-full">
+                <div key={`course-${course.id}`} className="px-3 h-full">
+                  <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group h-full flex flex-col">
                     {/* Video Container */}
                     <div className="relative h-52 overflow-hidden">
                       {activeVideoId === course.id ? (
@@ -165,15 +166,15 @@ export function CourseIntroVideos() {
                     </div>
 
                     {/* Course Info */}
-                    <div className="p-5">
-                      <h3 className="text-lg font-bold text-blue-950 mb-2 line-clamp-2">
+                    <div className="p-5 flex flex-col flex-grow">
+                      <h3 className="text-lg font-bold text-blue-950 mb-2 line-clamp-2 h-14">
                         {course.title}
                       </h3>
-                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                      <p className="text-gray-600 text-sm mb-4 line-clamp-2 flex-grow">
                         {course.shortDescription}
                       </p>
 
-                      <div className="flex justify-between items-center">
+                      <div className="flex justify-between items-center mt-auto">
                         <span className="text-blue-950 font-bold">
                           ${course.price}
                         </span>
