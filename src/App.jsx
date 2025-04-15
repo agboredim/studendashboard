@@ -14,7 +14,7 @@ import store from "./store";
 import ProtectedRoute from "./components/ProtectedRoute";
 import StudentPortalPage from "./pages/StudentPortalPage";
 import { ToastContainer } from "react-toastify";
-import SignupPage from "./pages/SignUpPage";
+import SignupPage from "./pages/SignupPage";
 
 function App() {
   return (

@@ -25,25 +25,23 @@ export function Hero() {
 
         <h1 className="mt-6 text-2xl font-bold text-white md:text-3xl lg:text-5xl">
           Accelerate your career with expert-led training in Business Analysis
-          Cybersecurity, Data Analytics, and Compliance . Join thousands of
-          learners building the future through our powerful, easy-to-use online
-          platform
+          Cybersecurity, Data Analytics, and Compliance.
         </h1>
 
         <p className="mt-4 max-w-2xl text-lg text-white">
-          The Most Innovative KYC/AML Learning Platform for Digital Compliance
-          Experience
+          Join thousands of learners building the future through our powerful,
+          easy-to-use online platform
         </p>
 
         <div className="mt-8 flex flex-col gap-4 sm:flex-row">
           {/* Watch the Video Button */}
-          <Button
+          <utton
             variant="outline"
-            className="flex items-center justify-center gap-2 w-full sm:w-48 rounded-full border-white bg-transparent px-6 py-6 text-white hover:bg-white hover:text-gray-900 transition-all duration-300"
+            className="flex items-center justify-center gap-2 w-full rounded-full border bg-transparent px-6 border-white text-white hover:bg-white hover:text-gray-900 transition-all duration-300"
           >
             <Play className="h-5 w-5" />
             <span>Watch the Video</span>
-          </Button>
+          </utton>
 
           {/* Enrol Now Button */}
           <Link to="/courses">
