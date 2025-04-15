@@ -1,0 +1,72 @@
+/* Hide scrollbar for Chrome, Safari and Opera */
+.carousel-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.carousel-container {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Custom styles for video container */
+.video-container {
+  position: relative;
+}
+
+/* Ensure iframe takes full space */
+.video-container iframe {
+  position: relative;
+  z-index: 10;
+}
+
+/* Add a custom control bar if needed */
+.video-container::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* Make sure Wistia controls are visible */
+.wistia_responsive_padding {
+  padding: 0 !important;
+}
+
+.wistia_responsive_wrapper {
+  height: 100% !important;
+}
+
+/* Ensure controls are visible and don't fade */
+.w-vulcan--background {
+  opacity: 0.7 !important;
+}
+
+.w-vulcan-v2-button {
+  opacity: 1 !important;
+}
+
+.w-css-reset-tree * {
+  opacity: 1 !important;
+}
+
+/* Add styles for consistent card heights */
+.slick-track {
+  display: flex !important;
+}
+
+.slick-slide {
+  height: inherit !important;
+  display: flex !important;
+}
+
+.slick-slide > div {
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
