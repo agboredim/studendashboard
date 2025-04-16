@@ -16,23 +16,23 @@ const stats = [
   {
     value: 75,
     text: "75%",
-    title: "Risk Reduction",
+    title: "Efficiency Boost",
     description:
-      "Organizations report a 75% reduction in compliance risks after staff complete our AML training",
+      "Teams report a 75% increase in product delivery speed after adopting our Product Management training and frameworks",
   },
   {
     value: 50,
     text: "50+",
-    title: "Regulatory Frameworks",
+    title: "Analytical Frameworks",
     description:
-      "Our KYC & AML curriculum covers over 50 global regulatory frameworks and standards",
+      "Our Data Analysis program covers over 50 industry-standard tools, frameworks, and methodologies for actionable insights",
   },
   {
-    value: 100,
-    text: "100%",
-    title: "Expert-Led Training",
+    value: 99,
+    text: "99%",
+    title: "Security Standards",
     description:
-      "All courses are designed and taught by certified AML and KYC compliance professionals",
+      "Our Cybersecurity curriculum covers over 99% global frameworks, protocols, and compliance standards including ISO, NIST, and GDPR",
   },
 ];
 
