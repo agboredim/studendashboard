@@ -1,11 +1,15 @@
 import { useState } from "react";
-import { Play, Shield, X } from "lucide-react";
+import { Play, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { VideoModal } from "./VideoModal";
 import bgImage from "@/assets/img/hero.jpg";
 
 export function Hero() {
-  const [showVideoModal, setShowVideoModal] = useState(false);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+
+  const openVideoModal = () => setIsVideoModalOpen(true);
+  const closeVideoModal = () => setIsVideoModalOpen(false);
 
   return (
     <section className="relative h-[500px] w-full overflow-hidden">
@@ -39,7 +43,7 @@ export function Hero() {
         <div className="mt-8 flex flex-col gap-4 sm:flex-row">
           {/* Watch the Video Button */}
           <button
-            onClick={() => setShowVideoModal(true)}
+            onClick={openVideoModal}
             className="flex items-center justify-center gap-2 w-full rounded-full border bg-transparent px-6 py-2 border-white text-white hover:bg-white hover:text-gray-900 transition-all duration-300"
           >
             <Play className="h-5 w-5" />
@@ -56,38 +60,11 @@ export function Hero() {
       </div>
 
       {/* Video Modal */}
-      {showVideoModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
-          <div className="relative w-full max-w-4xl">
-            <button
-              onClick={() => setShowVideoModal(false)}
-              className="absolute -top-10 right-0 z-50 text-white hover:text-gray-300"
-            >
-              <X className="h-8 w-8" />
-            </button>
-            <div className="aspect-w-16 aspect-h-9 w-full overflow-hidden rounded-lg">
-              <div className="wistia_responsive_padding">
-                <div className="wistia_responsive_wrapper">
-                  <wistia-player
-                    media-id="o31acanvx8"
-                    aspect="1.7777777777777777"
-                    autoplay="true"
-                    className="w-full h-full"
-                  ></wistia-player>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Load Wistia scripts */}
-      <script src="https://fast.wistia.com/player.js" async></script>
-      <script
-        src="https://fast.wistia.com/embed/o31acanvx8.js"
-        async
-        type="module"
-      ></script>
+      <VideoModal
+        isOpen={isVideoModalOpen}
+        onClose={closeVideoModal}
+        videoId="o31acanvx8"
+      />
     </section>
   );
 }
