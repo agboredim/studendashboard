@@ -34,6 +34,7 @@ const menuLinks = [
 ];
 
 const lgScreenLinks = [
+  { title: "Services", href: "/services" },
   { title: "Courses", href: "/courses" },
   { title: "Student Portal", href: "/student-portal" },
   { title: "Blog", href: "/blog" },
@@ -179,7 +180,7 @@ export function Navbar() {
 
           {/* Search and Icons */}
           <div className="hidden md:flex items-center gap-4">
-            <div className="relative w-96">
+            <div className="relative w-60">
               <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 hover:text-[#FDBC00] transition-colors duration-300" />
               <input
                 type="search"
