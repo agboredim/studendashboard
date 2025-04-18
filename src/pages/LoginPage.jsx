@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -20,7 +18,7 @@ function LoginPage() {
   const dispatch = useDispatch();
 
   // Get redirect path from location state or default to dashboard
-  const from = location.state?.from?.pathname || "/dashboard";
+  const from = location.state?.from?.pathname || "/portal";
 
   // Use the login mutation hook
   const [login, { isLoading, isError, error, isSuccess, data }] =
@@ -53,7 +51,8 @@ function LoginPage() {
 
   const onSubmit = async (formData) => {
     try {
-      await login(formData).unwrap();
+      const response = await login(formData).unwrap();
+      console.log("Login response:", response);
     } catch (err) {
       toast.error(err.error);
       toast.error(err.data.error);
@@ -61,12 +60,14 @@ function LoginPage() {
     }
   };
 
-  // if (isLoading) {
-  //   return <Spinner />;
-  // }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      {/* Spinner overlay */}
+      {isLoading && (
+        <div className="">
+          <Spinner />
+        </div>
+      )}
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
         <div className="text-center">
           <h2 className="mt-6 text-3xl font-bold text-blue-950">
@@ -84,7 +85,8 @@ function LoginPage() {
               <label htmlFor="email" className="sr-only">
                 Email address
               </label>
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+
+              <Mail className="absolute left-3 top-6 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
               <input
                 id="email"
                 type="email"
@@ -94,6 +96,7 @@ function LoginPage() {
                 } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-950 focus:border-blue-950 focus:z-10 sm:text-sm`}
                 placeholder="Email address"
               />
+
               {errors.email && (
                 <p className="mt-1 text-sm text-red-600">
                   {errors.email.message}
@@ -106,7 +109,7 @@ function LoginPage() {
               <label htmlFor="password" className="sr-only">
                 Password
               </label>
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Lock className="absolute left-3 top-6 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
               <input
                 id="password"
                 type={showPassword ? "text" : "password"}
@@ -119,7 +122,7 @@ function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                className="absolute right-3 top-6 -translate-y-1/2 text-gray-500"
               >
                 {showPassword ? (
                   <EyeOff className="h-5 w-5" />
@@ -127,6 +130,7 @@ function LoginPage() {
                   <Eye className="h-5 w-5" />
                 )}
               </button>
+
               {errors.password && (
                 <p className="mt-1 text-sm text-red-600">
                   {errors.password.message}

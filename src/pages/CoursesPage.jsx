@@ -1,29 +1,22 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Star, Clock, BarChart, Filter } from "lucide-react";
 import { coursesData } from "../data/coursesData";
-import axios from 'axios';
-import { toast } from 'react-toastify';
+import axios from "axios";
+import { toast } from "react-toastify";
 
-function CoursesPage({url}) {
-
- 
-
+function CoursesPage({ url }) {
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
 
-
-   const fetchList = async () => {
-    const response = await axios.get(`${url}/courses/courses/`);    
-    if (response.data.success){
-       setFilter(response.data.data);
+  const fetchList = async () => {
+    const response = await axios.get(`${url}/courses/courses/`);
+    if (response.data.success) {
+      setFilter(response.data.data);
+    } else {
+      toast.error("Error");
     }
-    else{
-      toast.error("Error")
-    }
-  }
+  };
 
   const filteredCourses = coursesData.filter((course) => {
     const matchesFilter =
@@ -34,15 +27,15 @@ function CoursesPage({url}) {
     return matchesFilter && matchesSearch;
   });
 
-   useEffect(() => {
-     fetchList(); 
-}, [])
+  useEffect(() => {
+    fetchList();
+  }, []);
 
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-blue-950 mb-4">
-          AML Pro Training Courses
+          Titans Training Courses
         </h1>
         <p className="text-lg text-gray-600 max-w-3xl mx-auto">
           Enhance your KYC & AML compliance skills with our industry-leading

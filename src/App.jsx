@@ -32,7 +32,7 @@ function App() {
 
               {/* Protected Routes */}
               <Route
-                path="student-portal"
+                path="/portal"
                 element={
                   <ProtectedRoute>
                     <StudentPortalPage />
