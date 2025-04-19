@@ -54,6 +54,7 @@ function LoginPage() {
       const response = await login(formData).unwrap();
       console.log("Login response:", response);
     } catch (err) {
+      console.log(err);
       toast.error(err.error);
       toast.error(err.data.error);
       // Error is handled in the useEffect above
