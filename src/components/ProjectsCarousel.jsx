@@ -9,43 +9,35 @@ import "slick-carousel/slick/slick-theme.css";
 const services = [
   {
     id: 1,
-    title: "Identity Verification",
+    title: "AML/KYC Compliance",
     description:
-      "Advanced biometric and document verification solutions to ensure customer authenticity and prevent fraud",
+      "Master the essential principles and practices of Know Your Customer (KYC) and Anti-Money Laundering (AML) compliance with our comprehensive certification program.",
     image:
       "https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
   },
   {
     id: 2,
-    title: "Transaction Monitoring",
+    title: "Data Analysis",
     description:
-      "Real-time monitoring systems to detect suspicious activities and ensure compliance with regulations",
+      "Learn how to analyze financial data, identify patterns, and generate actionable insights for business decision-making in our data analysis program.",
     image:
       "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
   },
   {
     id: 3,
-    title: "Risk Assessment",
+    title: "Business Analysis/Project Management",
     description:
-      "Comprehensive risk profiling and assessment tools to identify high-risk customers and transactions",
+      "Develop the skills to analyze business needs, manage projects effectively, and deliver successful outcomes in financial services with our dual-focus program.",
     image:
-      "https://images.unsplash.com/photo-1518186285589-2f7649de83e0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
   },
   {
     id: 4,
-    title: "Compliance Training",
+    title: "Cybersecurity",
     description:
-      "Interactive training programs to ensure your team understands and implements KYC & AML best practices",
+      "Learn how to protect financial data and systems from cyber threats and implement robust security measures in our comprehensive cybersecurity program.",
     image:
-      "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
-  },
-  {
-    id: 5,
-    title: "Regulatory Reporting",
-    description:
-      "Automated solutions for accurate and timely reporting to regulatory authorities worldwide",
-    image:
-      "https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+      "https://images.unsplash.com/photo-1518186285589-2f7649de83e0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
   },
 ];
 
@@ -83,7 +75,7 @@ export function ProjectsCarousel() {
     <section className="py-16 bg-gray-50">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-blue-950 text-center mb-12">
-          Our Compliance Solutions
+          Our Programs
         </h2>
 
         <div className="relative pb-12">
