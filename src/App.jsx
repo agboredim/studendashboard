@@ -48,7 +48,7 @@ function App() {
 
             {/* Protected Routes (require authentication) */}
             <Route
-              path="student-portal"
+              path="portal"
               element={
                 <ProtectedRoute>
                   <StudentPortalPage />
@@ -61,9 +61,9 @@ function App() {
               path="checkout"
               element={
                 <ProtectedRoute>
-                  <CheckoutProtection>
-                    <CheckoutPage />
-                  </CheckoutProtection>
+                  {/* <CheckoutProtection> */}
+                  <CheckoutPage />
+                  {/* </CheckoutProtection> */}
                 </ProtectedRoute>
               }
             />

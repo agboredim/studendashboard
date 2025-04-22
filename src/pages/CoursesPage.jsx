@@ -1,10 +1,10 @@
-"use client";
-
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Star, Clock, BarChart, Filter } from "lucide-react";
 import { useGetAllCoursesQuery } from "../services/coursesApi";
 import Spinner from "../components/Spinner";
+
+const baseUrl = import.meta.env.VITE_BASE_URL;
 
 function CoursesPage() {
   const [filter, setFilter] = useState("all");
@@ -26,8 +26,8 @@ function CoursesPage() {
       const term = searchTerm.toLowerCase();
       const matchesSearch =
         !term ||
-        course.title.toLowerCase().includes(term) ||
-        course.shortDescription.toLowerCase().includes(term);
+        course.name.toLowerCase().includes(term) ||
+        course.description.toLowerCase().includes(term);
 
       return matchesFilter && matchesSearch;
     });
@@ -136,7 +136,7 @@ function CoursesPage() {
             >
               <div className="relative h-48 overflow-hidden">
                 <img
-                  src={course.course_image || "/placeholder.svg"}
+                  src={`${baseUrl}${course.course_image}`}
                   alt={course.name}
                   className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                 />
@@ -178,7 +178,7 @@ function CoursesPage() {
                   />
                   <span className="text-sm text-gray-700">
                     {course.instructor.name}
-                    {console.log(course?.instructor)}
+                    {console.log(course)}
                   </span>
                 </div>
 
