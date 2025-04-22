@@ -26,6 +26,7 @@ import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderConfirmationPage from "./pages/OrderConfirmationPage";
+import Portal from "./pages/Portal";
 
 function App() {
   return (
@@ -51,7 +52,7 @@ function App() {
               path="portal"
               element={
                 <ProtectedRoute>
-                  <StudentPortalPage />
+                  <Portal />
                 </ProtectedRoute>
               }
             />
@@ -61,9 +62,9 @@ function App() {
               path="checkout"
               element={
                 <ProtectedRoute>
-                  {/* <CheckoutProtection> */}
-                  <CheckoutPage />
-                  {/* </CheckoutProtection> */}
+                  <CheckoutProtection>
+                    <CheckoutPage />
+                  </CheckoutProtection>
                 </ProtectedRoute>
               }
             />
