@@ -8,7 +8,7 @@ const ProtectedRoute = ({ children }) => {
 
   if (!user) {
     // Show toast notification when redirecting to login
-    toast.info("Please log in to access this page");
+    // toast.info("Please log in to access this page");
 
     // Redirect to login page with the location they tried to visit
     return <Navigate to="/login" state={{ from: location }} replace />;

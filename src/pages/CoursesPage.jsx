@@ -1,42 +1,74 @@
-"use client";
-
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Star, Clock, BarChart, Filter } from "lucide-react";
-import { coursesData } from "../data/coursesData";
-import axios from 'axios';
-import { toast } from 'react-toastify';
+import { useGetAllCoursesQuery } from "../services/coursesApi";
+import Spinner from "../components/Spinner";
 
-function CoursesPage({url}) {
+const baseUrl = import.meta.env.VITE_BASE_URL;
 
- 
-
+function CoursesPage() {
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
 
+  // Fetch courses using RTK Query
+  const { data: courses = [], isLoading, error } = useGetAllCoursesQuery();
 
-   const fetchList = async () => {
-    const response = await axios.get(`${url}/courses/courses/`);    
-    if (response.data.success){
-       setFilter(response.data.data);
-    }
-    else{
-      toast.error("Error")
-    }
+  // Filter courses client-side
+  const filteredCourses = useMemo(() => {
+    if (!courses.length) return [];
+
+    return courses.filter((course) => {
+      // Apply level filter
+      const matchesFilter =
+        filter === "all" || course.level.toLowerCase() === filter;
+
+      // Apply search filter
+      const term = searchTerm.toLowerCase();
+      const matchesSearch =
+        !term ||
+        course.name.toLowerCase().includes(term) ||
+        course.description.toLowerCase().includes(term);
+
+      return matchesFilter && matchesSearch;
+    });
+  }, [courses, filter, searchTerm]);
+
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  // Handle filter change
+  const handleFilterChange = (e) => {
+    setFilter(e.target.value);
+  };
+
+  if (isLoading) {
+    return <Spinner />;
   }
 
-  const filteredCourses = coursesData.filter((course) => {
-    const matchesFilter =
-      filter === "all" || course.level.toLowerCase() === filter;
-    const matchesSearch =
-      course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      course.shortDescription.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesFilter && matchesSearch;
-  });
-
-   useEffect(() => {
-     fetchList(); 
-}, [])
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-12 text-center">
+        <div className="bg-red-50 p-6 rounded-lg">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">
+            Error Loading Courses
+          </h2>
+          <p className="text-gray-700 mb-4">
+            {error.status === "FETCH_ERROR"
+              ? "Network error. Please check your connection."
+              : error.data?.message || "Failed to load courses."}
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-6 py-2 bg-blue-950 text-white rounded-md hover:bg-blue-900"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -57,7 +89,7 @@ function CoursesPage({url}) {
             type="search"
             placeholder="Search courses..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={handleSearchChange}
             className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-950"
           />
           <div className="absolute left-3 top-1/2 -translate-y-1/2">
@@ -83,7 +115,7 @@ function CoursesPage({url}) {
           <span className="text-gray-700">Filter by:</span>
           <select
             value={filter}
-            onChange={(e) => setFilter(e.target.value)}
+            onChange={handleFilterChange}
             className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-950"
           >
             <option value="all">All Levels</option>
@@ -104,8 +136,8 @@ function CoursesPage({url}) {
             >
               <div className="relative h-48 overflow-hidden">
                 <img
-                  src={course.image || "/placeholder.svg"}
-                  alt={course.title}
+                  src={`${baseUrl}${course.course_image}`}
+                  alt={course.name}
                   className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                 />
                 <div className="absolute top-0 right-0 bg-blue-950 text-white px-3 py-1 m-2 rounded-full text-sm font-semibold">
@@ -115,17 +147,17 @@ function CoursesPage({url}) {
 
               <div className="p-6">
                 <h3 className="text-xl font-bold text-blue-950 mb-2">
-                  {course.title}
+                  {course.name}
                 </h3>
                 <p className="text-gray-600 mb-4 line-clamp-2">
-                  {course.shortDescription}
+                  {course.description}
                 </p>
 
                 <div className="flex items-center mb-4">
                   <div className="flex items-center mr-4">
                     <Clock className="h-4 w-4 text-gray-500 mr-1" />
                     <span className="text-sm text-gray-500">
-                      {course.duration}
+                      {course.estimated_time}
                     </span>
                   </div>
                   <div className="flex items-center">
@@ -138,12 +170,15 @@ function CoursesPage({url}) {
 
                 <div className="flex items-center mb-4">
                   <img
-                    src={course.instructorImage || "/placeholder.svg"}
-                    alt={course.instructor}
+                    src={
+                      course.instructor.profile_picture || "/placeholder.svg"
+                    }
+                    alt={course.instructor.profile_picture}
                     className="w-8 h-8 rounded-full mr-2 object-cover"
                   />
                   <span className="text-sm text-gray-700">
-                    {course.instructor}
+                    {course.instructor.name}
+                    {console.log(course)}
                   </span>
                 </div>
 

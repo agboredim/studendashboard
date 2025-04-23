@@ -36,15 +36,17 @@ function SignupPage() {
   });
 
   useEffect(() => {
-    if (isError) {
-      toast.error(
-        error?.data?.message || "Registration failed. Please try again."
-      );
-    }
+    // if (isError) {
+    //   toast.error(
+    //     error?.data?.message ||
+    //       error?.data?.email ||
+    //       "Registration failed. Please try again."
+    //   );
+    // }
 
     // Redirect when registered
     if (isSuccess) {
-      navigate("/student-portal", { replace: true });
+      navigate("/portal", { replace: true });
       toast.success("Registration successful!");
     }
   }, [isError, isSuccess, error, navigate]);
@@ -60,19 +62,31 @@ function SignupPage() {
     };
 
     try {
-      await register(userData).unwrap();
+      const response = await register(userData).unwrap();
+      console.log("Registration response:", response); // Log the response here
     } catch (err) {
-      console.log(err);
+      toast.error(
+        error?.data?.message ||
+          error?.data?.email[0] ||
+          "Registration failed. Please try again."
+      );
+      console.log("Error:", err);
+      toast.error(err.error);
+      toast.error(err.data.error);
       // Error is handled in the useEffect above
     }
   };
 
-  // if (isLoading) {
-  //   return <Spinner />;
-  // }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      {/* Spinner overlay */}
+      {isLoading && (
+        <div className="">
+          <Spinner />
+        </div>
+      )}
+
+      {/* Signup form */}
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
         <div className="text-center">
           <h2 className="mt-6 text-3xl font-bold text-blue-950">
@@ -90,7 +104,7 @@ function SignupPage() {
               <label htmlFor="username" className="sr-only">
                 Username
               </label>
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <User className="absolute left-3 top-6 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
                 id="username"
                 type="text"
@@ -112,7 +126,7 @@ function SignupPage() {
               <label htmlFor="email" className="sr-only">
                 Email address
               </label>
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Mail className="absolute left-3 top-6 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
                 id="email"
                 type="email"
@@ -134,7 +148,7 @@ function SignupPage() {
               <label htmlFor="phone_number" className="sr-only">
                 Phone Number
               </label>
-              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Phone className="absolute left-3 top-6 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
                 id="phone_number"
                 type="tel"
@@ -156,7 +170,7 @@ function SignupPage() {
               <label htmlFor="password" className="sr-only">
                 Password
               </label>
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Lock className="absolute left-3 top-6 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
                 id="password"
                 type={showPassword ? "text" : "password"}
@@ -169,7 +183,7 @@ function SignupPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                className="absolute right-3 top-6 -translate-y-1/2 text-gray-500"
               >
                 {showPassword ? (
                   <EyeOff className="h-5 w-5" />
@@ -189,7 +203,7 @@ function SignupPage() {
               <label htmlFor="confirmPassword" className="sr-only">
                 Confirm Password
               </label>
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Lock className="absolute left-3 top-6 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
                 id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
@@ -202,7 +216,7 @@ function SignupPage() {
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                className="absolute right-3 top-6 -translate-y-1/2 text-gray-500"
               >
                 {showConfirmPassword ? (
                   <EyeOff className="h-5 w-5" />

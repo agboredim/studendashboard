@@ -7,32 +7,32 @@ import "react-circular-progressbar/dist/styles.css";
 
 const stats = [
   {
-    value: 98,
-    text: "98%",
-    title: "Compliance Rate",
+    value: 78,
+    text: "78%",
+    title: "Securing Interviews",
     description:
-      "Our graduates achieve near-perfect compliance scores in regulatory assessments",
+      "78% of our students secured interviews within 3 months of course completion",
   },
   {
-    value: 75,
-    text: "75%",
-    title: "Efficiency Boost",
+    value: 92,
+    text: "92%",
+    title: "Confidence Boost",
     description:
-      "Teams report a 75% increase in product delivery speed after adopting our Product Management training and frameworks",
+      "92% of students report increased confidence to transition into Compliance or IT roles after training",
   },
   {
-    value: 50,
-    text: "50+",
-    title: "Analytical Frameworks",
+    value: 95,
+    text: "95%",
+    title: "Student Satisfaction",
     description:
-      "Our Data Analysis program covers over 50 industry-standard tools, frameworks, and methodologies for actionable insights",
+      "95% student satisfaction rate with course content and delivery",
   },
   {
-    value: 99,
-    text: "99%",
-    title: "Security Standards",
+    value: 100,
+    text: "100%",
+    title: "Expert Led Training",
     description:
-      "Our Cybersecurity curriculum covers over 99% global frameworks, protocols, and compliance standards including ISO, NIST, and GDPR",
+      "100% expert led training - All courses are designed and taught by certified Compliance and IT experts",
   },
 ];
 
@@ -140,15 +140,15 @@ export function StatsSection() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-2xl font-bold text-yellow-600 mb-4">
-            INDUSTRY-LEADING KYC & AML COMPLIANCE SOLUTIONS
+            Industry Leading AML/KYC Compliance and IT Solutions Provider
           </h2>
-          <p className="text-3xl font-medium text-yellow-600">
+          {/* <p className="text-3xl font-medium text-yellow-600">
             Over{" "}
             <span className="text-primary">
               10,000 Compliance Professionals
             </span>{" "}
             Trained
-          </p>
+          </p> */}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">

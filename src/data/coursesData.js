@@ -1,7 +1,7 @@
 export const coursesData = [
   {
     id: 1,
-    title: "AML/KYC Compliance Certification",
+    title: "AML/KYC COMPLIANCE",
     shortDescription:
       "Master the essential principles and practices of Know Your Customer (KYC) and Anti-Money Laundering (AML) compliance.",
     description:
@@ -9,7 +9,7 @@ export const coursesData = [
     price: 199,
     image:
       "https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
-    videoUrl: "https://fast.wistia.net/embed/iframe/1p664zgerf",
+    videoUrl: "https://fast.wistia.net/embed/iframe/9u2a745qwe",
     duration: "12 hours",
     level: "Beginner",
     category: "Compliance",
@@ -86,7 +86,7 @@ export const coursesData = [
   },
   {
     id: 2,
-    title: "Data Analysis for Financial Services",
+    title: "Data ANALYSIS",
     shortDescription:
       "Learn how to analyze financial data, identify patterns, and generate actionable insights for business decision-making.",
     description:
@@ -94,7 +94,7 @@ export const coursesData = [
     price: 249,
     image:
       "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
-    videoUrl: "https://fast.wistia.net/embed/iframe/1p664zgerf",
+    videoUrl: "https://fast.wistia.net/embed/iframe/9u2a745qwe",
     duration: "15 hours",
     level: "Intermediate",
     category: "Data Analysis",
@@ -177,7 +177,7 @@ export const coursesData = [
   },
   {
     id: 3,
-    title: "Business Analysis & Project Management",
+    title: "BUSINESS ANALYSIS/PROJECT MANAGEMENT",
     shortDescription:
       "Develop the skills to analyze business needs, manage projects effectively, and deliver successful outcomes in financial services.",
     description:
@@ -185,7 +185,7 @@ export const coursesData = [
     price: 299,
     image:
       "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
-    videoUrl: "https://fast.wistia.net/embed/iframe/1p664zgerf",
+    videoUrl: "https://fast.wistia.net/embed/iframe/9u2a745qwe",
     duration: "18 hours",
     level: "Intermediate",
     category: "Business",
@@ -268,7 +268,7 @@ export const coursesData = [
   },
   {
     id: 4,
-    title: "Cyber Security for Financial Institutions",
+    title: "CYBERSECURITY",
     shortDescription:
       "Learn how to protect financial data and systems from cyber threats and implement robust security measures.",
     description:
@@ -276,7 +276,7 @@ export const coursesData = [
     price: 329,
     image:
       "https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
-    videoUrl: "https://fast.wistia.net/embed/iframe/1p664zgerf",
+    videoUrl: "https://fast.wistia.net/embed/iframe/9u2a745qwe",
     duration: "20 hours",
     level: "Intermediate",
     category: "Security",
@@ -362,207 +362,6 @@ export const coursesData = [
             title: "Business Continuity and Disaster Recovery",
             duration: "30 min",
           },
-        ],
-      },
-    ],
-  },
-  {
-    id: 5,
-    title: "Regulatory Technology (RegTech) Solutions",
-    shortDescription:
-      "Explore how technology is transforming regulatory compliance and learn to implement RegTech solutions in financial institutions.",
-    description:
-      "This innovative course focuses on the rapidly evolving field of Regulatory Technology (RegTech). Learn how AI, machine learning, blockchain, and other technologies are revolutionizing compliance processes in financial institutions. The course covers RegTech solutions for KYC/AML, regulatory reporting, risk management, and transaction monitoring. You'll gain hands-on experience with leading RegTech platforms and develop strategies for successful implementation.",
-    price: 279,
-    image:
-      "https://images.unsplash.com/photo-1507679799987-c73779587ccf?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
-    videoUrl: "https://fast.wistia.net/embed/iframe/1p664zgerf",
-    duration: "16 hours",
-    level: "Advanced",
-    category: "Technology",
-    modules: 10,
-    resources: 25,
-    instructor: "Robert Thompson",
-    instructorTitle: "RegTech Specialist & Innovation Lead",
-    instructorImage:
-      "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
-    instructorBio:
-      "Robert Thompson specializes in regulatory technology innovation and implementation. With experience at both major financial institutions and RegTech startups, he brings a unique perspective on how technology can transform compliance operations. He has led numerous successful RegTech implementations that have significantly improved efficiency and effectiveness.",
-    instructorCourses: 3,
-    instructorStudents: 7500,
-    rating: 4.9,
-    reviews: 186,
-    learningOutcomes: [
-      "Understand the RegTech landscape and key solution categories",
-      "Evaluate and select appropriate RegTech solutions for specific compliance needs",
-      "Implement AI and machine learning for compliance automation",
-      "Leverage blockchain for regulatory reporting and verification",
-      "Develop strategies for successful RegTech adoption",
-      "Measure ROI and effectiveness of RegTech implementations",
-    ],
-    requirements: [
-      "Understanding of regulatory compliance in financial services",
-      "Basic familiarity with financial technology concepts",
-      "Experience with compliance processes is helpful but not required",
-    ],
-    targetAudience: [
-      "Compliance professionals seeking to leverage technology",
-      "Technology leaders in financial institutions",
-      "Innovation managers and digital transformation specialists",
-      "Risk and compliance consultants",
-      "Financial regulators interested in technology solutions",
-    ],
-    curriculum: [
-      {
-        title: "RegTech Fundamentals",
-        lessons: [
-          { title: "The Evolution of RegTech", duration: "55 min" },
-          {
-            title: "RegTech Solution Categories and Use Cases",
-            duration: "45 min",
-          },
-          {
-            title: "Key Technologies Driving RegTech Innovation",
-            duration: "40 min",
-          },
-          {
-            title:
-              "The RegTech Ecosystem: Vendors, Regulators, and Institutions",
-            duration: "35 min",
-          },
-        ],
-      },
-      {
-        title: "RegTech Applications",
-        lessons: [
-          {
-            title: "AI-Powered KYC and Customer Onboarding",
-            duration: "50 min",
-          },
-          {
-            title: "Automated Regulatory Reporting Solutions",
-            duration: "35 min",
-          },
-          {
-            title: "Advanced Analytics for Risk Management",
-            duration: "45 min",
-          },
-          {
-            title: "Blockchain for Compliance Verification",
-            duration: "40 min",
-          },
-        ],
-      },
-      {
-        title: "Implementation and Optimization",
-        lessons: [
-          {
-            title: "Building a RegTech Implementation Strategy",
-            duration: "45 min",
-          },
-          { title: "Integration with Legacy Systems", duration: "50 min" },
-          {
-            title: "Change Management for RegTech Adoption",
-            duration: "40 min",
-          },
-          {
-            title: "Measuring RegTech Effectiveness and ROI",
-            duration: "35 min",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: 6,
-    title: "ESG Compliance and Reporting",
-    shortDescription:
-      "Master the growing field of Environmental, Social, and Governance (ESG) compliance and reporting for financial institutions.",
-    description:
-      "This forward-looking course addresses the rapidly expanding area of ESG compliance and reporting in the financial sector. Learn about evolving ESG regulations, frameworks for sustainable finance, climate risk assessment, and ESG data management. The course covers reporting standards such as TCFD, SASB, and GRI, as well as strategies for integrating ESG considerations into financial products and services. You'll develop practical skills for implementing effective ESG compliance programs.",
-    price: 249,
-    image:
-      "https://images.unsplash.com/photo-1591696205602-2f950c417cb9?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
-    videoUrl: "https://fast.wistia.net/embed/iframe/1p664zgerf",
-    duration: "14 hours",
-    level: "Intermediate",
-    category: "Compliance",
-    modules: 8,
-    resources: 20,
-    instructor: "Emma Rodriguez",
-    instructorTitle: "ESG Compliance Expert & Sustainable Finance Advisor",
-    instructorImage:
-      "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
-    instructorBio:
-      "Emma Rodriguez is a specialist in ESG compliance and sustainable finance with experience at global financial institutions and regulatory bodies. She has helped numerous organizations develop and implement ESG frameworks, reporting processes, and sustainable investment strategies. She holds certifications in ESG investing and sustainable finance.",
-    instructorCourses: 4,
-    instructorStudents: 6500,
-    rating: 4.7,
-    reviews: 175,
-    learningOutcomes: [
-      "Understand the regulatory landscape for ESG in financial services",
-      "Implement ESG data collection and management processes",
-      "Develop compliant ESG reporting aligned with major standards",
-      "Assess and manage climate-related financial risks",
-      "Integrate ESG considerations into financial products and services",
-      "Build effective ESG governance frameworks",
-    ],
-    requirements: [
-      "Basic understanding of financial regulations and compliance",
-      "Familiarity with financial reporting concepts",
-      "No prior ESG experience required",
-    ],
-    targetAudience: [
-      "Compliance professionals in financial institutions",
-      "Sustainability officers and ESG specialists",
-      "Risk management professionals",
-      "Financial reporting managers",
-      "Investment professionals interested in sustainable finance",
-    ],
-    curriculum: [
-      {
-        title: "ESG Regulatory Landscape",
-        lessons: [
-          {
-            title: "Evolution of ESG Regulations in Finance",
-            duration: "40 min",
-          },
-          {
-            title: "Key Regulatory Frameworks and Standards",
-            duration: "55 min",
-          },
-          { title: "Sustainable Finance Taxonomies", duration: "50 min" },
-          {
-            title: "Regulatory Trends and Future Developments",
-            duration: "45 min",
-          },
-        ],
-      },
-      {
-        title: "ESG Data and Reporting",
-        lessons: [
-          { title: "ESG Data Collection and Management", duration: "60 min" },
-          { title: "TCFD Reporting Implementation", duration: "65 min" },
-          {
-            title: "SASB and GRI Standards for Financial Institutions",
-            duration: "55 min",
-          },
-          { title: "ESG Disclosure Quality and Assurance", duration: "50 min" },
-        ],
-      },
-      {
-        title: "ESG Integration",
-        lessons: [
-          {
-            title: "Climate Risk Assessment for Financial Institutions",
-            duration: "45 min",
-          },
-          { title: "ESG in Investment Processes", duration: "40 min" },
-          {
-            title: "Sustainable Financial Products Development",
-            duration: "50 min",
-          },
-          { title: "Building an ESG Governance Framework", duration: "45 min" },
         ],
       },
     ],
