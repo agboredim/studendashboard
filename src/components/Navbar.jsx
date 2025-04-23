@@ -36,7 +36,7 @@ const menuLinks = [
 const lgScreenLinks = [
   { title: "Services", href: "/services" },
   { title: "Courses", href: "/courses" },
-  { title: "Student Portal", href: "/student-portal" },
+  { title: "Student Portal", href: "/portal" },
   { title: "Blog", href: "/blog" },
   { title: "Our Story", href: "/story" },
   { title: "Contact Us", href: "/contact" },
@@ -98,7 +98,7 @@ export function Navbar() {
   const profileOptions = user
     ? [
         { title: "My Profile", href: "/profile", icon: User },
-        { title: "Student Portal", href: "/student-portal", icon: Layout },
+        { title: "Student Portal", href: "/portal", icon: Layout },
         { title: "Logout", action: handleLogout, icon: LogOut },
       ]
     : [

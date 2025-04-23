@@ -13,40 +13,40 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { coursesData } from "../data/coursesData";
+import {
+  useGetCourseByIdQuery,
+  useGetAllCoursesQuery,
+} from "../services/coursesApi";
 import { Button } from "@/components/ui/button";
+import Spinner from "../components/Spinner";
+// Add the import for AddToCartButton
+import AddToCartButton from "../components/AddToCartButton";
 
 function CourseDetailPage() {
   const { courseId } = useParams();
-  const [course, setCourse] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [expandedModule, setExpandedModule] = useState(null);
   const [relatedCourses, setRelatedCourses] = useState([]);
 
+  // Fetch the specific course
+  const {
+    data: course,
+    isLoading: isCourseLoading,
+    error: courseError,
+  } = useGetCourseByIdQuery(courseId);
+
+  // Fetch all courses to find related ones
+  const { data: allCourses = [], isLoading: isAllCoursesLoading } =
+    useGetAllCoursesQuery();
+
+  // Find related courses when both queries are complete
   useEffect(() => {
-    // Simulate API fetch with a small delay
-    const timer = setTimeout(() => {
-      const foundCourse = coursesData.find(
-        (c) => c.id === Number.parseInt(courseId)
-      );
-      setCourse(foundCourse);
-
-      // Find related courses (same category, different ID)
-      if (foundCourse) {
-        const related = coursesData
-          .filter(
-            (c) =>
-              c.category === foundCourse.category && c.id !== foundCourse.id
-          )
-          .slice(0, 3);
-        setRelatedCourses(related);
-      }
-
-      setLoading(false);
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [courseId]);
+    if (course && allCourses.length > 0) {
+      const related = allCourses
+        .filter((c) => c.category === course.category && c.id !== course.id)
+        .slice(0, 3);
+      setRelatedCourses(related);
+    }
+  }, [course, allCourses]);
 
   const toggleModule = (moduleId) => {
     if (expandedModule === moduleId) {
@@ -56,24 +56,22 @@ function CourseDetailPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-12 flex justify-center items-center min-h-[60vh]">
-        <div className="animate-pulse text-blue-950 text-xl">
-          Loading course details...
-        </div>
-      </div>
-    );
+  if (isCourseLoading || isAllCoursesLoading) {
+    return <Spinner />;
   }
 
-  if (!course) {
+  if (courseError || !course) {
     return (
       <div className="container mx-auto px-4 py-12 text-center">
         <h2 className="text-2xl font-bold text-red-600 mb-4">
-          Course Not Found
+          {courseError ? "Error Loading Course" : "Course Not Found"}
         </h2>
         <p className="text-gray-600 mb-6">
-          The course you're looking for doesn't exist or has been removed.
+          {courseError
+            ? courseError.status === "FETCH_ERROR"
+              ? "Network error. Please check your connection."
+              : courseError.data?.message || "Failed to load course details."
+            : "The course you're looking for doesn't exist or has been removed."}
         </p>
         <Link
           to="/courses"
@@ -187,9 +185,7 @@ function CourseDetailPage() {
               <div className="text-3xl font-bold text-blue-950 mb-4">
                 ${course.price}
               </div>
-              <Button className="w-full py-3 bg-blue-950 hover:bg-blue-900 text-white rounded-md text-lg mb-4">
-                Enroll Now
-              </Button>
+              <AddToCartButton course={course} />
             </div>
 
             <div className="border-t border-gray-200 pt-4 mt-4">
@@ -352,46 +348,52 @@ function CourseDetailPage() {
               Related Courses
             </h2>
             <div className="space-y-4">
-              {relatedCourses.map((relatedCourse) => (
-                <Link
-                  key={relatedCourse.id}
-                  to={`/courses/${relatedCourse.id}`}
-                  className="block"
-                >
-                  <div className="flex items-start hover:bg-gray-50 p-2 rounded-lg transition-colors">
-                    <img
-                      src={relatedCourse.image || "/placeholder.svg"}
-                      alt={relatedCourse.title}
-                      className="w-20 h-20 object-cover rounded-md mr-3"
-                    />
-                    <div>
-                      <h3 className="font-medium text-blue-950">
-                        {relatedCourse.title}
-                      </h3>
-                      <div className="flex items-center mt-1">
-                        <div className="flex items-center">
-                          {[...Array(5)].map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`h-3 w-3 ${
-                                i < Math.floor(relatedCourse.rating)
-                                  ? "text-yellow-500 fill-current"
-                                  : "text-gray-300"
-                              }`}
-                            />
-                          ))}
+              {relatedCourses.length > 0 ? (
+                relatedCourses.map((relatedCourse) => (
+                  <Link
+                    key={relatedCourse.id}
+                    to={`/courses/${relatedCourse.id}`}
+                    className="block"
+                  >
+                    <div className="flex items-start hover:bg-gray-50 p-2 rounded-lg transition-colors">
+                      <img
+                        src={relatedCourse.image || "/placeholder.svg"}
+                        alt={relatedCourse.title}
+                        className="w-20 h-20 object-cover rounded-md mr-3"
+                      />
+                      <div>
+                        <h3 className="font-medium text-blue-950">
+                          {relatedCourse.title}
+                        </h3>
+                        <div className="flex items-center mt-1">
+                          <div className="flex items-center">
+                            {[...Array(5)].map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`h-3 w-3 ${
+                                  i < Math.floor(relatedCourse.rating)
+                                    ? "text-yellow-500 fill-current"
+                                    : "text-gray-300"
+                                }`}
+                              />
+                            ))}
+                          </div>
+                          <span className="text-xs text-gray-500 ml-1">
+                            ({relatedCourse.reviews})
+                          </span>
                         </div>
-                        <span className="text-xs text-gray-500 ml-1">
-                          ({relatedCourse.reviews})
-                        </span>
-                      </div>
-                      <div className="text-sm font-bold text-blue-950 mt-1">
-                        ${relatedCourse.price}
+                        <div className="text-sm font-bold text-blue-950 mt-1">
+                          ${relatedCourse.price}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                ))
+              ) : (
+                <p className="text-gray-500 text-center py-4">
+                  No related courses found
+                </p>
+              )}
             </div>
           </div>
         </div>

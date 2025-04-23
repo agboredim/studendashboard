@@ -1,53 +1,90 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import "./App.css";
+import { Provider } from "react-redux";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+// Store
+import store from "./store";
+
+// Layout
 import Layout from "./components/Layout";
-import HomePage from "./pages/HomePage";
+
+// Components
 import { WhatsAppButton } from "./components/WhatsAppButton";
-import LoginPage from "./pages/LoginPage";
+import ProtectedRoute from "./components/ProtectedRoute";
+import CheckoutProtection from "./components/CheckoutProtection";
+
+// Pages
+import HomePage from "./pages/HomePage";
+import AboutPage from "./pages/AboutPage";
 import CoursesPage from "./pages/CoursesPage";
 import CourseDetailPage from "./pages/CourseDetailPage";
 import BlogPage from "./pages/BlogPage";
 import BlogPostPage from "./pages/BlogPostPage";
-import AboutPage from "./pages/AboutPage";
-import { Provider } from "react-redux";
-import store from "./store";
-import ProtectedRoute from "./components/ProtectedRoute";
 import StudentPortalPage from "./pages/StudentPortalPage";
-import { ToastContainer } from "react-toastify";
+import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import OrderConfirmationPage from "./pages/OrderConfirmationPage";
+import Portal from "./pages/Portal";
 
 function App() {
   return (
-    <>
-      <Provider store={store}>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<HomePage />} />
-              <Route path="about" element={<AboutPage />} />
-              <Route path="courses/:courseId" element={<CourseDetailPage />} />
-              <Route path="courses" element={<CoursesPage />} />
-              <Route path="blog" element={<BlogPage />} />
-              <Route path="blog/:slug" element={<BlogPostPage />} />
+    <Provider store={store}>
+      <Router>
+        <Routes>
+          {/* Authentication Pages (outside main layout) */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
 
-              {/* Protected Routes */}
-              <Route
-                path="student-portal"
-                element={
-                  <ProtectedRoute>
-                    <StudentPortalPage />
-                  </ProtectedRoute>
-                }
-              />
-            </Route>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
-          </Routes>
-          <WhatsAppButton />
-        </Router>
+          {/* Main Layout Routes */}
+          <Route path="/" element={<Layout />}>
+            {/* Public Routes */}
+            <Route index element={<HomePage />} />
+            <Route path="about" element={<AboutPage />} />
+            <Route path="courses" element={<CoursesPage />} />
+            <Route path="courses/:courseId" element={<CourseDetailPage />} />
+            <Route path="blog" element={<BlogPage />} />
+            <Route path="blog/:slug" element={<BlogPostPage />} />
+
+            {/* Protected Routes (require authentication) */}
+            <Route
+              path="portal"
+              element={
+                <ProtectedRoute>
+                  <Portal />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Checkout Routes (require authentication AND non-empty cart) */}
+            <Route
+              path="checkout"
+              element={
+                <ProtectedRoute>
+                  <CheckoutProtection>
+                    <CheckoutPage />
+                  </CheckoutProtection>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="order-confirmation"
+              element={
+                <ProtectedRoute>
+                  <OrderConfirmationPage />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
+        </Routes>
+
+        {/* Global Components */}
+        <WhatsAppButton />
         <ToastContainer position="top-right" autoClose={5000} />
-      </Provider>
-    </>
+      </Router>
+    </Provider>
   );
 }
 

@@ -5,8 +5,8 @@ import { CompanyLogosCarousel } from "@/components/CompanyLogosCarousel";
 import { ProjectsCarousel } from "@/components/ProjectsCarousel";
 import { StatsSection } from "@/components/StatsSection";
 import { PlatformFeatures } from "@/components/PlatformFeatures";
-import { CompliancePromo } from "@/components/CompliancePromo";
 import { CourseIntroVideos } from "@/components/CourseIntroVideos";
+import { WhyChooseUs } from "@/components/WhyChooseUs";
 
 function HomePage() {
   return (
@@ -15,6 +15,7 @@ function HomePage() {
       <FeaturesBanner />
       <CompanyLogosCarousel />
       <StatsSection />
+      <WhyChooseUs />
       <ProjectsCarousel />
       <CourseIntroVideos />
       <PlatformFeatures />
