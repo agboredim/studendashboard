@@ -170,14 +170,12 @@ function CoursesPage() {
 
                 <div className="flex items-center mb-4">
                   <img
-                    src={
-                      course.instructor.profile_picture || "/placeholder.svg"
-                    }
+                    src={`${baseUrl}${course.instructor.profile_picture}`}
                     alt={course.instructor.profile_picture}
                     className="w-8 h-8 rounded-full mr-2 object-cover"
                   />
                   <span className="text-sm text-gray-700">
-                    {course.instructor.name}
+                    {course.instructor.name || "No Instructor Name"}
                     {console.log(course)}
                   </span>
                 </div>
