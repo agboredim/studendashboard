@@ -21,12 +21,10 @@ import CoursesPage from "./pages/CoursesPage";
 import CourseDetailPage from "./pages/CourseDetailPage";
 import BlogPage from "./pages/BlogPage";
 import BlogPostPage from "./pages/BlogPostPage";
-import StudentPortalPage from "./pages/StudentPortalPage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderConfirmationPage from "./pages/OrderConfirmationPage";
-import Portal from "./pages/Portal";
 import NotFound from "./pages/not-found";
 import Dashboard from "./pages/Dashboard";
 
@@ -86,7 +84,8 @@ function App() {
             {/* Add more portal-specific routes here */}
           </Route>
 
-          <Route element={<NotFound />} />
+          {/* Catch-all route for undefined paths */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
 
         {/* Global Components */}
