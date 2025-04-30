@@ -19,8 +19,8 @@ import {
 } from "../services/coursesApi";
 import { Button } from "@/components/ui/button";
 import Spinner from "../components/Spinner";
-// Add the import for AddToCartButton
 import AddToCartButton from "../components/AddToCartButton";
+import WistiaVideo from "../components/WistiaVideo"; // Ensure this is the correct path to the WistiaVideo component
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -30,30 +30,15 @@ function CourseDetailPage() {
   const [relatedCourses, setRelatedCourses] = useState([]);
   const [videoStarted, setVideoStarted] = useState(false);
 
-  // const handlePlayClick = () => {
-  //   if (videoRef.current) {
-  //     if (videoRef.current.paused) {
-  //       videoRef.current.play();
-  //       setIsPlaying(true);
-  //     } else {
-  //       videoRef.current.pause();
-  //       setIsPlaying(false);
-  //     }
-  //   }
-  // };
-
-  // Fetch the specific course
   const {
     data: course,
     isLoading: isCourseLoading,
     error: courseError,
   } = useGetCourseByIdQuery(courseId);
 
-  // Fetch all courses to find related ones
   const { data: allCourses = [], isLoading: isAllCoursesLoading } =
     useGetAllCoursesQuery();
 
-  // Find related courses when both queries are complete
   useEffect(() => {
     if (course && allCourses.length > 0) {
       const related = allCourses
@@ -70,21 +55,6 @@ function CourseDetailPage() {
       setExpandedModule(moduleId);
     }
   };
-
-  // // Add event listeners for video play/pause
-  // useEffect(() => {
-  //   const video = videoRef.current;
-  //   if (video) {
-  //     const handlePlay = () => setIsPlaying(true);
-  //     const handlePause = () => setIsPlaying(false);
-  //     video.addEventListener("play", handlePlay);
-  //     video.addEventListener("pause", handlePause);
-  //     return () => {
-  //       video.removeEventListener("play", handlePlay);
-  //       video.removeEventListener("pause", handlePause);
-  //     };
-  //   }
-  // }, []);
 
   if (isCourseLoading || isAllCoursesLoading) {
     return <Spinner />;
@@ -124,7 +94,7 @@ function CourseDetailPage() {
         <Link to="/courses" className="hover:text-blue-950">
           Courses
         </Link>{" "}
-        &gt; <span className="text-blue-950">{course.title}</span>
+        &gt; <span className="text-blue-950">{course.name}</span>
       </div>
 
       {/* Course Header */}
@@ -132,13 +102,13 @@ function CourseDetailPage() {
         <div className="md:flex">
           <div className="md:w-2/3 p-6 md:p-8">
             <h1 className="text-3xl font-bold text-blue-950 mb-4">
-              {course.title}
+              {course.name}
             </h1>
 
-            <p className="text-gray-600 mb-6">{course.shortDescription}</p>
+            <p className="text-gray-600 mb-6">{course.preview_description}</p>
 
             <div className="flex flex-wrap items-center gap-4 mb-6">
-              <div className="flex items-center">
+              {/* <div className="flex items-center">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
                     <Star
@@ -154,17 +124,19 @@ function CourseDetailPage() {
                 <span className="text-sm text-gray-500 ml-2">
                   ({course.reviews} reviews)
                 </span>
-              </div>
+              </div> */}
 
               <div className="flex items-center">
                 <Clock className="h-4 w-4 text-gray-500 mr-1" />
-                <span className="text-sm text-gray-500">{course.duration}</span>
+                <span className="text-sm text-gray-500">
+                  {course?.estimated_time}
+                </span>
               </div>
 
               <div className="flex items-center">
                 <BarChart className="h-4 w-4 text-gray-500 mr-1" />
                 <span className="text-sm text-gray-500">
-                  {course.modules} modules
+                  {course?.curriculum?.length} modules
                 </span>
               </div>
 
@@ -181,7 +153,8 @@ function CourseDetailPage() {
               />
               <div>
                 <p className="font-medium">
-                  Instructor: {course?.instructor?.name}
+                  Instructor: {course?.instructor?.first_name}{" "}
+                  {course?.instructor?.last_name}
                 </p>
                 <p className="text-sm text-gray-500">
                   {course?.instructor?.title}
@@ -201,43 +174,9 @@ function CourseDetailPage() {
 
           <div className="md:w-1/3 bg-gray-50 p-6 md:p-8">
             <div className="relative h-48 rounded-lg overflow-hidden mb-6">
-              {course.preview_url ? (
-                <div className="w-full h-full">
-                  {videoStarted ? (
-                    <iframe
-                      className="w-full h-full"
-                      src={`https://fast.wistia.net/embed/iframe/9u2a745qwe`}
-                      title={`${course.title} Preview`}
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  ) : (
-                    <img
-                      src={`${baseUrl}${course.course_image}`}
-                      alt={course.title}
-                      className="w-full h-full object-cover"
-                    />
-                  )}
-                </div>
-              ) : (
-                <img
-                  src={`${baseUrl}${course.course_image}`}
-                  alt={course.title}
-                  className="w-full h-full object-cover"
-                />
-              )}
-
-              {course.preview_url && !videoStarted && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40">
-                  <div
-                    className="w-16 h-16 rounded-full bg-white bg-opacity-80 flex items-center justify-center cursor-pointer hover:bg-opacity-100 transition-all"
-                    onClick={() => setVideoStarted(true)}
-                  >
-                    <Play className="h-8 w-8 text-blue-950 ml-1" />
-                  </div>
-                </div>
-              )}
+              <div className="mx-auto max-w-4xl">
+                <WistiaVideo videoId="o31acanvx8" />
+              </div>
             </div>
 
             <div className="hidden md:block">
@@ -254,7 +193,7 @@ function CourseDetailPage() {
               <ul className="space-y-2">
                 <li className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                  <span>{course.duration} of on-demand video</span>
+                  <span>{course.estimated_time} of on-demand video</span>
                 </li>
                 <li className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
@@ -264,10 +203,10 @@ function CourseDetailPage() {
                   <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
                   <span>Full lifetime access</span>
                 </li>
-                <li className="flex items-start">
+                {/* <li className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
                   <span>Access on mobile and desktop</span>
-                </li>
+                </li> */}
                 <li className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
                   <span>Certificate of completion</span>
@@ -307,9 +246,11 @@ function CourseDetailPage() {
                 Requirements
               </h3>
               <ul className="list-disc pl-5 space-y-1">
-                {course?.requirements?.map((req, index) => (
-                  <li key={index}>{req}</li>
-                ))}
+                {Object.entries(course?.required_materials).map(
+                  ([key, value]) => (
+                    <li key={key}>{value}</li>
+                  )
+                )}
               </ul>
 
               <h3 className="text-xl font-bold text-blue-950 mt-6 mb-3">
@@ -334,10 +275,8 @@ function CourseDetailPage() {
                   key={index}
                   className="border border-gray-200 rounded-lg overflow-hidden"
                 >
-                  <div
-                    className="flex justify-between items-center p-4 bg-gray-50 cursor-pointer"
-                    onClick={() => toggleModule(index)}
-                  >
+                  {/* onClick={() => toggleModule(index)} */}
+                  <div className="flex justify-between items-center p-4 bg-gray-50 cursor-pointer">
                     <div className="font-medium">
                       <span className="text-blue-950">Module {index + 1}:</span>{" "}
                       {module?.title}
@@ -382,12 +321,13 @@ function CourseDetailPage() {
             <div className="flex items-start">
               <img
                 src={`${baseUrl}${course.instructor.profile_picture}`}
-                alt={course?.instructor?.name}
+                alt={course?.instructor?.first_name}
                 className="w-20 h-20 rounded-full mr-4 object-cover"
               />
               <div>
                 <h3 className="text-xl font-bold">
-                  {course?.instructor?.name || "Mr Joseph"}
+                  {course?.instructor?.first_name}{" "}
+                  {course?.instructor?.last_name}
                 </h3>
                 <p className="text-gray-500 mb-3">
                   {course?.instructor?.title}
