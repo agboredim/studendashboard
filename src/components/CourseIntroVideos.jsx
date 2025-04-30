@@ -99,7 +99,7 @@ export function CourseIntroVideos() {
             Course Previews
           </span>
           <h2 className="text-4xl font-bold text-blue-950 mb-4">
-            Explore our Compliance and IT programs
+            Explore our Courses
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
             Watch these short introductory videos to get a taste of our
