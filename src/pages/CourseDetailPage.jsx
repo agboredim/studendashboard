@@ -26,9 +26,9 @@ const baseUrl = import.meta.env.VITE_BASE_URL;
 
 function CourseDetailPage() {
   const { courseId } = useParams();
-  const [expandedModule, setExpandedModule] = useState(null);
+  // const [expandedModule, setExpandedModule] = useState(null);
   const [relatedCourses, setRelatedCourses] = useState([]);
-  const [videoStarted, setVideoStarted] = useState(false);
+  // const [videoStarted, setVideoStarted] = useState(false);
 
   const {
     data: course,
@@ -48,13 +48,13 @@ function CourseDetailPage() {
     }
   }, [course, allCourses]);
 
-  const toggleModule = (moduleId) => {
-    if (expandedModule === moduleId) {
-      setExpandedModule(null);
-    } else {
-      setExpandedModule(moduleId);
-    }
-  };
+  // const toggleModule = (moduleId) => {
+  //   if (expandedModule === moduleId) {
+  //     setExpandedModule(null);
+  //   } else {
+  //     setExpandedModule(moduleId);
+  //   }
+  // };
 
   if (isCourseLoading || isAllCoursesLoading) {
     return <Spinner />;
@@ -285,15 +285,15 @@ function CourseDetailPage() {
                       <span className="text-sm text-gray-500 mr-3">
                         {module?.lessons?.length} lessons
                       </span>
-                      {expandedModule === index ? (
+                      {/* {expandedModule === index ? (
                         <ChevronUp className="h-5 w-5" />
                       ) : (
                         <ChevronDown className="h-5 w-5" />
-                      )}
+                      )} */}
                     </div>
                   </div>
 
-                  {expandedModule === index && (
+                  {/* {expandedModule === index && (
                     <div className="p-4 border-t border-gray-200">
                       <ul className="space-y-2">
                         {module.lessons.map((lesson, lessonIndex) => (
@@ -307,7 +307,7 @@ function CourseDetailPage() {
                         ))}
                       </ul>
                     </div>
-                  )}
+                  )} */}
                 </div>
               ))}
             </div>

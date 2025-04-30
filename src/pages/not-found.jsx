@@ -10,7 +10,7 @@ export default function NotFound() {
         <p className="text-gray-600 mb-6">
           The page you are looking for doesn't exist or has been moved.
         </p>
-        <Link href="/">
+        <Link to="/">
           <Button className="bg-blue-600 hover:bg-blue-700">
             Go back to Dashboard
           </Button>
