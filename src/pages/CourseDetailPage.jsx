@@ -20,7 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import Spinner from "../components/Spinner";
 import AddToCartButton from "../components/AddToCartButton";
-import WistiaVideo from "../components/WistiaVideo"; // Ensure this is the correct path to the WistiaVideo component
+import WistiaVideo from "../components/WistiaVide"; // Ensure this is the correct path to the WistiaVideo component
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
