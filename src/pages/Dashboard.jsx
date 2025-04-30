@@ -64,7 +64,7 @@ export default function Dashboard() {
                 {isUserLoading ? (
                   <Skeleton className="h-8 w-48" />
                 ) : (
-                  `Welcome Back ${user?.name || "Joseph"}`
+                  `Welcome Back ${user?.username || "Joseph"}`
                 )}
               </h1>
               <p className="text-muted-foreground mt-1">

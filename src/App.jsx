@@ -82,7 +82,7 @@ function App() {
           >
             {/* Child routes under PortalLayout */}
             {/* <Route index element={<StudentPortalPage />} /> */}
-            <Route path="dashboard" element={<Dashboard />} />
+            {/* <Route path="dashboard" element={<Dashboard />} /> */}
             {/* Add more portal-specific routes here */}
           </Route>
 

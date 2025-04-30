@@ -4,40 +4,34 @@ import { Link } from "react-router-dom";
 export function PlatformFeatures() {
   const features = [
     {
-      title: "Expert-led training",
+      title: "Expert-Led Training",
       description:
-        "The program is spearheaded by dual-qualified solicitor with over decades of experience solicitor and banking industries. His extensivein background and hands-on experience in high-profile institutions provide participants with insights and expertise that are rare in training environments.",
+        "At Titans Careers, every course is led by professionals who’ve worked—and excelled— in the industries they now teach. Our trainers aren’t just instructors; they’re active experts with years of hands-on experience managing real business challenges. They bring more than knowledge—they bring perspective, mentorship, and insight. You’ll gain exposure to best practices, tools used in the field, and industry expectations, all shared through engaging, interactive sessions. With expert-led instruction, you’ll learn exactly what’s needed to succeed in today’s job market—delivered in a way that’s practical, accessible, and immediately applicable to your career goals.",
       link: "/expert-training",
     },
     {
-      title: "Real-world relevance",
+      title: "Real-World Experience",
       description:
-        "Ami Pro trainer emphasizes practical, real-world applications of AML and KYC principles. The training incorporates current case studies and scenarios that participants are likely to encounter in their careers, ensuring that they can apply what they lean immediately and effectively",
+        "We don’t just teach concepts—we train you to apply them. Our programs are designed to mirror the real-world challenges you’ll face in the workplace. Through simulations, live case studies, practical exercises, and hands-on assignments, you’ll gain experience solving business problems as if you were already on the job. You’ll work with real tools, make real decisions, and build confidence through action. By the time you complete your course, you’ll have a portfolio of work, a practical skillset, and the confidence to step into your next role prepared, proven, and ready to contribute from day one",
       link: "/real-world-training",
     },
     {
-      title: "Comprehensive mentorship",
+      title: "Comprehensive Mentorship",
       description:
-        "Unlike many other programs, AML Pro Trainers offers personalized mentorship. Olumide and his team guide participants through the nuances to mastering job interviews and networking in the industry",
+        "At Titans Careers, mentorship isn’t an add-on—it’s built into every step of your journey. Our learners receive ongoing support from industry professionals who serve as both guides and motivators. Whether you’re navigating a diƯicult concept, building a portfolio, or preparing for interviews, your mentor is just a message away. They’ll provide personalized feedback, help you align your goals with career paths, and keep you accountable. This isn’t passive learning—it’s an interactive, empowering experience. With a dedicated mentor in your corner, you’ll never feel stuck or lost—you’ll feel seen, supported, and set up for success. There will be 12 months support for all candidates.",
       link: "/mentorship",
     },
     {
-      title: "Industry networking opportunities",
+      title: "Industry Networking Skills",
       description:
-        "The program provides unique networking opportunities, connecting trainees with professionals in the banking and legal sectors. this facilitates valuable industry contacts that can lead to job opportunities and career advancement.",
+        "Technical skills get your foot in the door—but networking opens it wider. That’s why we help you develop powerful, practical networking skills that elevate your visibility and professional presence. Learn how to build meaningful connections, grow your LinkedIn network, engage confidently at industry events, and present yourself with purpose. We’ll show you how to approach professionals, maintain connections, and make lasting impressions. Whether you're starting out or pivoting careers, mastering the art of networking will connect you with mentors, recruiters, and peers—expanding your opportunities and keeping you top-of-mind in a competitive job market.",
       link: "/networking",
     },
     {
-      title: "Regulator dynamic",
+      title: "Interview Preparation",
       description:
-        "With a curriculum updated to reflect the latest regulatory change and global compliance trends, AML Pro Trainners ensures that its participants are ahead of the curve in understanding and implementing necessary compliance measures",
+        "An interview is your moment to shine—and we’ll make sure you’re ready. Our interview preparation training helps you master the art of communication, strategy, and confidence. You’ll participate in mock interviews tailored to your desired industry, get feedback on your performance, and learn how to answer even the toughest questions with clarity and purpose. We cover everything from posture and tone to storytelling and situational responses. You’ll also learn how to navigate technical, behavioural, and panel interviews with ease. With Titans Careers, you walk into your next interview not just prepared—but prepared to win. There will be 12 months support for all candidates",
       link: "/regulatory-updates",
-    },
-    {
-      title: "Anti-money laundering",
-      description:
-        "Specifically targets anti-money laundering with a globla standard recognized internationally, offering advanced certifications for specialized roles in risk management and auditing.",
-      link: "/aml-certification",
     },
   ];
 
