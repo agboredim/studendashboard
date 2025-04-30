@@ -139,16 +139,9 @@ export function StatsSection() {
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-2xl font-bold text-yellow-600 mb-4">
-            Industry Leading AML/KYC Compliance and IT Solutions Provider
+          <h2 className="text-2xl font-bold text-[#F59E0B] mb-4">
+            Build Skills. Unlock Oppotunities. Become a Titan
           </h2>
-          {/* <p className="text-3xl font-medium text-yellow-600">
-            Over{" "}
-            <span className="text-primary">
-              10,000 Compliance Professionals
-            </span>{" "}
-            Trained
-          </p> */}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">

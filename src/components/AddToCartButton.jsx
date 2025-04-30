@@ -44,8 +44,8 @@ function AddToCartButton({ course }) {
       onClick={handleAddToCart}
       className={`flex items-center gap-2 ${
         isInCart
-          ? "bg-green-600 hover:bg-green-700"
-          : "bg-blue-950 hover:bg-blue-900"
+          ? "bg-green-600 text-white hover:bg-green-700"
+          : "bg-blue-950 text-white hover:bg-blue-900"
       }`}
     >
       {isAdded || isInCart ? (

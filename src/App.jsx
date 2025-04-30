@@ -21,12 +21,12 @@ import CoursesPage from "./pages/CoursesPage";
 import CourseDetailPage from "./pages/CourseDetailPage";
 import BlogPage from "./pages/BlogPage";
 import BlogPostPage from "./pages/BlogPostPage";
-import StudentPortalPage from "./pages/StudentPortalPage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderConfirmationPage from "./pages/OrderConfirmationPage";
-import Portal from "./pages/Portal";
+import NotFound from "./pages/not-found";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
@@ -46,16 +46,6 @@ function App() {
             <Route path="courses/:courseId" element={<CourseDetailPage />} />
             <Route path="blog" element={<BlogPage />} />
             <Route path="blog/:slug" element={<BlogPostPage />} />
-
-            {/* Protected Routes (require authentication) */}
-            <Route
-              path="portal"
-              element={
-                <ProtectedRoute>
-                  <Portal />
-                </ProtectedRoute>
-              }
-            />
 
             {/* Checkout Routes (require authentication AND non-empty cart) */}
             <Route
@@ -78,6 +68,19 @@ function App() {
               }
             />
           </Route>
+
+          {/* Protected Routes (require authentication) */}
+          <Route
+            path="/portal"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Catch-all route for undefined paths */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
 
         {/* Global Components */}
