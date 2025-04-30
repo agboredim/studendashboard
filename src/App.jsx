@@ -77,12 +77,7 @@ function App() {
                 <Dashboard />
               </ProtectedRoute>
             }
-          >
-            {/* Child routes under PortalLayout */}
-            {/* <Route index element={<StudentPortalPage />} /> */}
-            {/* <Route path="dashboard" element={<Dashboard />} /> */}
-            {/* Add more portal-specific routes here */}
-          </Route>
+          />
 
           {/* Catch-all route for undefined paths */}
           <Route path="*" element={<NotFound />} />
