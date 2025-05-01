@@ -23,7 +23,7 @@ export function Hero() {
           <span className="flex h-8 w-8 items-center justify-center rounded-md bg-white text-blue-950">
             <Shield className="h-5 w-5" />
           </span>
-          <span className="text-xl font-bold text-white">Titans Career</span>
+          <span className="text-xl font-bold text-white">Titans Careers</span>
         </div>
 
         <h1 className="mt-6 text-2xl font-bold text-white md:text-3xl lg:text-5xl">

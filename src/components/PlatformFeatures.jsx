@@ -62,12 +62,6 @@ export function PlatformFeatures() {
                 {feature.title}
               </h3>
               <p className="text-gray-600 mb-4">{feature.description}</p>
-              <Link
-                to={feature.link}
-                className="inline-flex items-center text-cyan-600 hover:text-cyan-700 font-medium transition-colors duration-300"
-              >
-                Learn more <ArrowRight className="ml-1 h-4 w-4" />
-              </Link>
             </div>
           ))}
         </div>
