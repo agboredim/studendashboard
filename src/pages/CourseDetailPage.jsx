@@ -164,7 +164,7 @@ function CourseDetailPage() {
 
             <div className="md:hidden mb-6">
               <div className="text-3xl font-bold text-blue-950 mb-2">
-                ${course.price}
+                £{course.price}
               </div>
               <Button className="w-full py-3 bg-blue-950 hover:bg-blue-900 text-white rounded-md text-lg">
                 Enroll Now
@@ -175,13 +175,13 @@ function CourseDetailPage() {
           <div className="md:w-1/3 bg-gray-50 p-6 md:p-8">
             <div className="relative h-48 rounded-lg overflow-hidden mb-6">
               <div className="mx-auto max-w-4xl">
-                <WistiaVideo videoId="o31acanvx8" />
+                <WistiaVideo videoId={`${course.preview_id}`} />
               </div>
             </div>
 
             <div className="hidden md:block">
               <div className="text-3xl font-bold text-blue-950 mb-4">
-                ${course.price}
+                £{course.price}
               </div>
               <AddToCartButton course={course} />
             </div>
