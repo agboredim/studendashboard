@@ -118,3 +118,29 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes slideDown {
+  from {
+    max-height: 100px;
+  }
+  to {
+    max-height: 1000px;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    max-height: 1000px;
+  }
+  to {
+    max-height: 100px;
+  }
+}
+
+[data-state="open"] {
+  animation: slideDown 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-state="closed"] {
+  animation: slideUp 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}

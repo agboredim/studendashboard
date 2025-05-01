@@ -74,11 +74,11 @@ function CoursesPage() {
     <div className="container mx-auto px-4 py-12">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-blue-950 mb-4">
-          AML Pro Training Courses
+          Titans Careers Courses
         </h1>
         <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-          Enhance your KYC & AML compliance skills with our industry-leading
-          courses designed by experts with decades of experience.
+          Enhance your skills with our industry-leading courses designed by
+          experts with decades of experience.
         </p>
       </div>
 
@@ -200,7 +200,7 @@ function CoursesPage() {
 
                 <div className="flex justify-between items-center">
                   <div className="text-2xl font-bold text-blue-950">
-                    ${course.price}
+                    £{course.price}
                   </div>
                   <Link
                     to={`/courses/${course.id}`}

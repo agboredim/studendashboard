@@ -8,6 +8,7 @@ import {
   Linkedin,
   Instagram,
   Facebook,
+  LifeBuoy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -36,6 +37,12 @@ export function WhyChooseUs() {
       title: "Career Support & Mentorship",
       description:
         "Get personalized career coaching: CV support, interview preparation, and ongoing mentorship to help you secure the right job opportunities and grow your career.",
+    },
+    {
+      icon: <LifeBuoy className="h-8 w-8" />, // New feature
+      title: "12-Month Ongoing Support",
+      description:
+        "Receive continuous assistance even after course completion with extended mentorship, technical guidance, and career advice to ensure your long-term success in the industry.",
     },
     {
       icon: <Check className="h-8 w-8" />,
