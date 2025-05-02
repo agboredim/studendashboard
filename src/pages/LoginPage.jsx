@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -15,9 +17,9 @@ function LoginPage() {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch(); // useDispatch is imported but not used in this component's logic
 
-  // Get redirect path from location state or default to dashboard
+  // Get redirect path from location state or default to portal
   const from = location.state?.from?.pathname || "/portal";
 
   // Use the login mutation hook
@@ -37,44 +39,53 @@ function LoginPage() {
     },
   });
 
+  // Effect to handle login state changes (success/error)
   useEffect(() => {
-    // if (isError) {
-    //   toast.error(data.error || "Login failed. Please try again.");
-    // }
-
-    // Redirect when logged in
-    if (isSuccess) {
-      navigate(from, { replace: true });
-      // toast.success("Login successful!");
+    // Handle login errors
+    if (isError && error) {
+      // Prioritize the error message from the response data if available, otherwise use a generic message
+      const errorMessage =
+        error.data?.error || error.error || "Login failed. Please try again.";
+      toast.error(errorMessage);
     }
-  }, [isError, isSuccess, data, navigate, from]);
+
+    // Redirect when logged in successfully
+    if (isSuccess) {
+      // toast.success("Login successful!"); // Uncomment if you want a success toast
+      navigate(from, { replace: true });
+    }
+    // Added 'error' to dependencies to re-run effect on new errors
+  }, [isError, isSuccess, error, navigate, from]); // Added 'error' to dependency array
 
   const onSubmit = async (formData) => {
+    // Error handling is now primarily in the useEffect
     try {
       const response = await login(formData).unwrap();
       console.log("Login response:", response);
+      // Success is handled in the useEffect
     } catch (err) {
-      console.log(err);
-      toast.error(err.error);
-      toast.error(err.data.error);
-      // Error is handled in the useEffect above
+      console.error("Login submission error:", err);
+      // The error handling in useEffect will catch this
+      // Avoid multiple toast.error calls here, let useEffect handle it based on isError state
     }
   };
 
   return (
+    // Keeping a light neutral background for the page
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      {/* Spinner overlay */}
+      {/* Spinner overlay - Styling might need adjustment for true overlay */}
       {isLoading && (
-        <div className="">
+        <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50">
           <Spinner />
         </div>
       )}
+      {/* Card background white, shadow remains */}
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
         <div className="text-center">
-          <h2 className="mt-6 text-3xl font-bold text-blue-950">
-            Welcome back
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          {/* Heading using primary color */}
+          <h2 className="mt-6 text-3xl font-bold text-primary">Welcome back</h2>
+          {/* Paragraph using foreground color with opacity */}
+          <p className="mt-2 text-sm text-foreground/80">
             Please sign in to your account
           </p>
         </div>
@@ -87,18 +98,21 @@ function LoginPage() {
                 Email address
               </label>
 
-              <Mail className="absolute left-3 top-6 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
+              {/* Icon using foreground color with opacity */}
+              <Mail className="absolute left-3 top-6 -translate-y-1/2 h-5 w-5 text-foreground/60 pointer-events-none" />
               <input
                 id="email"
                 type="email"
                 {...register("email")}
                 className={`appearance-none relative block w-full px-10 py-3 border ${
-                  errors.email ? "border-red-500" : "border-gray-300"
-                } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-950 focus:border-blue-950 focus:z-10 sm:text-sm`}
+                  // Error border remains red
+                  errors.email ? "border-red-500" : "border-foreground/20" // Default border using foreground/20
+                } placeholder-foreground/60 text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary focus:z-10 sm:text-sm`}
                 placeholder="Email address"
               />
 
               {errors.email && (
+                // Error text remains red
                 <p className="mt-1 text-sm text-red-600">
                   {errors.email.message}
                 </p>
@@ -110,29 +124,35 @@ function LoginPage() {
               <label htmlFor="password" className="sr-only">
                 Password
               </label>
-              <Lock className="absolute left-3 top-6 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
+              {/* Icon using foreground color with opacity */}
+              <Lock className="absolute left-3 top-6 -translate-y-1/2 h-5 w-5 text-foreground/60 pointer-events-none" />
               <input
                 id="password"
                 type={showPassword ? "text" : "password"}
                 {...register("password")}
                 className={`appearance-none relative block w-full px-10 py-3 border ${
-                  errors.password ? "border-red-500" : "border-gray-300"
-                } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-950 focus:border-blue-950 focus:z-10 sm:text-sm`}
+                  // Error border remains red
+                  errors.password ? "border-red-500" : "border-foreground/20" // Default border using foreground/20
+                } placeholder-foreground/60 text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary focus:z-10 sm:text-sm`}
                 placeholder="Password"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-6 -translate-y-1/2 text-gray-500"
+                // Icon button using foreground color with opacity
+                className="absolute right-3 top-6 -translate-y-1/2 text-foreground/70"
               >
                 {showPassword ? (
+                  // Icons inherit text color
                   <EyeOff className="h-5 w-5" />
                 ) : (
+                  // Icons inherit text color
                   <Eye className="h-5 w-5" />
                 )}
               </button>
 
               {errors.password && (
+                // Error text remains red
                 <p className="mt-1 text-sm text-red-600">
                   {errors.password.message}
                 </p>
@@ -144,13 +164,16 @@ function LoginPage() {
             <div className="flex items-center">
               <input
                 id="remember-me"
+                name="rememberMe" // Added name attribute for clarity
                 type="checkbox"
                 {...register("rememberMe")}
-                className="h-4 w-4 text-blue-950 focus:ring-blue-950 border-gray-300 rounded"
+                // Checkbox using primary color for accent and ring
+                className="h-4 w-4 text-primary focus:ring-primary border-foreground/20 rounded" // Border using foreground/20
               />
               <label
                 htmlFor="remember-me"
-                className="ml-2 block text-sm text-gray-900"
+                // Text using foreground color
+                className="ml-2 block text-sm text-foreground"
               >
                 Remember me
               </label>
@@ -159,7 +182,8 @@ function LoginPage() {
             <div className="text-sm">
               <Link
                 to="/forgot-password"
-                className="font-medium text-blue-950 hover:text-blue-800"
+                // Link using primary color, hover using primary/80
+                className="font-medium text-primary hover:text-primary/80"
               >
                 Forgot your password?
               </Link>
@@ -169,7 +193,8 @@ function LoginPage() {
           <div>
             <Button
               type="submit"
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-950 hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-950"
+              // Button using primary color, hover using primary/90, focus ring using primary
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
             >
               Sign in
             </Button>
@@ -177,11 +202,13 @@ function LoginPage() {
         </form>
 
         <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
+          {/* Text using foreground color with opacity */}
+          <p className="text-sm text-foreground/80">
             Don't have an account?{" "}
             <Link
               to="/signup"
-              className="font-medium text-blue-950 hover:text-blue-800"
+              // Link using primary color, hover using primary/80
+              className="font-medium text-primary hover:text-primary/80"
             >
               Sign up
             </Link>
@@ -191,10 +218,12 @@ function LoginPage() {
         <div className="mt-6">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
+              {/* Horizontal rule using foreground color with opacity */}
+              <div className="w-full border-t border-foreground/20"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">
+              {/* Text using foreground color with opacity, background white */}
+              <span className="px-2 bg-white text-foreground/70">
                 Or continue with
               </span>
             </div>
@@ -203,8 +232,10 @@ function LoginPage() {
           <div className="mt-6 flex justify-center">
             <button
               type="button"
-              className="inline-flex items-center justify-center py-2 px-6 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+              // Button using foreground color for text, border with opacity, light hover background
+              className="inline-flex items-center justify-center py-2 px-6 border border-foreground/20 rounded-md shadow-sm bg-white text-foreground hover:bg-gray-50"
             >
+              {/* Google icon - colors remain for branding */}
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                 <path
                   fill="#4285F4"

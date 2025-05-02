@@ -89,19 +89,23 @@ function CheckoutPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <h1 className="text-2xl font-bold mb-6 uppercase">Checkout</h1>
+      <h1 className="text-2xl font-bold mb-6 uppercase text-foreground">
+        Checkout
+      </h1>
 
-      <div className="border-t border-b border-gray-200 py-4 mb-6">
+      <div className="border-t border-b border-foreground/10 py-4 mb-6">
         <div className="flex items-start gap-2">
-          <Check className="h-5 w-5 text-blue-950 mt-0.5" />
-          <p>"{cartItem.name}" has been added to your cart</p>
+          <Check className="h-5 w-5 text-primary mt-0.5" />
+          <p className="text-foreground/80">
+            "{cartItem.name}" has been added to your cart
+          </p>
         </div>
       </div>
 
       {/* Login option for returning customers */}
-      <div className="border-b border-gray-200 py-4 mb-6">
+      <div className="border-b border-foreground/10 py-4 mb-6">
         <button
-          className="flex items-center gap-2 text-blue-950 hover:text-blue-800"
+          className="flex items-center gap-2 text-primary hover:text-primary/80"
           onClick={() => setShowLogin(!showLogin)}
         >
           <span className="inline-block w-5">
@@ -116,7 +120,7 @@ function CheckoutPage() {
 
         {showLogin && (
           <div className="mt-4 p-4 bg-gray-50 rounded-md">
-            <p className="mb-4">
+            <p className="mb-4 text-foreground/80">
               If you have shopped with us before, please enter your details
               below.
             </p>
@@ -124,23 +128,23 @@ function CheckoutPage() {
               <input
                 type="email"
                 placeholder="Email address"
-                className="flex-1 p-2 border border-gray-300 rounded-md"
+                className="flex-1 p-2 border border-foreground/20 rounded-md bg-gray-50"
               />
               <input
                 type="password"
                 placeholder="Password"
-                className="flex-1 p-2 border border-gray-300 rounded-md"
+                className="flex-1 p-2 border border-foreground/20 rounded-md bg-gray-50"
               />
-              <Button className="bg-blue-950 hover:bg-blue-900">Login</Button>
+              <Button className="bg-primary hover:bg-primary/90">Login</Button>
             </div>
           </div>
         )}
       </div>
 
       {/* Coupon code option */}
-      <div className="border-b border-gray-200 py-4 mb-6">
+      <div className="border-b border-foreground/10 py-4 mb-6">
         <button
-          className="flex items-center gap-2 text-blue-950 hover:text-blue-800"
+          className="flex items-center gap-2 text-primary hover:text-primary/80"
           onClick={() => setShowCoupon(!showCoupon)}
         >
           <span className="inline-block w-5">
@@ -159,9 +163,9 @@ function CheckoutPage() {
               <input
                 type="text"
                 placeholder="Coupon code"
-                className="flex-1 p-2 border border-gray-300 rounded-md"
+                className="flex-1 p-2 border border-foreground/20 rounded-md bg-gray-50"
               />
-              <Button className="bg-blue-950 hover:bg-blue-900">
+              <Button className="bg-primary hover:bg-primary/90">
                 Apply Coupon
               </Button>
             </div>
@@ -173,11 +177,16 @@ function CheckoutPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Billing details */}
           <div className="lg:col-span-2">
-            <h2 className="text-xl font-bold mb-4">Billing details</h2>
+            <h2 className="text-xl font-bold mb-4 text-primary">
+              Billing details
+            </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
-                <label htmlFor="firstName" className="block mb-1">
+                <label
+                  htmlFor="firstName"
+                  className="block mb-1 text-foreground"
+                >
                   First name
                 </label>
                 <input
@@ -185,8 +194,8 @@ function CheckoutPage() {
                   type="text"
                   {...register("firstName")}
                   className={`w-full p-3 border ${
-                    errors.firstName ? "border-red-500" : "border-gray-300"
-                  } rounded-md bg-gray-50`}
+                    errors.firstName ? "border-red-500" : "border-foreground/20"
+                  } rounded-md bg-gray-50 text-foreground`}
                 />
                 {errors.firstName && (
                   <p className="text-red-500 text-sm mt-1">
@@ -196,7 +205,10 @@ function CheckoutPage() {
               </div>
 
               <div>
-                <label htmlFor="lastName" className="block mb-1">
+                <label
+                  htmlFor="lastName"
+                  className="block mb-1 text-foreground"
+                >
                   Last name
                 </label>
                 <input
@@ -204,8 +216,8 @@ function CheckoutPage() {
                   type="text"
                   {...register("lastName")}
                   className={`w-full p-3 border ${
-                    errors.lastName ? "border-red-500" : "border-gray-300"
-                  } rounded-md bg-gray-50`}
+                    errors.lastName ? "border-red-500" : "border-foreground/20"
+                  } rounded-md bg-gray-50 text-foreground`}
                 />
                 {errors.lastName && (
                   <p className="text-red-500 text-sm mt-1">
@@ -216,7 +228,7 @@ function CheckoutPage() {
             </div>
 
             <div className="mb-4">
-              <label htmlFor="country" className="block mb-1">
+              <label htmlFor="country" className="block mb-1 text-foreground">
                 Country / Region
               </label>
               <div className="relative">
@@ -224,8 +236,8 @@ function CheckoutPage() {
                   id="country"
                   {...register("country")}
                   className={`w-full p-3 border ${
-                    errors.country ? "border-red-500" : "border-gray-300"
-                  } rounded-md bg-gray-50 appearance-none`}
+                    errors.country ? "border-red-500" : "border-foreground/20"
+                  } rounded-md bg-gray-50 appearance-none text-foreground`}
                 >
                   <option value="United Kingdom (UK)">
                     United Kingdom (UK)
@@ -235,7 +247,7 @@ function CheckoutPage() {
                   <option value="Australia">Australia</option>
                   {/* Add more countries as needed */}
                 </select>
-                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
+                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-foreground/70" />
               </div>
               {errors.country && (
                 <p className="text-red-500 text-sm mt-1">
@@ -245,7 +257,10 @@ function CheckoutPage() {
             </div>
 
             <div className="mb-4">
-              <label htmlFor="streetAddress" className="block mb-1">
+              <label
+                htmlFor="streetAddress"
+                className="block mb-1 text-foreground"
+              >
                 Street address
               </label>
               <input
@@ -254,8 +269,10 @@ function CheckoutPage() {
                 placeholder="House number and street name"
                 {...register("streetAddress")}
                 className={`w-full p-3 border ${
-                  errors.streetAddress ? "border-red-500" : "border-gray-300"
-                } rounded-md bg-gray-50`}
+                  errors.streetAddress
+                    ? "border-red-500"
+                    : "border-foreground/20"
+                } rounded-md bg-gray-50 text-foreground`}
               />
               {errors.streetAddress && (
                 <p className="text-red-500 text-sm mt-1">
@@ -265,7 +282,7 @@ function CheckoutPage() {
             </div>
 
             <div className="mb-4">
-              <label htmlFor="city" className="block mb-1">
+              <label htmlFor="city" className="block mb-1 text-foreground">
                 Town / city
               </label>
               <input
@@ -273,8 +290,8 @@ function CheckoutPage() {
                 type="text"
                 {...register("city")}
                 className={`w-full p-3 border ${
-                  errors.city ? "border-red-500" : "border-gray-300"
-                } rounded-md bg-gray-50`}
+                  errors.city ? "border-red-500" : "border-foreground/20"
+                } rounded-md bg-gray-50 text-foreground`}
               />
               {errors.city && (
                 <p className="text-red-500 text-sm mt-1">
@@ -284,19 +301,19 @@ function CheckoutPage() {
             </div>
 
             <div className="mb-4">
-              <label htmlFor="state" className="block mb-1">
+              <label htmlFor="state" className="block mb-1 text-foreground">
                 State / Country (optional)
               </label>
               <input
                 id="state"
                 type="text"
                 {...register("state")}
-                className="w-full p-3 border border-gray-300 rounded-md bg-gray-50"
+                className="w-full p-3 border border-foreground/20 rounded-md bg-gray-50 text-foreground"
               />
             </div>
 
             <div className="mb-4">
-              <label htmlFor="postcode" className="block mb-1">
+              <label htmlFor="postcode" className="block mb-1 text-foreground">
                 Postcode / ZIP
               </label>
               <input
@@ -304,8 +321,8 @@ function CheckoutPage() {
                 type="text"
                 {...register("postcode")}
                 className={`w-full p-3 border ${
-                  errors.postcode ? "border-red-500" : "border-gray-300"
-                } rounded-md bg-gray-50`}
+                  errors.postcode ? "border-red-500" : "border-foreground/20"
+                } rounded-md bg-gray-50 text-foreground`}
               />
               {errors.postcode && (
                 <p className="text-red-500 text-sm mt-1">
@@ -315,7 +332,7 @@ function CheckoutPage() {
             </div>
 
             <div className="mb-4">
-              <label htmlFor="phone" className="block mb-1">
+              <label htmlFor="phone" className="block mb-1 text-foreground">
                 Phone
               </label>
               <input
@@ -323,8 +340,8 @@ function CheckoutPage() {
                 type="tel"
                 {...register("phone")}
                 className={`w-full p-3 border ${
-                  errors.phone ? "border-red-500" : "border-gray-300"
-                } rounded-md bg-gray-50`}
+                  errors.phone ? "border-red-500" : "border-foreground/20"
+                } rounded-md bg-gray-50 text-foreground`}
               />
               {errors.phone && (
                 <p className="text-red-500 text-sm mt-1">
@@ -334,7 +351,7 @@ function CheckoutPage() {
             </div>
 
             <div className="mb-4">
-              <label htmlFor="email" className="block mb-1">
+              <label htmlFor="email" className="block mb-1 text-foreground">
                 Email address
               </label>
               <input
@@ -342,8 +359,8 @@ function CheckoutPage() {
                 type="email"
                 {...register("email")}
                 className={`w-full p-3 border ${
-                  errors.email ? "border-red-500" : "border-gray-300"
-                } rounded-md bg-gray-50`}
+                  errors.email ? "border-red-500" : "border-foreground/20"
+                } rounded-md bg-gray-50 text-foreground`}
               />
               {errors.email && (
                 <p className="text-red-500 text-sm mt-1">
@@ -355,12 +372,14 @@ function CheckoutPage() {
 
           {/* Order summary */}
           <div className="lg:col-span-1">
-            <div className="border border-gray-200 rounded-md p-6">
-              <h2 className="text-xl font-bold mb-4">Your order</h2>
+            <div className="border border-foreground/10 rounded-md p-6 text-foreground/90">
+              <h2 className="text-xl font-bold mb-4 text-primary">
+                Your order
+              </h2>
 
               <div className="mb-4">
                 <div className="font-medium mb-2">Product</div>
-                <div className="flex justify-between py-2 border-b border-gray-200">
+                <div className="flex justify-between py-2 border-b border-foreground/10">
                   <span>
                     {cartItem.name} × {cartItem.quantity}
                   </span>
@@ -368,12 +387,12 @@ function CheckoutPage() {
                 </div>
               </div>
 
-              <div className="flex justify-between py-2 border-b border-gray-200 mb-4">
+              <div className="flex justify-between py-2 border-b border-foreground/10 mb-4">
                 <span className="font-medium">Subtotal</span>
                 <span>${cartItem.price.toFixed(2)}</span>
               </div>
 
-              <div className="flex justify-between py-2 border-b border-gray-200 mb-6">
+              <div className="flex justify-between py-2 border-b border-foreground/10 mb-6">
                 <span className="font-medium">Total</span>
                 <span className="font-bold">${cartItem.price.toFixed(2)}</span>
               </div>
@@ -388,7 +407,7 @@ function CheckoutPage() {
                       checked={selectedPayment === "card"}
                       onChange={() => setSelectedPayment("card")}
                       {...register("paymentMethod")}
-                      className="h-4 w-4 text-blue-950"
+                      className="h-4 w-4 text-primary"
                     />
                     <span>Credit / Debit card</span>
                   </label>
@@ -406,7 +425,7 @@ function CheckoutPage() {
                           id="cardNumber"
                           type="text"
                           placeholder="1234 1234 1234 1234"
-                          className="w-full p-2 border border-gray-300 rounded-md"
+                          className="w-full p-2 border border-foreground/20 rounded-md"
                         />
                       </div>
 
@@ -422,7 +441,7 @@ function CheckoutPage() {
                             id="expiryDate"
                             type="text"
                             placeholder="MM / YY"
-                            className="w-full p-2 border border-gray-300 rounded-md"
+                            className="w-full p-2 border border-foreground/20 rounded-md"
                           />
                         </div>
 
@@ -437,7 +456,7 @@ function CheckoutPage() {
                             id="securityCode"
                             type="text"
                             placeholder="CVC"
-                            className="w-full p-2 border border-gray-300 rounded-md"
+                            className="w-full p-2 border border-foreground/20 rounded-md"
                           />
                         </div>
                       </div>
@@ -452,7 +471,7 @@ function CheckoutPage() {
                     checked={selectedPayment === "klarna"}
                     onChange={() => setSelectedPayment("klarna")}
                     {...register("paymentMethod")}
-                    className="h-4 w-4 text-blue-950"
+                    className="h-4 w-4 text-primary"
                   />
                   <span>Klarna</span>
                 </label>
@@ -464,7 +483,7 @@ function CheckoutPage() {
                     checked={selectedPayment === "clearpay"}
                     onChange={() => setSelectedPayment("clearpay")}
                     {...register("paymentMethod")}
-                    className="h-4 w-4 text-blue-950"
+                    className="h-4 w-4 text-primary"
                   />
                   <span>Clearpay</span>
                 </label>
@@ -476,7 +495,7 @@ function CheckoutPage() {
                     checked={selectedPayment === "paypal"}
                     onChange={() => setSelectedPayment("paypal")}
                     {...register("paymentMethod")}
-                    className="h-4 w-4 text-blue-950"
+                    className="h-4 w-4 text-primary"
                   />
                   <span>PayPal</span>
                 </label>
@@ -488,7 +507,7 @@ function CheckoutPage() {
                     checked={selectedPayment === "bnpl"}
                     onChange={() => setSelectedPayment("bnpl")}
                     {...register("paymentMethod")}
-                    className="h-4 w-4 text-blue-950"
+                    className="h-4 w-4 text-primary"
                   />
                   <span>Buy Now Pay Later</span>
                 </label>
@@ -500,7 +519,7 @@ function CheckoutPage() {
                 )}
               </div>
 
-              <p className="text-sm text-gray-600 mb-6">
+              <p className="text-sm text-foreground/80 mb-6">
                 Your personal data will be used to process your order, support
                 your experience throughout this website and for other purposes
                 described in our privacy policy.
@@ -508,7 +527,7 @@ function CheckoutPage() {
 
               <Button
                 type="submit"
-                className="w-full py-3 bg-blue-950 hover:bg-blue-900 text-white uppercase font-bold"
+                className="w-full py-3 bg-primary hover:bg-primary/90 text-white uppercase font-bold"
               >
                 Place Order
               </Button>
@@ -521,16 +540,16 @@ function CheckoutPage() {
       <div className="mt-16 mb-12">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
-            <h2 className="text-3xl font-bold text-blue-950 mb-4">
+            <h2 className="text-3xl font-bold text-primary mb-4">
               Trusted by
               <br />
               industry leaders
             </h2>
-            <p className="mb-6">
+            <p className="mb-6 text-foreground">
               Join the ranks of industry leaders who trust us to deliver
               excellence
             </p>
-            <Button className="bg-blue-950 hover:bg-blue-900">
+            <Button className="bg-primary hover:bg-primary/90">
               Find out why
             </Button>
           </div>
@@ -538,29 +557,29 @@ function CheckoutPage() {
           <div className="grid grid-cols-3 gap-6">
             {/* Replace with actual client logos */}
             <div className="h-12 flex items-center justify-center">
-              <span className="text-gray-500 font-medium">Deloitte</span>
+              <span className="text-foreground/70 font-medium">Deloitte</span>
             </div>
             <div className="h-12 flex items-center justify-center">
-              <span className="text-gray-500 font-medium">Capitec</span>
+              <span className="text-foreground/70 font-medium">Capitec</span>
             </div>
             <div className="h-12 flex items-center justify-center">
-              <span className="text-gray-500 font-medium">Informa</span>
+              <span className="text-foreground/70 font-medium">Informa</span>
             </div>
             <div className="h-12 flex items-center justify-center">
-              <span className="text-gray-500 font-medium">Cipla</span>
+              <span className="text-foreground/70 font-medium">Cipla</span>
             </div>
             <div className="h-12 flex items-center justify-center">
-              <span className="text-gray-500 font-medium">Mukuru</span>
+              <span className="text-foreground/70 font-medium">Mukuru</span>
             </div>
             <div className="h-12 flex items-center justify-center">
-              <span className="text-gray-500 font-medium">Nedbank</span>
+              <span className="text-foreground/70 font-medium">Nedbank</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* CTA Section */}
-      <div className="bg-blue-950 text-white rounded-lg p-8 mb-12">
+      <div className="bg-primary text-white rounded-lg p-8 mb-12">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           <div>
             <h2 className="text-3xl font-bold mb-4">
@@ -570,14 +589,14 @@ function CheckoutPage() {
               Let's explore how we can help you optimize training to reach
               business objectives
             </p>
-            <Button className="bg-white text-blue-950 hover:bg-gray-100">
+            <Button className="bg-white text-primary hover:bg-gray-100">
               Book a demo
             </Button>
           </div>
 
           <div className="flex justify-center">
             {/* Replace with actual image */}
-            <div className="w-64 h-64 rounded-full bg-blue-800 flex items-center justify-center">
+            <div className="w-64 h-64 rounded-full bg-primary/80 flex items-center justify-center">
               <span className="text-white">Demo Image</span>
             </div>
           </div>

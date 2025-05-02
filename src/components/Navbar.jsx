@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect, useCallback } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -108,7 +106,7 @@ export function Navbar() {
       ];
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white shadow-sm">
+    <header className="sticky top-0 z-50 w-full shadow-sm backdrop-blur bg-opacit">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Left side - Logo and Menu */}
@@ -136,7 +134,7 @@ export function Navbar() {
                 >
                   <SquareMenu
                     size={24}
-                    className="text-blue-950 hover:text-[#FDBC00] transition-colors duration-300"
+                    className="text-primary hover:text-secondary transition-colors duration-300"
                   />
                 </button>
               </DropdownMenuTrigger>
@@ -148,7 +146,7 @@ export function Navbar() {
                 {menuLinks.map((option) => (
                   <DropdownMenuItem
                     key={option.href}
-                    className="flex items-center gap-2 cursor-pointer text-blue-950 hover:bg-gray-50 hover:text-[#FDBC00] lg:hover:bg-gray-50 lg:hover:text-[#FDBC00] transition-colors duration-300"
+                    className="flex items-center gap-2 cursor-pointer text-primary hover:bg-gray-50 hover:text-secondary lg:hover:bg-gray-50 lg:hover:text-secondary transition-colors duration-300"
                     asChild
                   >
                     <Link to={option.href}>
@@ -160,11 +158,11 @@ export function Navbar() {
                 {/* Conditionally show lgScreenLinks on smaller screens */}
                 {isMobile && (
                   <>
-                    <div className="border-t border-gray-200 my-2"></div>
+                    <div className="border-t border-foreground/10 my-2"></div>
                     {lgScreenLinks.map((option) => (
                       <DropdownMenuItem
                         key={option.href}
-                        className="flex items-center gap-2 cursor-pointer text-blue-950 hover:bg-gray-50 hover:text-[#FDBC00] transition-colors duration-300"
+                        className="flex items-center gap-2 cursor-pointer text-primary hover:bg-gray-50 hover:text-secondary transition-colors duration-300"
                         asChild
                       >
                         <Link to={option.href}>
@@ -181,17 +179,17 @@ export function Navbar() {
           {/* Search and Icons */}
           <div className="hidden md:flex items-center gap-4">
             <div className="relative w-60">
-              <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 hover:text-[#FDBC00] transition-colors duration-300" />
+              <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-foreground/60 hover:text-secondary transition-colors duration-300" />
               <input
                 type="search"
                 placeholder="Search"
-                className="h-10 w-full rounded-md bg-gray-100 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-950"
+                className="h-10 w-full rounded-md bg-gray-100 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-primary"
                 aria-label="Search website"
               />
             </div>
             {!lgScreenLinks.find((link) => link.title === "Contact Us") && (
               <Button variant="ghost" size="icon" aria-label="Callus">
-                <Phone className="h-5 w-5 text-blue-950 hover:text-[#FDBC00] transition-colors duration-300" />
+                <Phone className="h-5 w-5 text-primary hover:text-secondary transition-colors duration-300" />
               </Button>
             )}
           </div>
@@ -200,7 +198,7 @@ export function Navbar() {
           {isMobile && (
             <div className="flex items-center gap-4 lg:hidden">
               <Button variant="ghost" size="icon" aria-label="Call us">
-                <Phone className="h-5 w-5 text-blue-950 hover:text-[#FDBC00] transition-colors duration-300" />
+                <Phone className="h-5 w-5 text-primary hover:text-secondary transition-colors duration-300" />
               </Button>
             </div>
           )}
@@ -211,7 +209,7 @@ export function Navbar() {
               <Link
                 key={link.title}
                 to={link.href}
-                className="text-sm font-medium text-blue-950 hover:text-[#FDBC00] focus:text-[#FDBC00] transition-colors duration-300"
+                className="text-sm font-medium text-primary hover:text-secondary focus:text-secondary transition-colors duration-300"
               >
                 {link.title}
               </Link>
@@ -220,7 +218,7 @@ export function Navbar() {
             <div className="flex items-center gap-4">
               {isMobile && (
                 <Button variant="ghost" size="icon" aria-label="Call us">
-                  <Phone className="h-5 w-5 text-blue-950 hover:text-[#FDBC00] transition-colors duration-300" />
+                  <Phone className="h-5 w-5 text-primary hover:text-secondary transition-colors duration-300" />
                 </Button>
               )}
 
@@ -236,8 +234,8 @@ export function Navbar() {
                     aria-label="User menu"
                     aria-expanded={isProfileOpen}
                   >
-                    <User className="h-5 w-5 text-blue-950 hover:text-[#FDBC00] transition-colors duration-300" />
-                    <span className="flex items-center justify-center text-xs text-blue-950 hover:text-[#FDBC00] transition-colors duration-300">
+                    <User className="h-5 w-5 text-primary hover:text-secondary transition-colors duration-300" />
+                    <span className="flex items-center justify-center text-xs text-primary hover:text-secondary transition-colors duration-300">
                       ▼
                     </span>
                   </Button>
@@ -247,11 +245,11 @@ export function Navbar() {
                   className="w-56 bg-white border-0 shadow-2xl"
                 >
                   {user && (
-                    <div className="px-4 py-3 border-b border-gray-100">
-                      <p className="text-sm font-medium text-blue-950">
+                    <div className="px-4 py-3 border-b border-foreground/10">
+                      <p className="text-sm font-medium text-primary">
                         Welcome,
                       </p>
-                      <p className="text-sm text-gray-700 truncate">
+                      <p className="text-sm text-foreground truncate">
                         {user.username || user.email}
                       </p>
                     </div>
@@ -260,13 +258,13 @@ export function Navbar() {
                   {profileOptions.map((option, index) => (
                     <DropdownMenuItem
                       key={index}
-                      className="flex items-center gap-2 text-blue-950 hover:bg-gray-50 hover:text-[#FDBC00] transition-colors duration-300 lg:hover:bg-gray-50 lg:hover:text-[#FDBC00]"
+                      className="flex items-center gap-2 text-primary hover:bg-gray-50 hover:text-secondary transition-colors duration-300 lg:hover:bg-gray-50 lg:hover:text-secondary"
                       onClick={option.action ? option.action : undefined}
                       asChild={!option.action}
                     >
                       {option.action ? (
                         <div className="flex items-center gap-2 cursor-pointer">
-                          <option.icon className="h-4 w-4 text-blue-950" />
+                          <option.icon className="h-4 w-4 text-primary" />
                           <span>{option.title}</span>
                         </div>
                       ) : (
@@ -274,7 +272,7 @@ export function Navbar() {
                           to={option.href}
                           className="flex items-center gap-2"
                         >
-                          <option.icon className="h-4 w-4 text-blue-950" />
+                          <option.icon className="h-4 w-4 text-primary" />
                           <span>{option.title}</span>
                         </Link>
                       )}
@@ -298,7 +296,7 @@ export function Navbar() {
               <Link
                 key={link.href}
                 to={link.href}
-                className="px-4 py-2 text-sm text-blue-950 hover:bg-gray-100 hover:text-[#FDBC00] transition-colors duration-300"
+                className="px-4 py-2 text-sm text-primary hover:bg-gray-100 hover:text-secondary transition-colors duration-300"
                 onClick={() => setIsMenuOpen(false)}
               >
                 {link.title}
