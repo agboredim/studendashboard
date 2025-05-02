@@ -45,7 +45,7 @@ function LoginPage() {
     // Redirect when logged in
     if (isSuccess) {
       navigate(from, { replace: true });
-      toast.success("Login successful!");
+      // toast.success("Login successful!");
     }
   }, [isError, isSuccess, data, navigate, from]);
 

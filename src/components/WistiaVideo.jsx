@@ -9,9 +9,6 @@ const WistiaVideo = ({ videoId }) => {
         title="Wistia Video"
         src={`https://fast.wistia.net/embed/iframe/${videoId}`}
         allow="autoplay; fullscreen"
-        allowTransparency
-        frameBorder="0"
-        scrolling="no"
         className="absolute top-0 left-0 w-full h-full"
       ></iframe>
     </div>
