@@ -115,8 +115,8 @@ function StatItem({ stat, index }) {
             value={percentage}
             text={displayText}
             styles={buildStyles({
-              pathColor: "#F59E0B", // Navy blue
-              textColor: "#F59E0B",
+              pathColor: "#00adee",
+              textColor: "#00adee",
               trailColor: "#f5f5f5",
               strokeLinecap: "round",
               // Use ease-out for smoother animation
@@ -126,7 +126,7 @@ function StatItem({ stat, index }) {
           />
         </div>
       </div>
-      <h3 className="mt-4 text-lg font-medium text-gray-800">{stat.title}</h3>
+      <h3 className="mt-4 text-lg font-medium text-foreground">{stat.title}</h3>
       <p className="mt-2 text-sm text-gray-600 text-center">
         {stat.description}
       </p>
@@ -138,9 +138,9 @@ export function StatsSection() {
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-2xl font-bold text-[#F59E0B] mb-4">
-            Build Skills. Unlock Oppotunities. Become a Titan
+        <div className="max-w-3xl mx-auto text-center mb-12">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+            Build Skills. Unlock Oppotunities. Become a Titan{" "}
           </h2>
         </div>
 

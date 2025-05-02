@@ -164,7 +164,7 @@ function CourseDetailPage() {
 
             <div className="md:hidden mb-6">
               <div className="text-3xl font-bold text-blue-950 mb-2">
-                ${course.price}
+                £{course.price}
               </div>
               <Button className="w-full py-3 bg-blue-950 hover:bg-blue-900 text-white rounded-md text-lg">
                 Enroll Now
@@ -175,13 +175,13 @@ function CourseDetailPage() {
           <div className="md:w-1/3 bg-gray-50 p-6 md:p-8">
             <div className="relative h-48 rounded-lg overflow-hidden mb-6">
               <div className="mx-auto max-w-4xl">
-                <WistiaVideo videoId="o31acanvx8" />
+                <WistiaVideo videoId={`${course.preview_id}`} />
               </div>
             </div>
 
             <div className="hidden md:block">
               <div className="text-3xl font-bold text-blue-950 mb-4">
-                ${course.price}
+                £{course.price}
               </div>
               <AddToCartButton course={course} />
             </div>
@@ -242,25 +242,37 @@ function CourseDetailPage() {
                 )}
               </ul>
 
-              <h3 className="text-xl font-bold text-blue-950 mt-6 mb-3">
-                Requirements
-              </h3>
-              <ul className="list-disc pl-5 space-y-1">
-                {Object.entries(course?.required_materials).map(
-                  ([key, value]) => (
-                    <li key={key}>{value}</li>
-                  )
+              {course?.required_materials &&
+                Object.keys(course.required_materials).length > 0 && (
+                  <>
+                    <h3 className="text-xl font-bold text-blue-950 mt-6 mb-3">
+                      Requirements
+                    </h3>
+                    <ul className="list-disc pl-5 space-y-1">
+                      {Object.entries(course.required_materials).map(
+                        ([key, value]) => (
+                          <li key={key}>{value}</li>
+                        )
+                      )}
+                    </ul>
+                  </>
                 )}
-              </ul>
 
-              <h3 className="text-xl font-bold text-blue-950 mt-6 mb-3">
-                Who This Course is For
-              </h3>
-              <ul className="list-disc pl-5 space-y-1">
-                {Object.entries(course.target_audience).map(([key, value]) => (
-                  <li key={key}>{value}</li>
-                ))}
-              </ul>
+              {course?.target_audience &&
+                Object.keys(course.target_audience).length > 0 && (
+                  <>
+                    <h3 className="text-xl font-bold text-blue-950 mt-6 mb-3">
+                      Who This Course is For
+                    </h3>
+                    <ul className="list-disc pl-5 space-y-1">
+                      {Object.entries(course.target_audience).map(
+                        ([key, value]) => (
+                          <li key={key}>{value}</li>
+                        )
+                      )}
+                    </ul>
+                  </>
+                )}
             </div>
           </div>
 

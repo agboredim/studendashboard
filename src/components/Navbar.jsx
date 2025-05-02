@@ -27,9 +27,9 @@ import logoImage from "@/assets/img/logo.jpeg"; // Import the image
 
 // Constants
 const menuLinks = [
-  { title: "Home", href: "/team" },
+  { title: "Home", href: "/" },
   { title: "About Us", href: "/about" },
-  { title: "Partner with Us", href: "/press" },
+  { title: "Partner with Us", href: "/partner" },
   { title: "Get Started", href: "/courses" },
 ];
 
@@ -85,7 +85,7 @@ export function Navbar() {
       try {
         // Dispatch the local logout action
         dispatch(logout());
-        toast.success("Logged out successfully");
+        // toast.success("Logged out successfully");
         navigate("/");
         setIsProfileOpen(false);
       } catch (error) {
