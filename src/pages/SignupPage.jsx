@@ -20,7 +20,7 @@ function SignupPage() {
     useRegisterMutation();
 
   const {
-    register: registerField,
+    register: registerField, // Renamed to avoid conflict with the mutation name
     handleSubmit,
     formState: { errors },
   } = useForm({
@@ -35,21 +35,29 @@ function SignupPage() {
     },
   });
 
+  // Effect to handle registration state changes (success/error)
   useEffect(() => {
-    // if (isError) {
-    //   toast.error(
-    //     error?.data?.message ||
-    //       error?.data?.email ||
-    //       "Registration failed. Please try again."
-    //   );
-    // }
+    // Handle registration errors
+    if (isError && error) {
+      // Prioritize specific error messages from the API if available
+      const errorMessage =
+        error.data?.error?.username?.[0] || // Check for username error message
+        error.data?.error?.email?.[0] || // Check for email error message
+        error.data?.error?.phone_number?.[0] || // Check for phone error message
+        error.data?.message || // Check for general message
+        error.error || // Check for generic error string
+        "Registration failed. Please try again.";
 
-    // Redirect when registered
-    if (isSuccess) {
-      navigate("/portal", { replace: true });
-      toast.success("Registration successful!");
+      toast.error(errorMessage);
     }
-  }, [isError, isSuccess, error, navigate]);
+
+    // Redirect when registered successfully
+    if (isSuccess) {
+      toast.success("Registration successful!");
+      navigate("/portal", { replace: true });
+    }
+    // Added 'error' to dependencies to re-run effect on new errors
+  }, [isError, isSuccess, error, navigate]); // Added 'error' to dependency array
 
   const onSubmit = async (data) => {
     const { username, email, phone_number, password } = data;
@@ -64,35 +72,34 @@ function SignupPage() {
     try {
       const response = await register(userData).unwrap();
       console.log("Registration response:", response); // Log the response here
+      // Success is handled in the useEffect
     } catch (err) {
-      toast.error(
-        error?.data?.message ||
-          error?.data?.email[0] ||
-          "Registration failed. Please try again."
-      );
-      console.log("Error:", err);
-      toast.error(err.error);
-      toast.error(err.data.error);
-      // Error is handled in the useEffect above
+      console.error("Registration submission error:", err);
+      // The error handling in useEffect will catch this based on isError state
+      // Avoid duplicate toast calls here
     }
   };
 
   return (
+    // Keeping a light neutral background for the page
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      {/* Spinner overlay */}
+      {/* Spinner overlay - Styling adjusted for true overlay */}
       {isLoading && (
-        <div className="">
+        <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50">
           <Spinner />
         </div>
       )}
 
       {/* Signup form */}
+      {/* Card background white, shadow remains */}
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
         <div className="text-center">
-          <h2 className="mt-6 text-3xl font-bold text-blue-950">
+          {/* Heading using primary color */}
+          <h2 className="mt-6 text-3xl font-bold text-primary">
             Create your account
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          {/* Paragraph using foreground color with opacity */}
+          <p className="mt-2 text-sm text-foreground/80">
             Join us and start your journey
           </p>
         </div>
@@ -104,17 +111,20 @@ function SignupPage() {
               <label htmlFor="username" className="sr-only">
                 Username
               </label>
-              <User className="absolute left-3 top-6 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              {/* Icon using foreground color with opacity */}
+              <User className="absolute left-3 top-6 -translate-y-1/2 h-5 w-5 text-foreground/60" />
               <input
                 id="username"
                 type="text"
                 {...registerField("username")}
                 className={`appearance-none relative block w-full px-10 py-3 border ${
-                  errors.username ? "border-red-500" : "border-gray-300"
-                } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-950 focus:border-blue-950 focus:z-10 sm:text-sm`}
+                  // Error border remains red
+                  errors.username ? "border-red-500" : "border-foreground/20" // Default border using foreground/20
+                } placeholder-foreground/60 text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary focus:z-10 sm:text-sm`}
                 placeholder="Username"
               />
               {errors.username && (
+                // Error text remains red
                 <p className="mt-1 text-sm text-red-600">
                   {errors.username.message}
                 </p>
@@ -126,17 +136,20 @@ function SignupPage() {
               <label htmlFor="email" className="sr-only">
                 Email address
               </label>
-              <Mail className="absolute left-3 top-6 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              {/* Icon using foreground color with opacity */}
+              <Mail className="absolute left-3 top-6 -translate-y-1/2 h-5 w-5 text-foreground/60" />
               <input
                 id="email"
                 type="email"
                 {...registerField("email")}
                 className={`appearance-none relative block w-full px-10 py-3 border ${
-                  errors.email ? "border-red-500" : "border-gray-300"
-                } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-950 focus:border-blue-950 focus:z-10 sm:text-sm`}
+                  // Error border remains red
+                  errors.email ? "border-red-500" : "border-foreground/20" // Default border using foreground/20
+                } placeholder-foreground/60 text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary focus:z-10 sm:text-sm`}
                 placeholder="Email address"
               />
               {errors.email && (
+                // Error text remains red
                 <p className="mt-1 text-sm text-red-600">
                   {errors.email.message}
                 </p>
@@ -148,17 +161,22 @@ function SignupPage() {
               <label htmlFor="phone_number" className="sr-only">
                 Phone Number
               </label>
-              <Phone className="absolute left-3 top-6 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              {/* Icon using foreground color with opacity */}
+              <Phone className="absolute left-3 top-6 -translate-y-1/2 h-5 w-5 text-foreground/60" />
               <input
                 id="phone_number"
                 type="tel"
                 {...registerField("phone_number")}
                 className={`appearance-none relative block w-full px-10 py-3 border ${
-                  errors.phone_number ? "border-red-500" : "border-gray-300"
-                } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-950 focus:border-blue-950 focus:z-10 sm:text-sm`}
+                  // Error border remains red
+                  errors.phone_number
+                    ? "border-red-500"
+                    : "border-foreground/20" // Default border using foreground/20
+                } placeholder-foreground/60 text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary focus:z-10 sm:text-sm`}
                 placeholder="Phone number"
               />
               {errors.phone_number && (
+                // Error text remains red
                 <p className="mt-1 text-sm text-red-600">
                   {errors.phone_number.message}
                 </p>
@@ -170,28 +188,34 @@ function SignupPage() {
               <label htmlFor="password" className="sr-only">
                 Password
               </label>
-              <Lock className="absolute left-3 top-6 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              {/* Icon using foreground color with opacity */}
+              <Lock className="absolute left-3 top-6 -translate-y-1/2 h-5 w-5 text-foreground/60" />
               <input
                 id="password"
                 type={showPassword ? "text" : "password"}
                 {...registerField("password")}
                 className={`appearance-none relative block w-full px-10 py-3 border ${
-                  errors.password ? "border-red-500" : "border-gray-300"
-                } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-950 focus:border-blue-950 focus:z-10 sm:text-sm`}
+                  // Error border remains red
+                  errors.password ? "border-red-500" : "border-foreground/20" // Default border using foreground/20
+                } placeholder-foreground/60 text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary focus:z-10 sm:text-sm`}
                 placeholder="Password"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-6 -translate-y-1/2 text-gray-500"
+                // Icon button using foreground color with opacity
+                className="absolute right-3 top-6 -translate-y-1/2 text-foreground/70"
               >
                 {showPassword ? (
+                  // Icons inherit text color
                   <EyeOff className="h-5 w-5" />
                 ) : (
+                  // Icons inherit text color
                   <Eye className="h-5 w-5" />
                 )}
               </button>
               {errors.password && (
+                // Error text remains red
                 <p className="mt-1 text-sm text-red-600">
                   {errors.password.message}
                 </p>
@@ -203,28 +227,36 @@ function SignupPage() {
               <label htmlFor="confirmPassword" className="sr-only">
                 Confirm Password
               </label>
-              <Lock className="absolute left-3 top-6 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              {/* Icon using foreground color with opacity */}
+              <Lock className="absolute left-3 top-6 -translate-y-1/2 h-5 w-5 text-foreground/60" />
               <input
                 id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
                 {...registerField("confirmPassword")}
                 className={`appearance-none relative block w-full px-10 py-3 border ${
-                  errors.confirmPassword ? "border-red-500" : "border-gray-300"
-                } placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-950 focus:border-blue-950 focus:z-10 sm:text-sm`}
+                  // Error border remains red
+                  errors.confirmPassword
+                    ? "border-red-500"
+                    : "border-foreground/20" // Default border using foreground/20
+                } placeholder-foreground/60 text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary focus:z-10 sm:text-sm`}
                 placeholder="Confirm Password"
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-6 -translate-y-1/2 text-gray-500"
+                // Icon button using foreground color with opacity
+                className="absolute right-3 top-6 -translate-y-1/2 text-foreground/70"
               >
                 {showConfirmPassword ? (
+                  // Icons inherit text color
                   <EyeOff className="h-5 w-5" />
                 ) : (
+                  // Icons inherit text color
                   <Eye className="h-5 w-5" />
                 )}
               </button>
               {errors.confirmPassword && (
+                // Error text remains red
                 <p className="mt-1 text-sm text-red-600">
                   {errors.confirmPassword.message}
                 </p>
@@ -235,31 +267,37 @@ function SignupPage() {
           <div className="flex items-center">
             <input
               id="agree-terms"
+              name="agreeToTerms" // Added name attribute for clarity
               type="checkbox"
               {...registerField("agreeToTerms")}
-              className="h-4 w-4 text-blue-950 focus:ring-blue-950 border-gray-300 rounded"
+              // Checkbox using primary color for accent and ring
+              className="h-4 w-4 text-primary focus:ring-primary border-foreground/20 rounded" // Border using foreground/20
             />
             <label
               htmlFor="agree-terms"
-              className="ml-2 block text-sm text-gray-900"
+              // Text using foreground color
+              className="ml-2 block text-sm text-foreground"
             >
               I agree to the{" "}
               <Link
                 to="/terms"
-                className="font-medium text-blue-950 hover:text-blue-800"
+                // Link using primary color, hover using primary/80
+                className="font-medium text-primary hover:text-primary/80"
               >
                 Terms of Service
               </Link>{" "}
               and{" "}
               <Link
                 to="/privacy"
-                className="font-medium text-blue-950 hover:text-blue-800"
+                // Link using primary color, hover using primary/80
+                className="font-medium text-primary hover:text-primary/80"
               >
                 Privacy Policy
               </Link>
             </label>
           </div>
           {errors.agreeToTerms && (
+            // Error text remains red
             <p className="mt-1 text-sm text-red-600">
               {errors.agreeToTerms.message}
             </p>
@@ -268,7 +306,8 @@ function SignupPage() {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-950 hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-950"
+              // Button using primary color, hover using primary/90, focus ring using primary
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
             >
               Create Account
             </button>
@@ -276,11 +315,13 @@ function SignupPage() {
         </form>
 
         <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
+          {/* Text using foreground color with opacity */}
+          <p className="text-sm text-foreground/80">
             Already have an account?{" "}
             <Link
               to="/login"
-              className="font-medium text-blue-950 hover:text-blue-800"
+              // Link using primary color, hover using primary/80
+              className="font-medium text-primary hover:text-primary/80"
             >
               Sign in
             </Link>
@@ -290,10 +331,12 @@ function SignupPage() {
         <div className="mt-6">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
+              {/* Horizontal rule using foreground color with opacity */}
+              <div className="w-full border-t border-foreground/20"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">
+              {/* Text using foreground color with opacity, background white */}
+              <span className="px-2 bg-white text-foreground/70">
                 Or sign up with
               </span>
             </div>
@@ -302,8 +345,10 @@ function SignupPage() {
           <div className="mt-6 flex justify-center">
             <button
               type="button"
-              className="inline-flex items-center justify-center py-2 px-6 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50"
+              // Button using foreground color for text, border with opacity, light hover background
+              className="inline-flex items-center justify-center py-2 px-6 border border-foreground/20 rounded-md shadow-sm bg-white text-foreground hover:bg-gray-50"
             >
+              {/* Google icon - colors remain for branding */}
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                 <path
                   fill="#4285F4"

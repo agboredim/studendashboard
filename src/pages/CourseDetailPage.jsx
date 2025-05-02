@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
@@ -49,11 +47,11 @@ function CourseDetailPage() {
   }, [course, allCourses]);
 
   // const toggleModule = (moduleId) => {
-  //   if (expandedModule === moduleId) {
-  //     setExpandedModule(null);
-  //   } else {
-  //     setExpandedModule(moduleId);
-  //   }
+  //     if (expandedModule === moduleId) {
+  //       setExpandedModule(null);
+  //     } else {
+  //       setExpandedModule(moduleId);
+  //     }
   // };
 
   if (isCourseLoading || isAllCoursesLoading) {
@@ -63,22 +61,26 @@ function CourseDetailPage() {
   if (courseError || !course) {
     return (
       <div className="container mx-auto px-4 py-12 text-center">
-        <h2 className="text-2xl font-bold text-red-600 mb-4">
-          {courseError ? "Error Loading Course" : "Course Not Found"}
-        </h2>
-        <p className="text-gray-600 mb-6">
-          {courseError
-            ? courseError.status === "FETCH_ERROR"
-              ? "Network error. Please check your connection."
-              : courseError.data?.message || "Failed to load course details."
-            : "The course you're looking for doesn't exist or has been removed."}
-        </p>
-        <Link
-          to="/courses"
-          className="px-6 py-3 bg-blue-950 text-white rounded-md hover:bg-blue-900"
-        >
-          Browse All Courses
-        </Link>
+        {/* Kept error styling distinct but simple */}
+        <div className="bg-red-100 border border-red-400 text-red-700 p-6 rounded-lg">
+          <h2 className="text-2xl font-bold mb-4">
+            {courseError ? "Error Loading Course" : "Course Not Found"}
+          </h2>
+          <p className="mb-6">
+            {courseError
+              ? courseError.status === "FETCH_ERROR"
+                ? "Network error. Please check your connection."
+                : courseError.data?.message || "Failed to load course details."
+              : "The course you're looking for doesn't exist or has been removed."}
+          </p>
+          <Link
+            to="/courses"
+            // Using primary color for the button
+            className="px-6 py-3 bg-primary text-white rounded-md hover:bg-primary/90"
+          >
+            Browse All Courses
+          </Link>
+        </div>
       </div>
     );
   }
@@ -86,61 +88,70 @@ function CourseDetailPage() {
   return (
     <div className="container mx-auto px-4 py-12">
       {/* Breadcrumb */}
-      <div className="text-sm text-gray-500 mb-6">
-        <Link to="/" className="hover:text-blue-950">
+      <div className="text-sm text-foreground/70 mb-6">
+        {/* Using primary color for breadcrumb links on hover */}
+        <Link to="/" className="hover:text-primary">
           Home
         </Link>{" "}
         &gt;{" "}
-        <Link to="/courses" className="hover:text-blue-950">
+        <Link to="/courses" className="hover:text-primary">
           Courses
         </Link>{" "}
-        &gt; <span className="text-blue-950">{course.name}</span>
+        {/* Using primary color for the current page name */}
+        &gt; <span className="text-primary">{course.name}</span>
       </div>
 
       {/* Course Header */}
       <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">
         <div className="md:flex">
           <div className="md:w-2/3 p-6 md:p-8">
-            <h1 className="text-3xl font-bold text-blue-950 mb-4">
+            {/* Using primary color for main heading */}
+            <h1 className="text-3xl font-bold text-primary mb-4">
               {course.name}
             </h1>
 
-            <p className="text-gray-600 mb-6">{course.preview_description}</p>
+            {/* Using foreground color for description */}
+            <p className="text-foreground/80 mb-6">
+              {course.preview_description}
+            </p>
 
             <div className="flex flex-wrap items-center gap-4 mb-6">
               {/* <div className="flex items-center">
-                <div className="flex items-center">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`h-4 w-4 ${
-                        i < Math.floor(course.rating)
-                          ? "text-yellow-500 fill-current"
-                          : "text-gray-300"
-                      }`}
-                    />
-                  ))}
-                </div>
-                <span className="text-sm text-gray-500 ml-2">
-                  ({course.reviews} reviews)
-                </span>
-              </div> */}
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`h-4 w-4 ${
+                          i < Math.floor(course.rating)
+                            ? "text-secondary fill-current" // Secondary for filled stars
+                            : "text-foreground/30" // Subtle foreground for empty
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-sm text-foreground/70 ml-2">
+                    ({course.reviews} reviews)
+                  </span>
+                </div> */}
 
               <div className="flex items-center">
-                <Clock className="h-4 w-4 text-gray-500 mr-1" />
-                <span className="text-sm text-gray-500">
+                {/* Using a foreground-like color for icons and text */}
+                <Clock className="h-4 w-4 text-foreground/60 mr-1" />
+                <span className="text-sm text-foreground/70">
                   {course?.estimated_time}
                 </span>
               </div>
 
               <div className="flex items-center">
-                <BarChart className="h-4 w-4 text-gray-500 mr-1" />
-                <span className="text-sm text-gray-500">
+                {/* Using a foreground-like color for icons and text */}
+                <BarChart className="h-4 w-4 text-foreground/60 mr-1" />
+                <span className="text-sm text-foreground/70">
                   {course?.curriculum?.length} modules
                 </span>
               </div>
 
-              <div className="px-3 py-1 bg-blue-100 text-blue-950 rounded-full text-sm font-semibold">
+              {/* Using primary color for level badge background and text */}
+              <div className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-semibold">
                 {course.level}
               </div>
             </div>
@@ -152,64 +163,81 @@ function CourseDetailPage() {
                 className="w-10 h-10 rounded-full mr-3 object-cover"
               />
               <div>
-                <p className="font-medium">
+                {/* Using foreground color for instructor name */}
+                <p className="font-medium text-foreground">
                   Instructor: {course?.instructor?.first_name}{" "}
                   {course?.instructor?.last_name}
                 </p>
-                <p className="text-sm text-gray-500">
+                {/* Using a foreground-like color for instructor title */}
+                <p className="text-sm text-foreground/70">
                   {course?.instructor?.title}
                 </p>
               </div>
             </div>
 
             <div className="md:hidden mb-6">
-              <div className="text-3xl font-bold text-blue-950 mb-2">
+              {/* Using primary color for price */}
+              <div className="text-3xl font-bold text-primary mb-2">
                 £{course.price}
               </div>
-              <Button className="w-full py-3 bg-blue-950 hover:bg-blue-900 text-white rounded-md text-lg">
+              {/* Using primary color for the button */}
+              <Button className="w-full py-3 bg-primary hover:bg-primary/90 text-white rounded-md text-lg">
                 Enroll Now
               </Button>
             </div>
           </div>
 
           <div className="md:w-1/3 bg-gray-50 p-6 md:p-8">
+            {" "}
+            {/* Consider changing bg-gray-50 if needed */}
             <div className="relative h-48 rounded-lg overflow-hidden mb-6">
               <div className="mx-auto max-w-4xl">
                 <WistiaVideo videoId={`${course.preview_id}`} />
               </div>
             </div>
-
             <div className="hidden md:block">
-              <div className="text-3xl font-bold text-blue-950 mb-4">
+              {/* Using primary color for price */}
+              <div className="text-3xl font-bold text-primary mb-4">
                 £{course.price}
               </div>
+              {/* AddToCartButton likely needs internal color updates if it uses Tailwind */}
               <AddToCartButton course={course} />
             </div>
-
             <div className="border-t border-gray-200 pt-4 mt-4">
-              <h3 className="font-bold text-gray-700 mb-3">
+              {" "}
+              {/* Border color might need adjustment */}
+              {/* Using foreground color for heading */}
+              <h3 className="font-bold text-foreground/90 mb-3">
                 This course includes:
               </h3>
               <ul className="space-y-2">
                 <li className="flex items-start">
+                  {/* Keeping green for success/inclusion icon */}
                   <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                  <span>{course.estimated_time} of on-demand video</span>
+                  <span>{course.estimated_time} of on-demand video</span>{" "}
+                  {/* Using default text color, adjust if needed */}
                 </li>
                 <li className="flex items-start">
+                  {/* Keeping green for success/inclusion icon */}
                   <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                  <span>{course.resources} downloadable resources</span>
+                  <span>{course.resources} downloadable resources</span>{" "}
+                  {/* Using default text color, adjust if needed */}
                 </li>
                 <li className="flex items-start">
+                  {/* Keeping green for success/inclusion icon */}
                   <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                  <span>Full lifetime access</span>
+                  <span>Full lifetime access</span>{" "}
+                  {/* Using default text color, adjust if needed */}
                 </li>
                 {/* <li className="flex items-start">
-                  <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                  <span>Access on mobile and desktop</span>
-                </li> */}
+                    <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <span>Access on mobile and desktop</span>
+                  </li> */}
                 <li className="flex items-start">
+                  {/* Keeping green for success/inclusion icon */}
                   <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                  <span>Certificate of completion</span>
+                  <span>Certificate of completion</span>{" "}
+                  {/* Using default text color, adjust if needed */}
                 </li>
               </ul>
             </div>
@@ -222,21 +250,26 @@ function CourseDetailPage() {
         <div className="md:col-span-2">
           {/* About This Course */}
           <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 className="text-2xl font-bold text-blue-950 mb-4">
+            {/* Using primary color for heading */}
+            <h2 className="text-2xl font-bold text-primary mb-4">
               About This Course
             </h2>
+            {/* Prose class uses default text colors, might need customization in tailwind.config.js prose plugin */}
             <div className="prose max-w-none">
               <p className="mb-4">{course.description}</p>
 
-              <h3 className="text-xl font-bold text-blue-950 mt-6 mb-3">
+              {/* Using primary color for subheading */}
+              <h3 className="text-xl font-bold text-primary mt-6 mb-3">
                 What You'll Learn
               </h3>
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {Object.entries(course.learning_outcomes).map(
                   ([key, value]) => (
                     <li key={key} className="flex items-start">
+                      {/* Keeping green for success/inclusion icon */}
                       <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span>{value}</span>
+                      <span>{value}</span>{" "}
+                      {/* Using default text color, adjust if needed */}
                     </li>
                   )
                 )}
@@ -245,9 +278,11 @@ function CourseDetailPage() {
               {course?.required_materials &&
                 Object.keys(course.required_materials).length > 0 && (
                   <>
-                    <h3 className="text-xl font-bold text-blue-950 mt-6 mb-3">
+                    {/* Using primary color for subheading */}
+                    <h3 className="text-xl font-bold text-primary mt-6 mb-3">
                       Requirements
                     </h3>
+                    {/* Using default text color for list items, adjust if needed */}
                     <ul className="list-disc pl-5 space-y-1">
                       {Object.entries(course.required_materials).map(
                         ([key, value]) => (
@@ -261,9 +296,11 @@ function CourseDetailPage() {
               {course?.target_audience &&
                 Object.keys(course.target_audience).length > 0 && (
                   <>
-                    <h3 className="text-xl font-bold text-blue-950 mt-6 mb-3">
+                    {/* Using primary color for subheading */}
+                    <h3 className="text-xl font-bold text-primary mt-6 mb-3">
                       Who This Course is For
                     </h3>
+                    {/* Using default text color for list items, adjust if needed */}
                     <ul className="list-disc pl-5 space-y-1">
                       {Object.entries(course.target_audience).map(
                         ([key, value]) => (
@@ -278,48 +315,55 @@ function CourseDetailPage() {
 
           {/* Course Curriculum */}
           <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 className="text-2xl font-bold text-blue-950 mb-4">
+            {/* Using primary color for heading */}
+            <h2 className="text-2xl font-bold text-primary mb-4">
               Course Curriculum
             </h2>
             <div className="space-y-4">
               {course?.curriculum?.map((module, index) => (
                 <div
                   key={index}
-                  className="border border-gray-200 rounded-lg overflow-hidden"
+                  className="border border-gray-200 rounded-lg overflow-hidden" // Border color might need adjustment
                 >
                   {/* onClick={() => toggleModule(index)} */}
-                  <div className="flex justify-between items-center p-4 bg-gray-50 cursor-pointer">
+                  {/* Background and text color using foreground/light shade */}
+                  <div className="flex justify-between items-center p-4 bg-foreground/5 cursor-pointer">
                     <div className="font-medium">
-                      <span className="text-blue-950">Module {index + 1}:</span>{" "}
-                      {module?.title}
+                      {/* Using primary color for "Module X:" part */}
+                      <span className="text-primary">
+                        Module {index + 1}:
+                      </span>{" "}
+                      {/* Using foreground color for module title */}
+                      <span className="text-foreground">{module?.title}</span>
                     </div>
                     <div className="flex items-center">
-                      <span className="text-sm text-gray-500 mr-3">
+                      {/* Using a foreground-like color for lesson count text */}
+                      <span className="text-sm text-foreground/70 mr-3">
                         {module?.lessons?.length} lessons
                       </span>
                       {/* {expandedModule === index ? (
-                        <ChevronUp className="h-5 w-5" />
-                      ) : (
-                        <ChevronDown className="h-5 w-5" />
-                      )} */}
+                          <ChevronUp className="h-5 w-5 text-foreground/60" /> // Using foreground for icon
+                        ) : (
+                          <ChevronDown className="h-5 w-5 text-foreground/60" /> // Using foreground for icon
+                        )} */}
                     </div>
                   </div>
 
                   {/* {expandedModule === index && (
-                    <div className="p-4 border-t border-gray-200">
-                      <ul className="space-y-2">
-                        {module.lessons.map((lesson, lessonIndex) => (
-                          <li key={lessonIndex} className="flex items-center">
-                            <Play className="h-4 w-4 text-gray-400 mr-2" />
-                            <span>{lesson.title}</span>
-                            <span className="ml-auto text-sm text-gray-500">
-                              {lesson.duration}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )} */}
+                      <div className="p-4 border-t border-gray-200">
+                        <ul className="space-y-2">
+                          {module.lessons.map((lesson, lessonIndex) => (
+                            <li key={lessonIndex} className="flex items-center">
+                              <Play className="h-4 w-4 text-foreground/50 mr-2" /> // Using subtle foreground for icon
+                              <span className="text-foreground/90">{lesson.title}</span> // Using foreground for text
+                              <span className="ml-auto text-sm text-foreground/70"> // Using foreground-like for duration
+                                {lesson.duration}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )} */}
                 </div>
               ))}
             </div>
@@ -327,7 +371,8 @@ function CourseDetailPage() {
 
           {/* Instructor */}
           <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 className="text-2xl font-bold text-blue-950 mb-4">
+            {/* Using primary color for heading */}
+            <h2 className="text-2xl font-bold text-primary mb-4">
               Your Instructor
             </h2>
             <div className="flex items-start">
@@ -337,22 +382,31 @@ function CourseDetailPage() {
                 className="w-20 h-20 rounded-full mr-4 object-cover"
               />
               <div>
-                <h3 className="text-xl font-bold">
+                {/* Using foreground color for instructor name */}
+                <h3 className="text-xl font-bold text-foreground">
                   {course?.instructor?.first_name}{" "}
                   {course?.instructor?.last_name}
                 </h3>
-                <p className="text-gray-500 mb-3">
+                {/* Using a foreground-like color for instructor title */}
+                <p className="text-foreground/70 mb-3">
                   {course?.instructor?.title}
                 </p>
                 <div className="flex items-center mb-3">
-                  <Award className="h-5 w-5 text-blue-950 mr-2" />
-                  <span>{course?.instructor?.courses_taken} courses</span>
-                  <Users className="h-5 w-5 text-blue-950 ml-4 mr-2" />
-                  <span>
+                  {/* Using primary color for icons */}
+                  <Award className="h-5 w-5 text-primary mr-2" />
+                  {/* Using foreground color for text */}
+                  <span className="text-foreground">
+                    {course?.instructor?.courses_taken} courses
+                  </span>
+                  {/* Using primary color for icons */}
+                  <Users className="h-5 w-5 text-primary ml-4 mr-2" />
+                  {/* Using foreground color for text */}
+                  <span className="text-foreground">
                     {course?.instructor?.students?.toLocaleString()} students
                   </span>
                 </div>
-                <p className="text-gray-700">{course?.instructor?.bio}</p>
+                {/* Using foreground color for bio */}
+                <p className="text-foreground/80">{course?.instructor?.bio}</p>
               </div>
             </div>
           </div>
@@ -361,7 +415,8 @@ function CourseDetailPage() {
         {/* Related Courses */}
         <div className="md:col-span-1">
           <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 className="text-xl font-bold text-blue-950 mb-4">
+            {/* Using primary color for heading */}
+            <h2 className="text-xl font-bold text-primary mb-4">
               Related Courses
             </h2>
             <div className="space-y-4">
@@ -372,14 +427,16 @@ function CourseDetailPage() {
                     to={`/courses/${relatedCourse.id}`}
                     className="block"
                   >
-                    <div className="flex items-start hover:bg-gray-50 p-2 rounded-lg transition-colors">
+                    {/* Hover background using a light shade of foreground */}
+                    <div className="flex items-start hover:bg-foreground/5 p-2 rounded-lg transition-colors">
                       <img
                         src={relatedCourse.image || "/placeholder.svg"}
                         alt={relatedCourse.title}
                         className="w-20 h-20 object-cover rounded-md mr-3"
                       />
                       <div>
-                        <h3 className="font-medium text-blue-950">
+                        {/* Using primary color for related course title */}
+                        <h3 className="font-medium text-primary">
                           {relatedCourse.title}
                         </h3>
                         <div className="flex items-center mt-1">
@@ -388,18 +445,22 @@ function CourseDetailPage() {
                               <Star
                                 key={i}
                                 className={`h-3 w-3 ${
+                                  // Using secondary color for filled stars
                                   i < Math.floor(relatedCourse.rating)
-                                    ? "text-yellow-500 fill-current"
-                                    : "text-gray-300"
+                                    ? "text-secondary fill-current"
+                                    : // Using subtle foreground for empty stars
+                                      "text-foreground/30"
                                 }`}
                               />
                             ))}
                           </div>
-                          <span className="text-xs text-gray-500 ml-1">
+                          {/* Using foreground-like color for review count */}
+                          <span className="text-xs text-foreground/70 ml-1">
                             ({relatedCourse.reviews})
                           </span>
                         </div>
-                        <div className="text-sm font-bold text-blue-950 mt-1">
+                        {/* Using primary color for related course price */}
+                        <div className="text-sm font-bold text-primary mt-1">
                           ${relatedCourse.price}
                         </div>
                       </div>
@@ -407,7 +468,7 @@ function CourseDetailPage() {
                   </Link>
                 ))
               ) : (
-                <p className="text-gray-500 text-center py-4">
+                <p className="text-foreground/70 text-center py-4">
                   No related courses found
                 </p>
               )}
