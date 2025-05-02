@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -25,7 +23,9 @@ function AddToCartButton({ course }) {
     dispatch(
       addToCart({
         id: course.id,
-        name: course.title,
+        // Assuming course object has a 'name' property for the cart
+        // If it's 'title' as in the previous component, use course.title
+        name: course.name,
         price: course.price,
         quantity: 1,
       })
@@ -44,17 +44,20 @@ function AddToCartButton({ course }) {
       onClick={handleAddToCart}
       className={`flex items-center gap-2 ${
         isInCart
-          ? "bg-green-600 text-white hover:bg-green-700"
-          : "bg-blue-950 text-white hover:bg-blue-900"
+          ? "bg-green-600 text-white hover:bg-green-700" // Keeping green for clarity when item is in cart
+          : // Using primary color for 'Add to Cart' state
+            "bg-primary text-white hover:bg-primary/90"
       }`}
     >
       {isAdded || isInCart ? (
         <>
+          {/* Icons will inherit text color */}
           <Check className="h-5 w-5" />
           {isInCart ? "Go to Checkout" : "Added to Cart"}
         </>
       ) : (
         <>
+          {/* Icons will inherit text color */}
           <ShoppingCart className="h-5 w-5" />
           Add to Cart
         </>

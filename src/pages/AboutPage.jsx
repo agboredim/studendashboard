@@ -90,13 +90,16 @@ export function AboutPage() {
       {/* Hero Section */}
       <div className="py-16 px-6 md:px-12 lg:px-16">
         <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-blue-950 mb-6">
+          {/* Heading using primary color */}
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-primary mb-6">
             ABOUT US
           </h1>
-          <h2 className="text-2xl md:text-3xl font-semibold text-blue-900 mb-6">
+          {/* Subheading using primary/90 color */}
+          <h2 className="text-2xl md:text-3xl font-semibold text-primary/90 mb-6">
             Building Careers. Empowering Futures.
           </h2>
-          <p className="text-lg text-gray-700 max-w-4xl mx-auto">
+          {/* Paragraph using foreground color */}
+          <p className="text-lg text-foreground max-w-4xl mx-auto">
             At <strong>Titans Careers</strong>, we believe education should go
             beyond theory — it should open doors, transform lives, and equip
             individuals with the skills to lead in the real world. We specialize
@@ -112,14 +115,19 @@ export function AboutPage() {
       </div>
 
       {/* Mission & Vision Section */}
-      <div className="py-12 px-6 md:px-12 lg:px-16 bg-blue-50">
+      {/* Background color primary/5 */}
+      <div className="py-12 px-6 md:px-12 lg:px-16 bg-primary/5">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12">
+          {/* Card background white, shadow remains */}
           <div className="bg-white p-8 rounded-xl shadow-sm">
             <div className="flex items-center mb-4">
-              <Target className="h-8 w-8 text-blue-900 mr-4" />
-              <h3 className="text-2xl font-bold text-blue-950">Our Mission</h3>
+              {/* Icon color primary/90 */}
+              <Target className="h-8 w-8 text-primary/90 mr-4" />
+              {/* Heading using primary color */}
+              <h3 className="text-2xl font-bold text-primary">Our Mission</h3>
             </div>
-            <p className="text-gray-700">
+            {/* Paragraph using foreground color */}
+            <p className="text-foreground">
               To bridge the gap between ambition and achievement by providing
               practical, career-focused training that empowers students to
               launch, transition, and elevate their careers in Compliance and
@@ -127,12 +135,16 @@ export function AboutPage() {
             </p>
           </div>
 
+          {/* Card background white, shadow remains */}
           <div className="bg-white p-8 rounded-xl shadow-sm">
             <div className="flex items-center mb-4">
-              <Target className="h-8 w-8 text-blue-900 mr-4" />
-              <h3 className="text-2xl font-bold text-blue-950">Our Vision</h3>
+              {/* Icon color primary/90 */}
+              <Target className="h-8 w-8 text-primary/90 mr-4" />
+              {/* Heading using primary color */}
+              <h3 className="text-2xl font-bold text-primary">Our Vision</h3>
             </div>
-            <p className="text-gray-700">
+            {/* Paragraph using foreground color */}
+            <p className="text-foreground">
               To be recognized as a global leader in professional training —
               renowned for transforming talent into industry-ready professionals
               through hands-on education, expert guidance, and unwavering career
@@ -145,7 +157,8 @@ export function AboutPage() {
       {/* Values Section */}
       <div className="py-16 px-6 md:px-12 lg:px-16">
         <div className="max-w-6xl mx-auto">
-          <h3 className="text-3xl font-bold text-center text-blue-950 mb-12">
+          {/* Heading using primary color */}
+          <h3 className="text-3xl font-bold text-center text-primary mb-12">
             What We Stand For
           </h3>
 
@@ -156,13 +169,17 @@ export function AboutPage() {
                 key={index}
                 className="bg-gray-50 p-6 rounded-lg text-center hover:shadow-md transition-all"
               >
-                <div className="bg-blue-100 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4">
+                {/* Icon background primary/10 */}
+                <div className="bg-primary/10 w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4">
+                  {/* Icon color inherits from parent text color or is default */}
                   {value.icon}
                 </div>
-                <h4 className="text-xl font-semibold text-blue-900 mb-2">
+                {/* Title using primary/90 color */}
+                <h4 className="text-xl font-semibold text-primary/90 mb-2">
                   {value.title}
                 </h4>
-                <p className="text-gray-600">{value.description}</p>
+                {/* Description using foreground/80 color */}
+                <p className="text-foreground/80">{value.description}</p>
               </div>
             ))}
           </div>
@@ -175,14 +192,18 @@ export function AboutPage() {
                 className="bg-gray-50 p-6 rounded-lg hover:shadow-md transition-all"
               >
                 <div className="flex items-center mb-4">
-                  <div className="bg-blue-100 p-2 rounded-full mr-4">
+                  {/* Icon background primary/10 */}
+                  <div className="bg-primary/10 p-2 rounded-full mr-4">
+                    {/* Icon color inherits from parent text color or is default */}
                     {value.icon}
                   </div>
-                  <h4 className="text-xl font-semibold text-blue-900">
+                  {/* Title using primary/90 color */}
+                  <h4 className="text-xl font-semibold text-primary/90">
                     {value.title}
                   </h4>
                 </div>
-                <p className="text-gray-600">{value.description}</p>
+                {/* Description using foreground/80 color */}
+                <p className="text-foreground/80">{value.description}</p>
               </div>
             ))}
           </div>
@@ -190,9 +211,11 @@ export function AboutPage() {
       </div>
 
       {/* Why Titans Careers Section */}
-      <div className="py-16 px-6 md:px-12 lg:px-16 bg-blue-50">
+      {/* Background color primary/5 */}
+      <div className="py-16 px-6 md:px-12 lg:px-16 bg-primary/5">
         <div className="max-w-6xl mx-auto">
-          <h3 className="text-3xl font-bold text-center text-blue-950 mb-12">
+          {/* Heading using primary color */}
+          <h3 className="text-3xl font-bold text-center text-primary mb-12">
             Why Titans Careers?
           </h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
@@ -202,20 +225,25 @@ export function AboutPage() {
                 className="bg-white p-6 rounded-lg hover:shadow-md transition-all"
               >
                 <div className="flex items-center mb-4">
-                  <div className="bg-blue-100 p-2 rounded-full mr-4">
+                  {/* Icon background primary/10 */}
+                  <div className="bg-primary/10 p-2 rounded-full mr-4">
+                    {/* Icon color inherits from parent text color or is default */}
                     {item.icon}
                   </div>
-                  <h4 className="text-xl font-semibold text-blue-900">
+                  {/* Title using primary/90 color */}
+                  <h4 className="text-xl font-semibold text-primary/90">
                     {item.title}
                   </h4>
                 </div>
-                <p className="text-gray-700">{item.description}</p>
+                {/* Description using foreground color */}
+                <p className="text-foreground">{item.description}</p>
               </div>
             ))}
           </div>
 
+          {/* Blockquote using foreground color */}
           <div className="text-center mb-12">
-            <p className="text-xl italic text-gray-700 max-w-3xl mx-auto">
+            <p className="text-xl italic text-foreground max-w-3xl mx-auto">
               "At Titans Careers, we don't just teach — we empower. We don't
               just certify — we transform. Your future begins here."
             </p>
@@ -226,16 +254,18 @@ export function AboutPage() {
       {/* Call to Action Section */}
       <div className="py-16 px-6 md:px-12 lg:px-16">
         <div className="max-w-3xl mx-auto text-center">
-          <h3 className="text-2xl md:text-3xl font-bold text-blue-950 mb-6">
+          {/* Heading using primary color */}
+          <h3 className="text-2xl md:text-3xl font-bold text-primary mb-6">
             Your Career Transformation Starts Today
           </h3>
-          <p className="text-lg text-gray-700 mb-8">
+          {/* Paragraph using foreground color */}
+          <p className="text-lg text-foreground mb-8">
             Whether you're starting a new career journey, transitioning into a
             new industry, or seeking to upskill for greater opportunities,
             Titans Careers is your trusted partner. We're here to guide you,
             challenge you, and celebrate your success.
           </p>
-          <Button className="bg-blue-950 hover:bg-blue-900 px-8 py-6 rounded-full text-lg text-white">
+          <Button className="bg-primary hover:bg-primary/90 px-8 py-6 rounded-full text-lg text-white">
             <Link to="/courses">Start Your Journey Now</Link>
           </Button>
         </div>

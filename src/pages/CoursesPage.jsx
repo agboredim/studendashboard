@@ -50,18 +50,18 @@ function CoursesPage() {
   if (error) {
     return (
       <div className="container mx-auto px-4 py-12 text-center">
-        <div className="bg-red-50 p-6 rounded-lg">
-          <h2 className="text-2xl font-bold text-red-600 mb-4">
-            Error Loading Courses
-          </h2>
-          <p className="text-gray-700 mb-4">
+        {/* Kept error styling distinct but simple */}
+        <div className="bg-red-100 border border-red-400 text-red-700 p-6 rounded-lg">
+          <h2 className="text-2xl font-bold mb-4">Error Loading Courses</h2>
+          <p className="mb-4">
             {error.status === "FETCH_ERROR"
               ? "Network error. Please check your connection."
               : error.data?.message || "Failed to load courses."}
           </p>
           <button
             onClick={() => window.location.reload()}
-            className="px-6 py-2 bg-blue-950 text-white rounded-md hover:bg-blue-900"
+            // Using primary color for the retry button
+            className="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
           >
             Try Again
           </button>
@@ -73,10 +73,12 @@ function CoursesPage() {
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-blue-950 mb-4">
+        {/* Using primary color for main heading */}
+        <h1 className="text-4xl font-bold text-primary mb-4">
           Titans Careers Courses
         </h1>
-        <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+        {/* Using foreground color for main text */}
+        <p className="text-lg text-foreground/80 max-w-3xl mx-auto">
           Enhance your skills with our industry-leading courses designed by
           experts with decades of experience.
         </p>
@@ -90,12 +92,14 @@ function CoursesPage() {
             placeholder="Search courses..."
             value={searchTerm}
             onChange={handleSearchChange}
-            className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-950"
+            // Border color and focus ring using primary color
+            className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
           />
           <div className="absolute left-3 top-1/2 -translate-y-1/2">
+            {/* Using a foreground-like color for the icon */}
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-gray-400"
+              className="h-5 w-5 text-foreground/60"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -111,12 +115,15 @@ function CoursesPage() {
         </div>
 
         <div className="flex items-center gap-2 w-full md:w-auto">
-          <Filter className="h-5 w-5 text-gray-500" />
-          <span className="text-gray-700">Filter by:</span>
+          {/* Using a foreground-like color for the icon */}
+          <Filter className="h-5 w-5 text-foreground/60" />
+          {/* Using foreground color for text */}
+          <span className="text-foreground/80">Filter by:</span>
           <select
             value={filter}
             onChange={handleFilterChange}
-            className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-950"
+            // Border color and focus ring using primary color
+            className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
           >
             <option value="all">All Levels</option>
             <option value="beginner">Beginner</option>
@@ -140,30 +147,37 @@ function CoursesPage() {
                   alt={course.name}
                   className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                 />
-                <div className="absolute top-0 right-0 bg-blue-950 text-white px-3 py-1 m-2 rounded-full text-sm font-semibold">
+                {/* Using primary color for level badge */}
+                <div className="absolute top-0 right-0 bg-primary text-white px-3 py-1 m-2 rounded-full text-sm font-semibold">
                   {course.level}
                 </div>
               </div>
 
               <div className="p-6">
-                <h3 className="text-xl font-bold text-blue-950 mb-2">
+                {/* Using primary color for course title */}
+                <h3 className="text-xl font-bold text-primary mb-2">
                   {course.name}
                 </h3>
-                <p className="text-gray-600 mb-4 line-clamp-2">
+                {/* Using foreground color for description */}
+                <p className="text-foreground/80 mb-4 line-clamp-2">
                   {course.description}
                 </p>
 
                 <div className="flex items-center mb-4">
                   <div className="flex items-center mr-4">
-                    <Clock className="h-4 w-4 text-gray-500 mr-1" />
-                    <span className="text-sm text-gray-500">
+                    {/* Using a foreground-like color for icons */}
+                    <Clock className="h-4 w-4 text-foreground/60 mr-1" />
+                    {/* Using a foreground-like color for text */}
+                    <span className="text-sm text-foreground/70">
                       {course.estimated_time}
                       {console.log(course)}
                     </span>
                   </div>
                   <div className="flex items-center">
-                    <BarChart className="h-4 w-4 text-gray-500 mr-1" />
-                    <span className="text-sm text-gray-500">
+                    {/* Using a foreground-like color for icons */}
+                    <BarChart className="h-4 w-4 text-foreground/60 mr-1" />
+                    {/* Using a foreground-like color for text */}
+                    <span className="text-sm text-foreground/70">
                       {course?.curriculum.length} modules
                     </span>
                   </div>
@@ -175,7 +189,8 @@ function CoursesPage() {
                     alt={course?.instructor?.name}
                     className="w-8 h-8 rounded-full mr-2 object-cover"
                   />
-                  <span className="text-sm text-gray-700">
+                  {/* Using foreground color for instructor name */}
+                  <span className="text-sm text-foreground">
                     {course.instructor.name || "No Instructor Name"}
                   </span>
                 </div>
@@ -186,25 +201,30 @@ function CoursesPage() {
                       <Star
                         key={i}
                         className={`h-4 w-4 ${
+                          // Using secondary color for filled stars
                           i < Math.floor(course.rating)
-                            ? "text-yellow-500 fill-current"
-                            : "text-gray-300"
+                            ? "text-secondary fill-current"
+                            : // Using a subtle foreground-like color for empty stars
+                              "text-foreground/30"
                         }`}
                       />
                     ))}
                   </div>
-                  <span className="text-sm text-gray-500 ml-2">
+                  {/* Using a foreground-like color for review count */}
+                  <span className="text-sm text-foreground/70 ml-2">
                     ({course.reviews} reviews)
                   </span>
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <div className="text-2xl font-bold text-blue-950">
+                  {/* Using primary color for price */}
+                  <div className="text-2xl font-bold text-primary">
                     £{course.price}
                   </div>
                   <Link
                     to={`/courses/${course.id}`}
-                    className="px-4 py-2 bg-blue-950 text-white rounded-md hover:bg-blue-900 transition-colors duration-300"
+                    // Using primary color for the button
+                    className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors duration-300"
                   >
                     View Details
                   </Link>
@@ -214,7 +234,7 @@ function CoursesPage() {
           ))
         ) : (
           <div className="col-span-full text-center py-12">
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-foreground/80">
               No courses found matching your criteria. Please try a different
               search or filter.
             </p>
