@@ -100,10 +100,10 @@ export function CourseIntroVideos() {
     <section ref={sectionRef} className="py-16 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <span className="inline-block px-6 py-2 bg-blue-100 text-blue-950 rounded-full text-sm font-semibold uppercase tracking-wider mb-4">
+          <span className="inline-block px-6 py-2 bg-blue-100 text-foreground rounded-full text-sm font-semibold uppercase tracking-wider mb-4">
             Course Previews
           </span>
-          <h2 className="text-4xl font-bold text-blue-950 mb-4">
+          <h2 className="text-4xl font-bold text-primary mb-4">
             Explore our Courses
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
@@ -122,7 +122,7 @@ export function CourseIntroVideos() {
           >
             <ChevronLeft
               className={`h-6 w-6 ${
-                currentSlide === 0 ? "text-gray-400" : "text-blue-950"
+                currentSlide === 0 ? "text-gray-400" : "text-primary"
               }`}
             />
           </button>
@@ -154,11 +154,11 @@ export function CourseIntroVideos() {
                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                           />
                           <div
-                            className="absolute inset-0 bg-opacit flex items-center justify-center cursor-pointer"
+                            className="absolute inset-0 flex items-center justify-center cursor-pointer"
                             onClick={() => toggleVideo(course.id)}
                           >
                             <div className="w-14 h-14 rounded-full bg-white bg-opacity-80 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
-                              <Play className="h-6 w-6 text-blue-950 ml-1" />
+                              <Play className="h-6 w-6 text-primary ml-1" />
                             </div>
                           </div>
                         </>
@@ -172,7 +172,7 @@ export function CourseIntroVideos() {
 
                     {/* Course Info */}
                     <div className="p-5 flex flex-col flex-grow">
-                      <h3 className="text-lg font-bold text-blue-950 mb-2 line-clamp-2 h-14">
+                      <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2 h-14">
                         {course.name}
                       </h3>
                       <p className="text-gray-600 text-sm mb-4 line-clamp-2 flex-grow">
@@ -180,12 +180,12 @@ export function CourseIntroVideos() {
                       </p>
 
                       <div className="flex justify-between items-center mt-auto">
-                        <span className="text-blue-950 font-bold">
+                        <span className="text-foreground font-bold">
                           £{course.price}
                         </span>
                         <Link
                           to={`/courses/${course.id}`}
-                          className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                          className="text-sm text-primary hover:text-primary/80 font-medium"
                         >
                           View Course
                         </Link>
@@ -208,7 +208,7 @@ export function CourseIntroVideos() {
               className={`h-6 w-6 ${
                 currentSlide === slideCount - sliderSettings.slidesToShow
                   ? "text-gray-400"
-                  : "text-blue-950"
+                  : "text-primary"
               }`}
             />
           </button>
@@ -217,7 +217,7 @@ export function CourseIntroVideos() {
         <div className="text-center mt-10">
           <Link
             to="/courses"
-            className="inline-block px-8 py-3 bg-blue-950 text-white rounded-md hover:bg-blue-900 transition-colors duration-300 font-medium"
+            className="inline-block px-8 py-3 bg-primary text-white rounded-md hover:bg-primary/80 transition-colors duration-300 font-medium"
           >
             View All Courses
           </Link>

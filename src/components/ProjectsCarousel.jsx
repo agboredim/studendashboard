@@ -74,7 +74,7 @@ export function ProjectsCarousel() {
   return (
     <section className="py-16 bg-gray-50">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-blue-950 text-center mb-12">
+        <h2 className="text-3xl font-bold text-primary text-center mb-12">
           Our Programs
         </h2>
 
@@ -103,7 +103,7 @@ export function ProjectsCarousel() {
                     </div>
 
                     {/* Service Title and Description */}
-                    <div className="absolute inset-x-0 bottom-0 p-6 text-white">
+                    <div className="absolute inset-x-0 bottom-0 p-6 text-secondary">
                       <h3 className="text-2xl font-bold">{service.title}</h3>
 
                       {/* Description that slides up on hover */}
@@ -111,23 +111,6 @@ export function ProjectsCarousel() {
                         <p className="mt-2 text-white/90">
                           {service.description}
                         </p>
-                        <button className="mt-4 inline-flex items-center text-sm font-medium text-blue-400 hover:text-blue-300">
-                          Learn more
-                          <svg
-                            className="ml-1 h-4 w-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M9 5l7 7-7 7"
-                            ></path>
-                          </svg>
-                        </button>
                       </div>
                     </div>
                   </div>

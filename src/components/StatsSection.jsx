@@ -115,8 +115,8 @@ function StatItem({ stat, index }) {
             value={percentage}
             text={displayText}
             styles={buildStyles({
-              pathColor: "#ffc627", // Navy blue
-              textColor: "#ffc627",
+              pathColor: "#00adee",
+              textColor: "#00adee",
               trailColor: "#f5f5f5",
               strokeLinecap: "round",
               // Use ease-out for smoother animation
@@ -126,7 +126,7 @@ function StatItem({ stat, index }) {
           />
         </div>
       </div>
-      <h3 className="mt-4 text-lg font-medium text-gray-800">{stat.title}</h3>
+      <h3 className="mt-4 text-lg font-medium text-foreground">{stat.title}</h3>
       <p className="mt-2 text-sm text-gray-600 text-center">
         {stat.description}
       </p>

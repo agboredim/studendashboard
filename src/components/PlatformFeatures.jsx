@@ -71,18 +71,13 @@ export function PlatformFeatures() {
               >
                 <Collapsible.Content
                   className="overflow-hidden data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp"
-                  forceMount
+                  style={{ "--base-height": "6rem" }} // Adjust based on your line height
                 >
                   <p className="text-gray-600 mb-4">{feature.description}</p>
                 </Collapsible.Content>
 
                 <Collapsible.Trigger asChild>
-                  <button
-                    className="text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 w-full justify-end"
-                    aria-label={`${
-                      openIndex === index ? "Collapse" : "Expand"
-                    } content`}
-                  >
+                  <button className="text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 w-full justify-end mt-2">
                     {openIndex === index ? "See less" : "See more"}
                     <svg
                       className={`transform transition-transform ${

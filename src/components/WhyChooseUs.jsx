@@ -15,37 +15,37 @@ import { Button } from "@/components/ui/button";
 export function WhyChooseUs() {
   const features = [
     {
-      icon: <GraduationCap className="h-8 w-8" />,
+      icon: <GraduationCap className="h-8 w-8 text-primary " />,
       title: "Industry-Relevant Training",
       description:
         "Our programs are built in collaboration with seasoned professionals who understand the real-world demands of Compliance and IT Industries. You'll gain the knowledge and hands-on experience employers seek.",
     },
     {
-      icon: <Briefcase className="h-8 w-8" />,
+      icon: <Briefcase className="h-8 w-8 text-primary" />,
       title: "Practical, Job-Focused Learning",
       description:
         "We don't just teach theory—we simulate real-world projects and scenarios. From AML/KYC case studies to Data Analysis projects, you'll be trained to think, act, and deliver like a professional from day one.",
     },
     {
-      icon: <Award className="h-8 w-8" />,
+      icon: <Award className="h-8 w-8 text-primary" />,
       title: "Expert-Led Masterclasses",
       description:
         "Learn directly from experienced Compliance officers, IT consultants, Data Analysts, Business Analysts, and Project Managers who have walked the path you aspire to take.",
     },
     {
-      icon: <HeartHandshake className="h-8 w-8" />,
+      icon: <HeartHandshake className="h-8 w-8 text-primary" />,
       title: "Career Support & Mentorship",
       description:
         "Get personalized career coaching: CV support, interview preparation, and ongoing mentorship to help you secure the right job opportunities and grow your career.",
     },
     {
-      icon: <LifeBuoy className="h-8 w-8" />, // New feature
+      icon: <LifeBuoy className="h-8 w-8 text-primary" />, // New feature
       title: "12-Month Ongoing Support",
       description:
         "Receive continuous assistance even after course completion with extended mentorship, technical guidance, and career advice to ensure your long-term success in the industry.",
     },
     {
-      icon: <Check className="h-8 w-8" />,
+      icon: <Check className="h-8 w-8 text-primary" />,
       title: "Affordable and Accessible",
       description:
         "Our mission is to make high-quality training affordable without compromising on excellence. Flexible payment plans are available.",
@@ -70,7 +70,7 @@ export function WhyChooseUs() {
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-blue-950 mb-4">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
             Why Choose Titans Careers?
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
@@ -90,7 +90,7 @@ export function WhyChooseUs() {
                 <div className="bg-blue-100 p-2 rounded-full mr-4">
                   {feature.icon}
                 </div>
-                <h3 className="text-xl font-semibold text-blue-950">
+                <h3 className="text-xl font-semibold text-foreground">
                   {feature.title}
                 </h3>
               </div>
@@ -102,13 +102,13 @@ export function WhyChooseUs() {
         {/* Who We Serve Section */}
         <div className="bg-blue-50 rounded-xl p-8 md:p-12 mb-12">
           <div className="max-w-4xl mx-auto">
-            <h3 className="text-2xl md:text-3xl font-bold text-blue-950 mb-6 text-center">
+            <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-6 text-center">
               Who We Serve
             </h3>
             <ul className="space-y-4 mb-8">
               {audience.map((item, index) => (
                 <li key={index} className="flex items-start">
-                  <Check className="h-5 w-5 text-blue-600 mt-1 mr-3 flex-shrink-0" />
+                  <Check className="h-5 w-5 text-primary mt-1 mr-3 flex-shrink-0" />
                   <span className="text-gray-700">{item}</span>
                 </li>
               ))}
@@ -122,7 +122,7 @@ export function WhyChooseUs() {
 
         {/* Social Media Section */}
         <div className="text-center">
-          <h3 className="text-2xl md:text-3xl font-bold text-blue-950 mb-6 text-center">
+          <h3 className="text-2xl md:text-3xl font-bold text-primary mb-6 text-center">
             Join Our Community
           </h3>
           <h3 className="text-xl font-semibold text-gray-700 mb-4">
@@ -133,7 +133,7 @@ export function WhyChooseUs() {
               <a
                 key={index}
                 href="#"
-                className="text-blue-950 hover:text-blue-700 transition-colors"
+                className="text-foreground hover:text-primary transition-colors"
                 aria-label={`Follow us on ${social.name}`}
               >
                 {social.icon}
@@ -144,7 +144,7 @@ export function WhyChooseUs() {
             Stay updated with new course offerings, success stories, webinars,
             and career tips!
           </p>
-          <p className="text-lg font-bold text-blue-950">
+          <p className="text-lg font-bold text-foreground">
             Titans Careers - Where Ambitions Meet Opportunities.
           </p>
         </div>

@@ -246,21 +246,28 @@ function CourseDetailPage() {
                 Requirements
               </h3>
               <ul className="list-disc pl-5 space-y-1">
-                {Object.entries(course?.required_materials).map(
+                {Object.entries(course?.required_materials)?.map(
                   ([key, value]) => (
                     <li key={key}>{value}</li>
                   )
                 )}
               </ul>
 
-              <h3 className="text-xl font-bold text-blue-950 mt-6 mb-3">
-                Who This Course is For
-              </h3>
-              <ul className="list-disc pl-5 space-y-1">
-                {Object.entries(course.target_audience).map(([key, value]) => (
-                  <li key={key}>{value}</li>
-                ))}
-              </ul>
+              {course?.target_audience &&
+                Object.keys(course.target_audience).length > 0 && (
+                  <>
+                    <h3 className="text-xl font-bold text-blue-950 mt-6 mb-3">
+                      Who This Course is For
+                    </h3>
+                    <ul className="list-disc pl-5 space-y-1">
+                      {Object.entries(course.target_audience).map(
+                        ([key, value]) => (
+                          <li key={key}>{value}</li>
+                        )
+                      )}
+                    </ul>
+                  </>
+                )}
             </div>
           </div>
 

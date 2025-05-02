@@ -158,12 +158,13 @@ function CoursesPage() {
                     <Clock className="h-4 w-4 text-gray-500 mr-1" />
                     <span className="text-sm text-gray-500">
                       {course.estimated_time}
+                      {console.log(course)}
                     </span>
                   </div>
                   <div className="flex items-center">
                     <BarChart className="h-4 w-4 text-gray-500 mr-1" />
                     <span className="text-sm text-gray-500">
-                      {course.modules} modules
+                      {course?.curriculum.length} modules
                     </span>
                   </div>
                 </div>
@@ -176,7 +177,6 @@ function CoursesPage() {
                   />
                   <span className="text-sm text-gray-700">
                     {course.instructor.name || "No Instructor Name"}
-                    {console.log(course)}
                   </span>
                 </div>
 
