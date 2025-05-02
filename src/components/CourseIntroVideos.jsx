@@ -131,7 +131,7 @@ export function CourseIntroVideos() {
             <Slider ref={sliderRef} {...sliderSettings}>
               {courses.map((course, index) => (
                 <div key={`course-${course.id}`} className="px-3 h-full">
-                  <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group h-full flex flex-col">
+                  <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group h-[400px] flex flex-col">
                     {/* Video Container */}
                     <div className="relative h-52 overflow-hidden">
                       {activeVideoId === course.id ? (
