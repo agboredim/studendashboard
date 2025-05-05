@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Star, Clock, BarChart, Filter } from "lucide-react";
 import { useGetAllCoursesQuery } from "../services/coursesApi";
 import Spinner from "../components/Spinner";
+import ErrorMessage from "@/components/ErrorMessage";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -49,24 +50,16 @@ function CoursesPage() {
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-12 text-center">
-        {/* Kept error styling distinct but simple */}
-        <div className="bg-red-100 border border-red-400 text-red-700 p-6 rounded-lg">
-          <h2 className="text-2xl font-bold mb-4">Error Loading Courses</h2>
-          <p className="mb-4">
-            {error.status === "FETCH_ERROR"
-              ? "Network error. Please check your connection."
-              : error.data?.message || "Failed to load courses."}
-          </p>
-          <button
-            onClick={() => window.location.reload()}
-            // Using primary color for the retry button
-            className="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
+      <ErrorMessage
+        title="Error Loading Courses"
+        message={
+          error.status === "FETCH_ERROR"
+            ? "Network error. Please check your connection."
+            : error.data?.message || "Failed to load courses."
+        }
+        onRetry={() => window.location.reload()}
+        retryLabel="Try Again"
+      />
     );
   }
 
@@ -170,7 +163,6 @@ function CoursesPage() {
                     {/* Using a foreground-like color for text */}
                     <span className="text-sm text-foreground/70">
                       {course.estimated_time}
-                      {console.log(course)}
                     </span>
                   </div>
                   <div className="flex items-center">
