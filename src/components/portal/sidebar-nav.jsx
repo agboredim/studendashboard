@@ -8,6 +8,7 @@ import {
   MessageSquareIcon,
   AwardIcon,
   BellIcon,
+  GraduationCapIcon,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLogoutMutation } from "@/services/api";
@@ -22,11 +23,11 @@ function NavItem({ href, active, icon, children, onClick }) {
 
   return (
     <Link
-      href={href}
+      to={href}
       onClick={handleClick}
       className={cn(
-        "flex items-center px-4 py-3 text-sidebar-foreground rounded-md transition-colors",
-        active ? "bg-sidebar-primary font-medium" : "hover:bg-sidebar-accent"
+        "flex items-center px-4 py-3 text-sidebar rounded-md transition-colors",
+        active ? "bg-primary font-medium" : "hover:bg-primary"
       )}
     >
       <span className="mr-3">{icon}</span>
@@ -61,26 +62,34 @@ export default function SidebarNav() {
   };
 
   return (
-    <aside className="w-64 flex-shrink-0 h-screen bg-sidebar text-sidebar-foreground flex flex-col">
-      <div className="p-4 border-b border-sidebar-border">
+    <aside className="w-64 z-50 flex-shrink-0 h-full fixed bg-foreground text-primary flex flex-col">
+      <div className="p-4">
         <h1 className="text-xl font-bold">STUDENT PORTAL</h1>
       </div>
 
       <nav className="flex-1 overflow-y-auto p-2 space-y-1">
         <NavItem
-          href="/"
-          active={location.pathname === "/"}
+          href="/portal"
+          active={location.pathname === "/portal"}
           icon={<HomeIcon className="h-5 w-5" />}
         >
           Dashboard
         </NavItem>
 
         <NavItem
-          href="/courses"
-          active={location.pathname === "/courses"}
+          href="/portal/library"
+          active={location.pathname === "/portal/library"}
           icon={<BookIcon className="h-5 w-5" />}
         >
           Course Library
+        </NavItem>
+
+        <NavItem
+          href="/portal/courses"
+          active={location.pathname === "portal/courses"}
+          icon={<GraduationCapIcon className="h-5 w-5" />}
+        >
+          My Courses
         </NavItem>
 
         <NavItem
