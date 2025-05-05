@@ -21,7 +21,7 @@ export default function Layout({ children }) {
             className="fixed inset-0 bg-black/50"
             onClick={() => setSidebarOpen(false)}
           />
-          <div className="relative flex-1 flex flex-col w-64 max-w-xs bg-sidebar">
+          <div className="relative flex-1 flex flex-col w-64 max-w-xs bg-foreground">
             <div className="absolute top-0 right-0 pt-4 pr-4">
               <Button
                 variant="ghost"
@@ -43,7 +43,9 @@ export default function Layout({ children }) {
           onMenuClick={() => setSidebarOpen(true)}
           showMenuButton={isMobile}
         />
-        <main className="flex-1 p-4 md:p-6 bg-gray-50">{children}</main>
+        <main className="flex-1 md:ml-64 p-4 md:p-6 bg-gray-50">
+          {children}
+        </main>
       </div>
     </div>
   );
