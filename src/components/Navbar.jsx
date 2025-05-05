@@ -195,13 +195,75 @@ export function Navbar() {
           </div>
 
           {/* Phone Icon for Small Screens */}
-          {isMobile && (
+          {/* {isMobile && (
             <div className="flex items-center gap-4 lg:hidden">
               <Button variant="ghost" size="icon" aria-label="Call us">
                 <Phone className="h-5 w-5 text-primary hover:text-secondary transition-colors duration-300" />
               </Button>
             </div>
-          )}
+          )} */}
+
+          {/* Profile Icon (Single Dropdown for All Screens) */}
+          {/* <div className="flex items-center gap-4">
+            <DropdownMenu
+              open={isProfileOpen}
+              onOpenChange={(open) => setIsProfileOpen(open)}
+            >
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative flex items-center gap-1"
+                  aria-label="User menu"
+                  aria-expanded={isProfileOpen}
+                >
+                  <User className="h-5 w-5 text-primary hover:text-secondary transition-colors duration-300" />
+                  <span className="flex items-center justify-center text-xs text-primary hover:text-secondary transition-colors duration-300">
+                    ▼
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align={isMobile ? "start" : "end"} // Align differently based on screen size
+                className={`w-56 bg-white border-0 shadow-2xl ${
+                  isMobile ? "mt-2" : ""
+                }`}
+              >
+                {user && (
+                  <div className="px-4 py-3 border-b border-foreground/10">
+                    <p className="text-sm font-medium text-primary">Welcome,</p>
+                    <p className="text-sm text-foreground truncate">
+                      {user.username || user.email}
+                    </p>
+                  </div>
+                )}
+
+                {profileOptions.map((option, index) => (
+                  <DropdownMenuItem
+                    key={index}
+                    className="flex items-center gap-2 text-primary hover:bg-gray-50 hover:text-secondary transition-colors duration-300"
+                    onClick={option.action ? option.action : undefined}
+                    asChild={!option.action}
+                  >
+                    {option.action ? (
+                      <div className="flex items-center gap-2 cursor-pointer">
+                        <option.icon className="h-4 w-4 text-primary" />
+                        <span>{option.title}</span>
+                      </div>
+                    ) : (
+                      <Link
+                        to={option.href}
+                        className="flex items-center gap-2"
+                      >
+                        <option.icon className="h-4 w-4 text-primary" />
+                        <span>{option.title}</span>
+                      </Link>
+                    )}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div> */}
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex lg:items-center lg:gap-6">
@@ -214,73 +276,67 @@ export function Navbar() {
                 {link.title}
               </Link>
             ))}
+          </div>
+          <div className="flex items-center gap-4">
+            {isMobile && (
+              <Button variant="ghost" size="icon" aria-label="Call us">
+                <Phone className="h-5 w-5 text-primary hover:text-secondary transition-colors duration-300" />
+              </Button>
+            )}
 
-            <div className="flex items-center gap-4">
-              {isMobile && (
-                <Button variant="ghost" size="icon" aria-label="Call us">
-                  <Phone className="h-5 w-5 text-primary hover:text-secondary transition-colors duration-300" />
-                </Button>
-              )}
-
-              <DropdownMenu
-                open={isProfileOpen}
-                onOpenChange={setIsProfileOpen}
-              >
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="relative flex items-center gap-1"
-                    aria-label="User menu"
-                    aria-expanded={isProfileOpen}
-                  >
-                    <User className="h-5 w-5 text-primary hover:text-secondary transition-colors duration-300" />
-                    <span className="flex items-center justify-center text-xs text-primary hover:text-secondary transition-colors duration-300">
-                      ▼
-                    </span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  className="w-56 bg-white border-0 shadow-2xl"
+            <DropdownMenu open={isProfileOpen} onOpenChange={setIsProfileOpen}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative flex items-center gap-1"
+                  aria-label="User menu"
+                  aria-expanded={isProfileOpen}
                 >
-                  {user && (
-                    <div className="px-4 py-3 border-b border-foreground/10">
-                      <p className="text-sm font-medium text-primary">
-                        Welcome,
-                      </p>
-                      <p className="text-sm text-foreground truncate">
-                        {user.username || user.email}
-                      </p>
-                    </div>
-                  )}
+                  <User className="h-5 w-5 text-primary hover:text-secondary transition-colors duration-300" />
+                  <span className="flex items-center justify-center text-xs text-primary hover:text-secondary transition-colors duration-300">
+                    ▼
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="w-56 bg-white border-0 shadow-2xl"
+              >
+                {user && (
+                  <div className="px-4 py-3 border-b border-foreground/10">
+                    <p className="text-sm font-medium text-primary">Welcome,</p>
+                    <p className="text-sm text-foreground truncate">
+                      {user.username || user.email}
+                    </p>
+                  </div>
+                )}
 
-                  {profileOptions.map((option, index) => (
-                    <DropdownMenuItem
-                      key={index}
-                      className="flex items-center gap-2 text-primary hover:bg-gray-50 hover:text-secondary transition-colors duration-300 lg:hover:bg-gray-50 lg:hover:text-secondary"
-                      onClick={option.action ? option.action : undefined}
-                      asChild={!option.action}
-                    >
-                      {option.action ? (
-                        <div className="flex items-center gap-2 cursor-pointer">
-                          <option.icon className="h-4 w-4 text-primary" />
-                          <span>{option.title}</span>
-                        </div>
-                      ) : (
-                        <Link
-                          to={option.href}
-                          className="flex items-center gap-2"
-                        >
-                          <option.icon className="h-4 w-4 text-primary" />
-                          <span>{option.title}</span>
-                        </Link>
-                      )}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+                {profileOptions.map((option, index) => (
+                  <DropdownMenuItem
+                    key={index}
+                    className="flex items-center gap-2 text-primary hover:bg-gray-50 hover:text-secondary transition-colors duration-300 lg:hover:bg-gray-50 lg:hover:text-secondary"
+                    onClick={option.action ? option.action : undefined}
+                    asChild={!option.action}
+                  >
+                    {option.action ? (
+                      <div className="flex items-center gap-2 cursor-pointer">
+                        <option.icon className="h-4 w-4 text-primary" />
+                        <span>{option.title}</span>
+                      </div>
+                    ) : (
+                      <Link
+                        to={option.href}
+                        className="flex items-center gap-2"
+                      >
+                        <option.icon className="h-4 w-4 text-primary" />
+                        <span>{option.title}</span>
+                      </Link>
+                    )}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
