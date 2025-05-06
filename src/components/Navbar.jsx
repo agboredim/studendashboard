@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { logout } from "../store/slices/authSlice";
 import { toast } from "react-toastify";
-import logoImage from "@/assets/img/logo.jpeg"; // Import the image
+import logoImage from "@/assets/img/logo.png";
 
 // Constants
 const menuLinks = [
