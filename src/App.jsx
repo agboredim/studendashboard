@@ -28,6 +28,7 @@ import OrderConfirmationPage from "./pages/OrderConfirmationPage";
 import NotFound from "./pages/not-found";
 import Dashboard from "./pages/Dashboard";
 import Library from "./components/portal/Library";
+import { ContactPage } from "./pages/ContactPage";
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
             {/* Public Routes */}
             <Route index element={<HomePage />} />
             <Route path="about" element={<AboutPage />} />
+            <Route path="contact" element={<ContactPage />} />
             <Route path="courses" element={<CoursesPage />} />
             <Route path="courses/:courseId" element={<CourseDetailPage />} />
             <Route path="blog" element={<BlogPage />} />
