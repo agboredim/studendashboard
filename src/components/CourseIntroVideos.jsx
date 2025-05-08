@@ -156,7 +156,7 @@ export function CourseIntroVideos() {
     ],
   };
 
-  if (isLoading) return <Spinner />;
+  // if (isLoading) return <Spinner />;
 
   if (error) {
     return (

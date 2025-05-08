@@ -19,7 +19,7 @@ export const api = createApi({
       return headers;
     },
   }),
-  tagTypes: ["User"],
+  tagTypes: ["User", "Courses", "Orders"],
   endpoints: (builder) => ({
     // Login endpoint
     login: builder.mutation({
@@ -43,6 +43,16 @@ export const api = createApi({
       invalidatesTags: ["User"],
     }),
 
+    // Google authentication endpoint
+    googleAuth: builder.mutation({
+      query: (tokenData) => ({
+        url: "/customuser/google-auth/",
+        method: "POST",
+        body: tokenData,
+      }),
+      invalidatesTags: ["User"],
+    }),
+
     // Logout endpoint (if needed on the server)
     logout: builder.mutation({
       query: () => ({
@@ -57,6 +67,44 @@ export const api = createApi({
       query: () => "/auth/profile",
       providesTags: ["User"],
     }),
+
+    // Get courses
+    getCourses: builder.query({
+      query: () => "/courses/",
+      providesTags: ["Courses"],
+    }),
+
+    // Get course by ID
+    getCourseById: builder.query({
+      query: (id) => `/courses/${id}/`,
+      providesTags: (result, error, id) => [{ type: "Courses", id }],
+    }),
+
+    // Create order
+    createOrder: builder.mutation({
+      query: (orderData) => ({
+        url: "/orders/",
+        method: "POST",
+        body: orderData,
+      }),
+      invalidatesTags: ["Orders"],
+    }),
+
+    // Process PayPal payment
+    processPayPalPayment: builder.mutation({
+      query: (paymentData) => ({
+        url: "/payments/paypal/",
+        method: "POST",
+        body: paymentData,
+      }),
+      invalidatesTags: ["Orders"],
+    }),
+
+    // Get user orders
+    getUserOrders: builder.query({
+      query: () => "/orders/user/",
+      providesTags: ["Orders"],
+    }),
   }),
 });
 
@@ -64,6 +112,12 @@ export const api = createApi({
 export const {
   useLoginMutation,
   useRegisterMutation,
+  useGoogleAuthMutation,
   useLogoutMutation,
   useGetUserProfileQuery,
+  useGetCoursesQuery,
+  useGetCourseByIdQuery,
+  useCreateOrderMutation,
+  useProcessPayPalPaymentMutation,
+  useGetUserOrdersQuery,
 } = api;

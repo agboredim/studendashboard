@@ -1,43 +1,62 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { api } from "../../services/api";
 
-// Get user from localStorage
-const user = JSON.parse(localStorage.getItem("user"));
-
 const initialState = {
-  user: user || null,
-  csrfToken: null,
+  user: null,
+  token: localStorage.getItem("token") || null,
+  isAuthenticated: !!localStorage.getItem("token"),
+  isLoading: false,
 };
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+    login: (state, action) => {
+      state.user = action.payload.user;
+      state.token = action.payload.token;
+      state.isAuthenticated = true;
+      localStorage.setItem("token", action.payload.token);
+    },
     logout: (state) => {
       state.user = null;
-      state.csrfToken = null;
-      localStorage.removeItem("user");
+      state.token = null;
+      state.isAuthenticated = false;
+      localStorage.removeItem("token");
+    },
+    setUser: (state, action) => {
+      state.user = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder
-      // Handle login success
+      // Handle login
       .addMatcher(api.endpoints.login.matchFulfilled, (state, { payload }) => {
         state.user = payload.user;
-        state.csrfToken = payload.csrfToken;
-        localStorage.setItem("user", JSON.stringify(payload.user));
+        state.token = payload.token;
+        state.isAuthenticated = true;
+        localStorage.setItem("token", payload.token);
       })
-      // Handle register success
+      // Handle register
       .addMatcher(
         api.endpoints.register.matchFulfilled,
         (state, { payload }) => {
           state.user = payload.user;
-          state.csrfToken = payload.csrfToken;
-          localStorage.setItem("user", JSON.stringify(payload.user));
+          state.token = payload.token;
+          state.isAuthenticated = true;
+          localStorage.setItem("token", payload.token);
         }
-      );
+      )
+      // Handle logout
+      .addMatcher(api.endpoints.logout.matchFulfilled, (state) => {
+        state.user = null;
+        state.token = null;
+        state.isAuthenticated = false;
+        localStorage.removeItem("token");
+      });
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { login, logout, setUser } = authSlice.actions;
+
 export default authSlice.reducer;

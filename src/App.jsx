@@ -1,12 +1,11 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Provider } from "react-redux";
 import { ToastContainer } from "react-toastify";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import "react-toastify/dist/ReactToastify.css";
 
-// Store
 import store from "./store";
 
-// Layout
 import Layout from "./components/Layout";
 
 // Components
@@ -28,74 +27,87 @@ import OrderConfirmationPage from "./pages/OrderConfirmationPage";
 import NotFound from "./pages/not-found";
 import Dashboard from "./pages/Dashboard";
 import Library from "./components/portal/Library";
+import { ContactPage } from "./pages/ContactPage";
+import { OurStoryPage } from "./pages/OurStoryPage";
+import { PartnerWithUs } from "./pages/PartnerWithUs";
+import { ServicesPage } from "./pages/ServicesPage";
 
 function App() {
+  // Get Google Client ID from environment variables using Vite's import.meta.env
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
   return (
     <Provider store={store}>
-      <Router>
-        <Routes>
-          {/* Authentication Pages (outside main layout) */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
+      <GoogleOAuthProvider clientId={googleClientId}>
+        <Router>
+          <Routes>
+            {/* Authentication Pages (outside main layout) */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
 
-          {/* Main Layout Routes */}
-          <Route path="/" element={<Layout />}>
-            {/* Public Routes */}
-            <Route index element={<HomePage />} />
-            <Route path="about" element={<AboutPage />} />
-            <Route path="courses" element={<CoursesPage />} />
-            <Route path="courses/:courseId" element={<CourseDetailPage />} />
-            <Route path="blog" element={<BlogPage />} />
-            <Route path="blog/:slug" element={<BlogPostPage />} />
+            {/* Main Layout Routes */}
+            <Route path="/" element={<Layout />}>
+              {/* Public Routes */}
+              <Route index element={<HomePage />} />
+              <Route path="about" element={<AboutPage />} />
+              <Route path="contact" element={<ContactPage />} />
+              <Route path="story" element={<OurStoryPage />} />
+              <Route path="partner" element={<PartnerWithUs />} />
+              <Route path="services" element={<ServicesPage />} />
+              <Route path="courses" element={<CoursesPage />} />
+              <Route path="courses/:courseId" element={<CourseDetailPage />} />
+              <Route path="blog" element={<BlogPage />} />
+              <Route path="blog/:slug" element={<BlogPostPage />} />
 
-            {/* Checkout Routes (require authentication AND non-empty cart) */}
+              {/* Checkout Routes (require authentication AND non-empty cart) */}
+              <Route
+                path="checkout"
+                element={
+                  <ProtectedRoute>
+                    <CheckoutProtection>
+                      <CheckoutPage />
+                    </CheckoutProtection>
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="order-confirmation"
+                element={
+                  <ProtectedRoute>
+                    <OrderConfirmationPage />
+                  </ProtectedRoute>
+                }
+              />
+            </Route>
+
+            {/* Protected Routes (require authentication) */}
             <Route
-              path="checkout"
+              path="/portal"
               element={
                 <ProtectedRoute>
-                  <CheckoutProtection>
-                    <CheckoutPage />
-                  </CheckoutProtection>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portal/library"
+              element={
+                <ProtectedRoute>
+                  <Library />
                 </ProtectedRoute>
               }
             />
 
-            <Route
-              path="order-confirmation"
-              element={
-                <ProtectedRoute>
-                  <OrderConfirmationPage />
-                </ProtectedRoute>
-              }
-            />
-          </Route>
+            {/* Catch-all route for undefined paths */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
 
-          {/* Protected Routes (require authentication) */}
-          <Route
-            path="/portal"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/portal/library"
-            element={
-              <ProtectedRoute>
-                <Library />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Catch-all route for undefined paths */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-
-        {/* Global Components */}
-        <WhatsAppButton />
-        <ToastContainer position="top-right" autoClose={5000} />
-      </Router>
+          {/* Global Components */}
+          <WhatsAppButton />
+          <ToastContainer position="top-right" autoClose={5000} />
+        </Router>
+      </GoogleOAuthProvider>
     </Provider>
   );
 }

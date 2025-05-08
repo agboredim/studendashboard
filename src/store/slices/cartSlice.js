@@ -2,7 +2,10 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   items: [],
-  total: 0,
+  isLoading: false,
+  error: null,
+  paymentStatus: null,
+  orderId: null,
 };
 
 const cartSlice = createSlice({
@@ -10,48 +13,49 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     addToCart: (state, action) => {
-      const { id, name, price, quantity = 1 } = action.payload;
-      const existingItem = state.items.find((item) => item.id === id);
-
-      if (existingItem) {
-        existingItem.quantity += quantity;
-      } else {
-        state.items.push({ id, name, price, quantity });
-      }
-
-      state.total = state.items.reduce(
-        (total, item) => total + item.price * item.quantity,
-        0
+      const existingItem = state.items.find(
+        (item) => item.id === action.payload.id
       );
+      if (!existingItem) {
+        state.items.push(action.payload);
+      }
     },
     removeFromCart: (state, action) => {
-      const id = action.payload;
-      state.items = state.items.filter((item) => item.id !== id);
-      state.total = state.items.reduce(
-        (total, item) => total + item.price * item.quantity,
-        0
-      );
-    },
-    updateQuantity: (state, action) => {
-      const { id, quantity } = action.payload;
-      const item = state.items.find((item) => item.id === id);
-
-      if (item) {
-        item.quantity = quantity;
-      }
-
-      state.total = state.items.reduce(
-        (total, item) => total + item.price * item.quantity,
-        0
-      );
+      state.items = state.items.filter((item) => item.id !== action.payload);
     },
     clearCart: (state) => {
       state.items = [];
-      state.total = 0;
+    },
+    setPaymentStatus: (state, action) => {
+      state.paymentStatus = action.payload;
+    },
+    setOrderId: (state, action) => {
+      state.orderId = action.payload;
+    },
+    resetPaymentState: (state) => {
+      state.paymentStatus = null;
+      state.orderId = null;
+      state.error = null;
     },
   },
 });
 
-export const { addToCart, removeFromCart, updateQuantity, clearCart } =
-  cartSlice.actions;
+export const {
+  addToCart,
+  removeFromCart,
+  clearCart,
+  setPaymentStatus,
+  setOrderId,
+  resetPaymentState,
+} = cartSlice.actions;
+
+export const selectCartItems = (state) => state.cart.items;
+export const selectCartTotal = (state) =>
+  state.cart.items
+    .reduce((total, item) => total + (item.price || 0), 0)
+    .toFixed(2);
+export const selectCartCount = (state) => state.cart.items.length;
+export const selectPaymentStatus = (state) => state.cart.paymentStatus;
+export const selectOrderId = (state) => state.cart.orderId;
+
 export default cartSlice.reducer;
