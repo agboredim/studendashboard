@@ -27,7 +27,7 @@ export function ServicesPage() {
             marketplace.
           </p>
           <Button className="bg-primary hover:bg-primary/90 px-8 py-6 rounded-full text-lg">
-            Explore Our Programs
+            <Link to="/courses">Explore Our Programs</Link>
           </Button>
           <p className="text-sm text-muted-foreground mt-4">
             94% success rate with professionals advancing their careers within 6

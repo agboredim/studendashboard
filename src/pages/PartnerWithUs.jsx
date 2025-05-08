@@ -9,6 +9,7 @@ import {
   MessageSquare,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 export function PartnerWithUs() {
   return (
@@ -314,7 +315,11 @@ export function PartnerWithUs() {
             Join our network of forward-thinking organizations and professionals
             committed to building the future of work.
           </p>
-          <Button className="bg-secondary text-secondary-foreground hover:bg-secondary/90 px-8 py-6 rounded-full text-lg">
+          <Button
+            as={Link}
+            to="/courses"
+            className="bg-secondary text-secondary-foreground hover:bg-foreground hover:text-secondary ease-in px-8 py-6 rounded-full text-lg"
+          >
             Start Your Partnership Journey
           </Button>
         </div>

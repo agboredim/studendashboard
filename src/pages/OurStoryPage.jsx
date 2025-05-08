@@ -9,17 +9,18 @@ import {
   Rocket,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 export function OurStoryPage() {
   return (
     <div className="bg-background">
       {/* Hero Section */}
-      <div className="bg-primary text-primary-foreground py-20 px-6 md:px-12 lg:px-16">
+      <div className="bg-primary/10 text-foreground py-20 px-6 md:px-12 lg:px-16">
         <div className="max-w-6xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
             Titans Careers: Transform Your Professional Journey
           </h1>
-          <p className="text-xl text-primary-foreground/90 max-w-4xl mx-auto mb-8">
+          <p className="text-xl text-foreground/90 max-w-4xl mx-auto mb-8">
             We eliminate the barriers between your current position and your
             dream career through industry-relevant skills training, one-on-one
             coaching, and a supportive network that recognizes your unique
@@ -27,10 +28,10 @@ export function OurStoryPage() {
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button className="bg-secondary text-secondary-foreground hover:bg-secondary/90 px-8 py-6 rounded-full text-lg">
-              Explore Our Programs
+              <Link to="/courses">Explore Our Programs</Link>
             </Button>
-            <Button className="bg-transparent border-2 border-primary-foreground hover:bg-primary-foreground/10 px-8 py-6 rounded-full text-lg">
-              Join Our Community
+            <Button className="bg- border-2 border-foreground hover:bg-foreground hover:text-secondary px-8 py-6 rounded-full text-lg text-foreground">
+              <Link to="/community">Join Our Community</Link>
             </Button>
           </div>
         </div>
@@ -362,14 +363,14 @@ export function OurStoryPage() {
       </div>
 
       {/* Final CTA */}
-      <div className="py-20 px-6 md:px-12 lg:px-16 bg-gradient-to-r from-primary to-primary/90 text-primary-foreground">
+      <div className="py-20 px-6 md:px-12 lg:px-16 bg-primary/10  text-foreground">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             Transform Your Journey With Us
           </h2>
 
           <div className="grid md:grid-cols-3 gap-8 mb-12">
-            <div className="bg-primary-foreground/10 p-6 rounded-xl backdrop-blur-sm">
+            <div className="bg-primary p-6 rounded-xl backdrop-blur-sm">
               <h3 className="text-xl font-semibold mb-3">
                 Accelerate Your Career Growth
               </h3>
@@ -379,7 +380,7 @@ export function OurStoryPage() {
               </p>
             </div>
 
-            <div className="bg-primary-foreground/10 p-6 rounded-xl backdrop-blur-sm">
+            <div className="bg-primary p-6 rounded-xl backdrop-blur-sm">
               <h3 className="text-xl font-semibold mb-3">
                 Reinvent Your Professional Path
               </h3>
@@ -389,7 +390,7 @@ export function OurStoryPage() {
               </p>
             </div>
 
-            <div className="bg-primary-foreground/10 p-6 rounded-xl backdrop-blur-sm">
+            <div className="bg-primary p-6 rounded-xl backdrop-blur-sm">
               <h3 className="text-xl font-semibold mb-3">
                 Empower Your Organization
               </h3>
@@ -402,7 +403,7 @@ export function OurStoryPage() {
           </div>
 
           <Button className="bg-secondary text-secondary-foreground hover:bg-secondary/90 px-8 py-6 rounded-full text-lg font-semibold">
-            Start Your Transformation Today
+            <Link to="/courses">Start Your Transformation Today</Link>
           </Button>
         </div>
       </div>
