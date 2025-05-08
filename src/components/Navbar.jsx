@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { logout } from "../store/slices/authSlice";
 import { toast } from "react-toastify";
-import logoImage from "@/assets/img/logo.jpeg"; // Import the image
+import logoImage from "@/assets/img/logo.png";
 
 // Constants
 const menuLinks = [
@@ -146,7 +146,7 @@ export function Navbar() {
                 {menuLinks.map((option) => (
                   <DropdownMenuItem
                     key={option.href}
-                    className="flex items-center gap-2 cursor-pointer text-primary hover:bg-gray-50 hover:text-secondary lg:hover:bg-gray-50 lg:hover:text-secondary transition-colors duration-300"
+                    className="flex items-center gap-2 cursor-pointer text-foreground hover:bg-gray-50 hover:text-secondary lg:hover:bg-gray-50 lg:hover:text-secondary transition-colors duration-300"
                     asChild
                   >
                     <Link to={option.href}>
@@ -162,7 +162,7 @@ export function Navbar() {
                     {lgScreenLinks.map((option) => (
                       <DropdownMenuItem
                         key={option.href}
-                        className="flex items-center gap-2 cursor-pointer text-primary hover:bg-gray-50 hover:text-secondary transition-colors duration-300"
+                        className="flex items-center gap-2 cursor-pointer text-foreground hover:bg-gray-50 hover:text-secondary transition-colors duration-300"
                         asChild
                       >
                         <Link to={option.href}>
@@ -194,84 +194,13 @@ export function Navbar() {
             )}
           </div>
 
-          {/* Phone Icon for Small Screens */}
-          {/* {isMobile && (
-            <div className="flex items-center gap-4 lg:hidden">
-              <Button variant="ghost" size="icon" aria-label="Call us">
-                <Phone className="h-5 w-5 text-primary hover:text-secondary transition-colors duration-300" />
-              </Button>
-            </div>
-          )} */}
-
-          {/* Profile Icon (Single Dropdown for All Screens) */}
-          {/* <div className="flex items-center gap-4">
-            <DropdownMenu
-              open={isProfileOpen}
-              onOpenChange={(open) => setIsProfileOpen(open)}
-            >
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="relative flex items-center gap-1"
-                  aria-label="User menu"
-                  aria-expanded={isProfileOpen}
-                >
-                  <User className="h-5 w-5 text-primary hover:text-secondary transition-colors duration-300" />
-                  <span className="flex items-center justify-center text-xs text-primary hover:text-secondary transition-colors duration-300">
-                    ▼
-                  </span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align={isMobile ? "start" : "end"} // Align differently based on screen size
-                className={`w-56 bg-white border-0 shadow-2xl ${
-                  isMobile ? "mt-2" : ""
-                }`}
-              >
-                {user && (
-                  <div className="px-4 py-3 border-b border-foreground/10">
-                    <p className="text-sm font-medium text-primary">Welcome,</p>
-                    <p className="text-sm text-foreground truncate">
-                      {user.username || user.email}
-                    </p>
-                  </div>
-                )}
-
-                {profileOptions.map((option, index) => (
-                  <DropdownMenuItem
-                    key={index}
-                    className="flex items-center gap-2 text-primary hover:bg-gray-50 hover:text-secondary transition-colors duration-300"
-                    onClick={option.action ? option.action : undefined}
-                    asChild={!option.action}
-                  >
-                    {option.action ? (
-                      <div className="flex items-center gap-2 cursor-pointer">
-                        <option.icon className="h-4 w-4 text-primary" />
-                        <span>{option.title}</span>
-                      </div>
-                    ) : (
-                      <Link
-                        to={option.href}
-                        className="flex items-center gap-2"
-                      >
-                        <option.icon className="h-4 w-4 text-primary" />
-                        <span>{option.title}</span>
-                      </Link>
-                    )}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div> */}
-
           {/* Desktop Navigation */}
           <div className="hidden lg:flex lg:items-center lg:gap-6">
             {lgScreenLinks.map((link) => (
               <Link
                 key={link.title}
                 to={link.href}
-                className="text-sm font-medium text-primary hover:text-secondary focus:text-secondary transition-colors duration-300"
+                className="text-sm font-medium text-foreground hover:text-secondary focus:text-secondary transition-colors duration-300"
               >
                 {link.title}
               </Link>
@@ -315,13 +244,13 @@ export function Navbar() {
                 {profileOptions.map((option, index) => (
                   <DropdownMenuItem
                     key={index}
-                    className="flex items-center gap-2 text-primary hover:bg-gray-50 hover:text-secondary transition-colors duration-300 lg:hover:bg-gray-50 lg:hover:text-secondary"
+                    className="flex items-center gap-2 text-foreground hover:bg-gray-50 hover:text-secondary transition-colors duration-300 lg:hover:bg-gray-50 lg:hover:text-secondary"
                     onClick={option.action ? option.action : undefined}
                     asChild={!option.action}
                   >
                     {option.action ? (
                       <div className="flex items-center gap-2 cursor-pointer">
-                        <option.icon className="h-4 w-4 text-primary" />
+                        <option.icon className="h-4 w-4 text-foreground" />
                         <span>{option.title}</span>
                       </div>
                     ) : (
@@ -329,7 +258,7 @@ export function Navbar() {
                         to={option.href}
                         className="flex items-center gap-2"
                       >
-                        <option.icon className="h-4 w-4 text-primary" />
+                        <option.icon className="h-4 w-4 text-foreground" />
                         <span>{option.title}</span>
                       </Link>
                     )}

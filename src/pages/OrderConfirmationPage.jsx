@@ -1,69 +1,66 @@
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useParams, Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { CheckCircle } from "lucide-react";
+
+// Components
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { clearCart } from "../store/slices/cartSlice";
 
-function OrderConfirmationPage() {
-  const dispatch = useDispatch();
+// Redux
+import { selectOrderId, selectPaymentStatus } from "@/store/slices/cartSlice";
 
-  // Clear the cart when the order is confirmed
+const OrderConfirmationPage = () => {
+  const { orderId } = useParams();
+  const paymentStatus = useSelector(selectPaymentStatus);
+  const storeOrderId = useSelector(selectOrderId);
+
+  // Use either the URL param or the stored order ID
+  const displayOrderId = orderId || storeOrderId;
+
   useEffect(() => {
-    dispatch(clearCart());
-  }, [dispatch]);
+    // Scroll to top on page load
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
-    <div className="container mx-auto px-4 py-12 max-w-3xl text-center">
-      <div className="flex justify-center mb-6">
-        {/* Success icon color remains green */}
-        <CheckCircle className="h-16 w-16 text-green-500" />
-      </div>
+    <div className="container mx-auto px-4 py-12">
+      <Card className="max-w-2xl mx-auto p-8 text-center">
+        <div className="flex flex-col items-center space-y-6">
+          <CheckCircle className="w-16 h-16 text-green-500" />
 
-      {/* Heading using foreground color */}
-      <h1 className="text-3xl font-bold mb-4 text-foreground">
-        Thank You for Your Order!
-      </h1>
-      {/* Paragraph using foreground color */}
-      <p className="text-lg mb-8 text-foreground">
-        Your order has been received and is now being processed. You will
-        receive an email confirmation shortly.
-      </p>
+          <h1 className="text-3xl font-bold">Order Confirmed!</h1>
 
-      {/* Order details background gray-50 remains */}
-      <div className="bg-gray-50 p-6 rounded-lg mb-8">
-        {/* Heading using primary color */}
-        <h2 className="text-xl font-bold mb-4 text-primary">Order Details</h2>
-        {/* Text using foreground color */}
-        <div className="flex justify-between mb-2 text-foreground">
-          <span>Order Number:</span>
-          <span className="font-medium">
-            #ORD-{Math.floor(100000 + Math.random() * 900000)}
-          </span>
-        </div>
-        {/* Text using foreground color */}
-        <div className="flex justify-between mb-2 text-foreground">
-          <span>Date:</span>
-          <span className="font-medium">{new Date().toLocaleDateString()}</span>
-        </div>
-        {/* Text using foreground color */}
-        <div className="flex justify-between mb-2 text-foreground">
-          <span>Payment Method:</span>
-          <span className="font-medium">Credit Card</span>
-        </div>
-      </div>
+          <p className="text-lg text-gray-600">
+            Thank you for your purchase. Your order has been successfully
+            processed.
+          </p>
 
-      <div className="flex flex-col sm:flex-row gap-4 justify-center">
-        {/* Button background primary, hover primary/90 */}
-        <Button asChild className="bg-primary hover:bg-primary/90">
-          <Link to="/courses">Browse More Courses</Link>
-        </Button>
-        <Button asChild variant="outline">
-          <Link to="/student-portal">Go to Student Portal</Link>
-        </Button>
-      </div>
+          {displayOrderId && (
+            <div className="bg-gray-100 p-4 rounded-md w-full">
+              <p className="text-sm text-gray-500">Order Reference</p>
+              <p className="font-mono font-medium">{displayOrderId}</p>
+            </div>
+          )}
+
+          <p className="text-gray-600">
+            You will receive an email confirmation shortly with details about
+            your purchase.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 w-full">
+            <Button asChild className="flex-1">
+              <Link to="/portal/my-courses">Go to My Courses</Link>
+            </Button>
+
+            <Button asChild variant="outline" className="flex-1">
+              <Link to="/courses">Browse More Courses</Link>
+            </Button>
+          </div>
+        </div>
+      </Card>
     </div>
   );
-}
+};
 
 export default OrderConfirmationPage;

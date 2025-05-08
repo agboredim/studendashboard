@@ -66,11 +66,9 @@ function CoursesPage() {
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="text-center mb-12">
-        {/* Using primary color for main heading */}
-        <h1 className="text-4xl font-bold text-primary mb-4">
+        <h1 className="text-4xl font-bold text-foreground mb-4">
           Titans Careers Courses
         </h1>
-        {/* Using foreground color for main text */}
         <p className="text-lg text-foreground/80 max-w-3xl mx-auto">
           Enhance your skills with our industry-leading courses designed by
           experts with decades of experience.
@@ -140,27 +138,23 @@ function CoursesPage() {
                   alt={course.name}
                   className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                 />
-                {/* Using primary color for level badge */}
                 <div className="absolute top-0 right-0 bg-primary text-white px-3 py-1 m-2 rounded-full text-sm font-semibold">
                   {course.level}
                 </div>
               </div>
 
               <div className="p-6">
-                {/* Using primary color for course title */}
-                <h3 className="text-xl font-bold text-primary mb-2">
+                <h3 className="text-xl font-bold text-foreground mb-2">
                   {course.name}
                 </h3>
-                {/* Using foreground color for description */}
                 <p className="text-foreground/80 mb-4 line-clamp-2">
                   {course.description}
                 </p>
 
                 <div className="flex items-center mb-4">
                   <div className="flex items-center mr-4">
-                    {/* Using a foreground-like color for icons */}
                     <Clock className="h-4 w-4 text-foreground/60 mr-1" />
-                    {/* Using a foreground-like color for text */}
+
                     <span className="text-sm text-foreground/70">
                       {course.estimated_time}
                     </span>
@@ -168,7 +162,7 @@ function CoursesPage() {
                   <div className="flex items-center">
                     {/* Using a foreground-like color for icons */}
                     <BarChart className="h-4 w-4 text-foreground/60 mr-1" />
-                    {/* Using a foreground-like color for text */}
+
                     <span className="text-sm text-foreground/70">
                       {course?.curriculum.length} modules
                     </span>
@@ -181,7 +175,6 @@ function CoursesPage() {
                     alt={course?.instructor?.name}
                     className="w-8 h-8 rounded-full mr-2 object-cover"
                   />
-                  {/* Using foreground color for instructor name */}
                   <span className="text-sm text-foreground">
                     {course.instructor.name || "No Instructor Name"}
                   </span>
@@ -202,7 +195,6 @@ function CoursesPage() {
                       />
                     ))}
                   </div>
-                  {/* Using a foreground-like color for review count */}
                   <span className="text-sm text-foreground/70 ml-2">
                     ({course.reviews} reviews)
                   </span>
