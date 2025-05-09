@@ -170,7 +170,7 @@ const CheckoutPage = () => {
                           </p>
                         </div>
                       </div>
-                      <p className="font-semibold">${item.price?.toFixed(2)}</p>
+                      <p className="font-semibold">£{item.price?.toFixed(2)}</p>
                     </div>
                   ))}
                 </div>
@@ -188,11 +188,11 @@ const CheckoutPage = () => {
               <div className="space-y-4">
                 <div className="flex justify-between border-b pb-2">
                   <span>Subtotal:</span>
-                  <span>${cartTotal}</span>
+                  <span>£{cartTotal}</span>
                 </div>
                 <div className="flex justify-between font-bold text-lg">
                   <span>Total:</span>
-                  <span>${cartTotal}</span>
+                  <span>£{cartTotal}</span>
                 </div>
 
                 {/* PayPal Button */}
