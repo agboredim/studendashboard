@@ -26,10 +26,10 @@ export function Footer() {
               <li className="flex items-start">
                 <Mail className="h-5 w-5 text-primary mr-3 mt-1 flex-shrink-0" />
                 <a
-                  href="mailto:info@titanscareers.com"
+                  href="mailto:support@titanscareers.com"
                   className="text-blue-100 hover:underline"
                 >
-                  info@titanscareers.com
+                  support@titanscareers.com
                 </a>
               </li>
               <li className="flex items-start">
@@ -97,18 +97,18 @@ export function Footer() {
                   Contact
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link to="/faq" className="text-blue-100 hover:underline">
                   FAQs
                 </Link>
-              </li>
+              </li> */}
               <li>
-                <Link
+                {/* <Link
                   to="/career-support"
                   className="text-blue-100 hover:underline"
                 >
                   Career Support
-                </Link>
+                </Link> */}
               </li>
             </ul>
           </div>

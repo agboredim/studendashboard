@@ -1,10 +1,8 @@
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import * as Collapsible from "@radix-ui/react-collapsible";
 import { useState } from "react";
 
 export function PlatformFeatures() {
-  const [openIndex, setOpenIndex] = useState(null);
   const features = [
     {
       title: "Expert-Led Training",
@@ -57,50 +55,41 @@ export function PlatformFeatures() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
-            <div
-              key={index}
-              className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-2"
-            >
-              <h3 className="text-xl font-semibold mb-3 text-navy-800">
-                {feature.title}
-              </h3>
-
-              <Collapsible.Root
-                open={openIndex === index}
-                onOpenChange={(open) => setOpenIndex(open ? index : null)}
-              >
-                <Collapsible.Content
-                  className="overflow-hidden data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp"
-                  style={{ "--base-height": "6rem" }} // Adjust based on your line height
-                >
-                  <p className="text-gray-600 mb-4">{feature.description}</p>
-                </Collapsible.Content>
-
-                <Collapsible.Trigger asChild>
-                  <button className="text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 w-full justify-end mt-2">
-                    {openIndex === index ? "See less" : "See more"}
-                    <svg
-                      className={`transform transition-transform ${
-                        openIndex === index ? "rotate-180" : ""
-                      }`}
-                      width="15"
-                      height="15"
-                      viewBox="0 0 15 15"
-                      fill="none"
-                    >
-                      <path
-                        d="M4 6L7.5 9.5L11 6"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                      />
-                    </svg>
-                  </button>
-                </Collapsible.Trigger>
-              </Collapsible.Root>
-            </div>
+            <FeatureCard key={index} feature={feature} />
           ))}
         </div>
       </div>
     </section>
+  );
+}
+
+function FeatureCard({ feature }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const descriptionLength = 100; // Adjust this value to control when to truncate
+
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  const displayedDescription = isExpanded
+    ? feature.description
+    : feature.description.slice(0, descriptionLength) +
+      (feature.description.length > descriptionLength ? "..." : "");
+
+  return (
+    <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+      <h3 className="text-xl font-semibold mb-3 text-navy-800">
+        {feature.title}
+      </h3>
+      <p className="text-gray-600 mb-4">{displayedDescription}</p>
+      {feature.description.length > descriptionLength && (
+        <button
+          className="text-primary font-semibold text-sm focus:outline-none"
+          onClick={toggleExpand}
+        >
+          {isExpanded ? "See Less" : "See More"}
+        </button>
+      )}
+    </div>
   );
 }
