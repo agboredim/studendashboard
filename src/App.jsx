@@ -31,6 +31,7 @@ import { ContactPage } from "./pages/ContactPage";
 import { OurStoryPage } from "./pages/OurStoryPage";
 import { PartnerWithUs } from "./pages/PartnerWithUs";
 import { ServicesPage } from "./pages/ServicesPage";
+import { CommunityPage } from "./pages/CommunityPage";
 
 function App() {
   // Get Google Client ID from environment variables using Vite's import.meta.env
@@ -49,11 +50,12 @@ function App() {
             <Route path="/" element={<Layout />}>
               {/* Public Routes */}
               <Route index element={<HomePage />} />
-              <Route path="about" element={<AboutPage />} />
-              <Route path="contact" element={<ContactPage />} />
-              <Route path="story" element={<OurStoryPage />} />
-              <Route path="partner" element={<PartnerWithUs />} />
-              <Route path="services" element={<ServicesPage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/story" element={<OurStoryPage />} />
+              <Route path="/partner" element={<PartnerWithUs />} />
+              <Route path="/services" element={<ServicesPage />} />
+              <Route path="/community" element={<CommunityPage />} />
               <Route path="courses" element={<CoursesPage />} />
               <Route path="courses/:courseId" element={<CourseDetailPage />} />
               <Route path="blog" element={<BlogPage />} />
