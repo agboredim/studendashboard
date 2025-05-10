@@ -242,23 +242,23 @@ export default function Dashboard() {
                         </Card>
                       ))
                   : enrollments
-                      ?.filter((e) => e.progress > 0 && e.progress < 100)
+                      ?.filter((e) => !e.progress > 0 && !e.progress < 100)
                       .slice(0, 4)
                       .map((enrollment) => (
                         <CourseProgressCard
                           key={enrollment.id}
                           id={enrollment.id}
-                          title={enrollment.course?.title}
-                          instructor={enrollment.course?.instructor}
-                          progress={enrollment.progress}
+                          title={enrollment.name}
+                          instructor={enrollment.instructor?.first_name}
+                          progress={enrollment.progress ?? 0}
                           lastActivity={enrollment.lastActivity}
-                          thumbnail={enrollment.course?.thumbnail}
+                          thumbnail={enrollment.course_image}
                           nextLesson={enrollment.nextLesson}
                         />
                       ))}
               </CardContent>
 
-              {enrollments?.filter((e) => e.progress > 0 && e.progress < 100)
+              {enrollments?.filter((e) => !e.progress > 0 && !e.progress < 100)
                 .length === 0 && (
                 <CardContent className="text-center py-6">
                   <p className="text-muted-foreground">

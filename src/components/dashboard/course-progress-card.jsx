@@ -1,32 +1,31 @@
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { PlayIcon, Clock } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { formatDistanceToNow } from "date-fns";
+import { baseUrl } from "@/services/api";
 
-
-import { Card, CardContent } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { Button } from "@/components/ui/button"
-import { PlayIcon, Clock } from 'lucide-react'
-import { useNavigate } from "react-router-dom"
-import { formatDistanceToNow } from "date-fns"
-
-export default function CourseProgressCard({ 
-  id, 
-  title, 
-  instructor, 
-  progress, 
-  lastActivity, 
+export default function CourseProgressCard({
+  id,
+  title,
+  instructor,
+  progress,
+  lastActivity,
   thumbnail,
-  nextLesson
+  nextLesson,
 }) {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const formattedLastActivity = lastActivity 
-    ? formatDistanceToNow(new Date(lastActivity), { addSuffix: true }) 
-    : null
+  const formattedLastActivity = lastActivity
+    ? formatDistanceToNow(new Date(lastActivity), { addSuffix: true })
+    : null;
 
   return (
     <Card className="overflow-hidden">
       <div className="relative h-32 w-full">
         <img
-          src={thumbnail || "/placeholder.svg?height=128&width=384"}
+          src={`${baseUrl}${thumbnail}`}
           alt={title}
           className="h-full w-full object-cover"
         />
@@ -51,15 +50,15 @@ export default function CourseProgressCard({
           {nextLesson && (
             <p className="text-xs text-muted-foreground">Next: {nextLesson}</p>
           )}
-          <Button 
-            className="w-full" 
-            size="sm" 
-            onClick={() => navigate(`/portal/courses/${id}`)}
+          <Button
+            className="w-full"
+            size="sm"
+            onClick={() => navigate(`/portal/learn/${id}`)}
           >
             <PlayIcon className="h-4 w-4 mr-2" /> Continue Learning
           </Button>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

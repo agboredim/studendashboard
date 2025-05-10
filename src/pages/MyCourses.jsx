@@ -25,7 +25,7 @@ export default function MyCourses() {
   const [activeTab, setActiveTab] = useState("all");
   const navigate = useNavigate();
   const currentUserId = useSelector((state) => state.auth.user?.id);
-//   console.log(currentUserId);
+  //   console.log(currentUserId);
 
   const {
     data: enrolledData,
