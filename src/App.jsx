@@ -28,6 +28,11 @@ import OrderConfirmationPage from "./pages/OrderConfirmationPage";
 import NotFound from "./pages/not-found";
 import Dashboard from "./pages/Dashboard";
 import Library from "./components/portal/Library";
+import CourseLibrary from "./pages/EnrollCoursesPage";
+import CourseDetail from "./pages/CourseDetailsScreen";
+import MyCourses from "./pages/MyCourses";
+import CourseLearning from "./pages/CourseLearning";
+import ProgressAnalytics from "./pages/ProgressAnalytics";
 
 function App() {
   return (
@@ -76,6 +81,46 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/portal/enroll-courses"
+            element={
+              <ProtectedRoute>
+                <CourseLibrary />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/portal/enroll-courses/:courseId"
+            element={
+              <ProtectedRoute>
+                <CourseDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/portal/courses"
+            element={
+              <ProtectedRoute>
+                <MyCourses />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/portal/learn/:id"
+            element={
+              <ProtectedRoute>
+                <CourseLearning />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/portal/progress"
+            element={
+              <ProtectedRoute>
+                <ProgressAnalytics />
               </ProtectedRoute>
             }
           />

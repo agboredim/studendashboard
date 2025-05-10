@@ -1,58 +1,120 @@
-import { Button } from "@/components/ui/button";
-import { Link, useLocation } from "react-router-dom";
-import { cn } from "@/lib/utils";
-import { Menu } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+"use client";
 
-export default function HeaderNav({ onMenuClick, showMenuButton = false }) {
-  const location = useLocation(); // Correct usage of useLocation
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import { Bell, Menu, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+
+export default function HeaderNav({ onMenuClick, showMenuButton }) {
+  const { user } = useSelector((state) => state.auth);
+  const [showSearch, setShowSearch] = useState(false);
+
+  // Mock notification count
+  const notificationCount = 3;
+
+  const getInitials = (name) => {
+    if (!name) return "ST";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .substring(0, 2);
+  };
 
   return (
-    <header className="bg-white text-white border-b z-10">
-      <div className="flex items-center justify-between px-4 py-3">
-        <div className="flex items-center justify-between w-full">
-          {/* Left Section */}
-          {showMenuButton && (
+    <header className="sticky top-0 z-40 w-full border-b bg-background">
+      <div className="flex h-16 items-center px-4 md:px-6">
+        {showMenuButton && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="mr-2"
+            onClick={onMenuClick}
+          >
+            <Menu className="h-5 w-5" />
+            <span className="sr-only">Toggle menu</span>
+          </Button>
+        )}
+
+        <div className="flex-1">
+          {showSearch ? (
+            <div className="relative max-w-md">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Search..."
+                className="w-full pl-8 md:w-64 lg:w-80"
+                autoFocus
+                onBlur={() => setShowSearch(false)}
+              />
+            </div>
+          ) : (
+            <h1 className="text-lg font-semibold">Student Portal</h1>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2">
+          {!showSearch && (
             <Button
               variant="ghost"
               size="icon"
-              onClick={onMenuClick}
-              className="md:hidden text-white"
+              onClick={() => setShowSearch(true)}
+              className="mr-1"
             >
-              <Menu className="h-6 w-6 text-primary" />
+              <Search className="h-5 w-5" />
+              <span className="sr-only">Search</span>
             </Button>
           )}
 
-          {/* Right Section */}
-          <div className="flex items-center gap-4 ml-auto">
-            <Button className="bg-blue-700 hover:bg-blue-600 text-white rounded-full font-medium">
-              JOIN LIVE CLASS
-            </Button>
+          <Button variant="ghost" size="icon" className="relative">
+            <Bell className="h-5 w-5" />
+            {notificationCount > 0 && (
+              <Badge
+                variant="destructive"
+                className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-[10px]"
+              >
+                {notificationCount}
+              </Badge>
+            )}
+            <span className="sr-only">Notifications</span>
+          </Button>
 
-            <Avatar className="h-10 w-10 border-2 border-white">
-              <AvatarImage src="" alt="User" />
-              <AvatarFallback className="bg-blue-500 text-white">
-                J
-              </AvatarFallback>
-            </Avatar>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage
+                    src={user?.avatar || "/placeholder.svg"}
+                    alt={user?.username || "User"}
+                  />
+                  <AvatarFallback>{getInitials(user?.username)}</AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Profile</DropdownMenuItem>
+              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem>Help</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Logout</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>
-  );
-}
-
-function NavItem({ href, active, children }) {
-  return (
-    <Link to={href}>
-      <span
-        className={cn(
-          "px-4 py-2 text-sm font-medium transition-colors rounded-full cursor-pointer inline-block",
-          active ? "bg-blue-700 text-white" : "text-white hover:bg-blue-800"
-        )}
-      >
-        {children}
-      </span>
-    </Link>
   );
 }
