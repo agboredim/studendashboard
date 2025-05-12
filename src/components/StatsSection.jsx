@@ -140,7 +140,7 @@ export function StatsSection() {
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto text-center mb-12">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-            Build Skills. Unlock Oppotunities. Become a Titan{" "}
+            Build Skills. Unlock Opportunities. Become a Titan{" "}
           </h2>
         </div>
 

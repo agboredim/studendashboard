@@ -30,7 +30,7 @@ export function ServicesPage() {
             <Link to="/courses">Explore Our Programs</Link>
           </Button>
           <p className="text-sm text-muted-foreground mt-4">
-            94% success rate with professionals advancing their careers within 6
+            75% success rate with professionals advancing their careers within 6
             months
           </p>
         </div>
@@ -147,7 +147,7 @@ export function ServicesPage() {
             {[
               {
                 icon: <TrendingUp className="h-8 w-8 mx-auto" />,
-                value: "94%",
+                value: "75%",
                 label: "Success Rate",
                 description:
                   "Participants advance their careers within 6 months",
