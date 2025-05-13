@@ -1,11 +1,6 @@
 import { Mail, Phone, MessageSquare, MapPin, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
-import {
-  Instagram,
-  Linkedin,
-  X, // For Twitter
-  Youtube,
-} from "lucide-react";
+import { FaXTwitter } from "react-icons/fa6";
 import {
   FaFacebook,
   FaInstagram,
@@ -177,7 +172,7 @@ export function Footer() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <X className="w-5 h-5" />
+              <FaXTwitter className="w-5 h-5" />
             </a>
             <a
               href="https://www.youtube.com/channel/UCNUE2QZemJ4vlsvirzJ71kw"

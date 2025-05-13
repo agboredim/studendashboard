@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useCallback } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,6 +13,7 @@ import {
   UserPlus,
   Rocket,
   LogOut,
+  ShoppingCart,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +23,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { logout } from "../store/slices/authSlice";
+import { selectCartItems } from "../store/slices/cartSlice";
 import { toast } from "react-toastify";
 import logoImage from "@/assets/img/logo.png";
 
@@ -67,6 +71,9 @@ export function Navbar() {
 
   // Get user from Redux store
   const { user } = useSelector((state) => state.auth);
+  // Get cart items from Redux store
+  const cartItems = useSelector(selectCartItems);
+  const cartItemCount = cartItems.length;
 
   useEffect(() => {
     setIsMenuOpen(false);
@@ -114,7 +121,7 @@ export function Navbar() {
             <Link to="/" className="flex items-center" aria-label="Home">
               <div className="flex items-center">
                 <img
-                  src={logoImage}
+                  src={logoImage || "/placeholder.svg"}
                   alt="Logo"
                   className="w-48 rounded-md"
                   aria-label="Logo"
@@ -128,13 +135,13 @@ export function Navbar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
-                  className="relative flex items-center justify-center"
+                  className="relative flex items-center justify-center hover:bg-gray-50 transition-colors duration-300 lg:hover:bg-gray-50 p-2 rounded-md"
                   aria-label="User menu"
                   aria-expanded={isMenuOpen}
                 >
                   <SquareMenu
                     size={24}
-                    className="text-primary hover:text-secondary transition-colors duration-300"
+                    className="text-primary transition-colors duration-300"
                   />
                 </button>
               </DropdownMenuTrigger>
@@ -208,11 +215,32 @@ export function Navbar() {
           </div>
           <div className="flex items-center gap-4">
             {isMobile && (
-              <Button variant="ghost" size="icon" aria-label="Call us">
-                <Phone className="h-5 w-5 text-primary hover:text-secondary transition-colors duration-300" />
-              </Button>
+              <Link
+                to="/contact"
+                variant="ghost"
+                size="icon"
+                aria-label="Call us"
+                className="hover:bg-gray-50 transition-colors duration-300 lg:hover:bg-gray-50 lg:hover:text-secondary p-3 rounded-md"
+              >
+                <Phone className="h-4 w-4 text-primary " />
+              </Link>
             )}
 
+            {/* Cart Icon */}
+            <Link
+              to="/checkout"
+              className="relative flex items-center justify-center hover:bg-gray-50 transition-colors duration-300 p-2 rounded-md"
+              aria-label="Shopping Cart"
+            >
+              <ShoppingCart className="h-5 w-5 text-primary hover:text-secondary transition-colors duration-300" />
+              {cartItemCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-secondary text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {cartItemCount}
+                </span>
+              )}
+            </Link>
+
+            {/* User Profile Dropdown */}
             <DropdownMenu open={isProfileOpen} onOpenChange={setIsProfileOpen}>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -223,7 +251,7 @@ export function Navbar() {
                   aria-expanded={isProfileOpen}
                 >
                   <User className="h-5 w-5 text-primary hover:text-secondary transition-colors duration-300" />
-                  <span className="flex items-center justify-center text-xs text-primary hover:text-secondary transition-colors duration-300">
+                  <span className="flex items-center justify-center text-xs text-primary transition-colors duration-300">
                     ▼
                   </span>
                 </Button>
@@ -293,3 +321,5 @@ export function Navbar() {
     </header>
   );
 }
+
+export default Navbar;

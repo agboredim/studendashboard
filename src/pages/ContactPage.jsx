@@ -12,31 +12,9 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { FAQSection } from "@/components/FAQSection";
 
 export function ContactPage() {
-  const faqs = [
-    {
-      question: "How quickly can I expect a response?",
-      answer:
-        "We respond to all inquiries within 24 hours during business days.",
-    },
-    {
-      question: "Do you offer virtual consultations?",
-      answer:
-        "Yes! We provide video calls, phone consultations, and email support.",
-    },
-    {
-      question: "Are your services only for London residents?",
-      answer:
-        "No, we work with clients worldwide through our virtual services.",
-    },
-    {
-      question: "What industries do you specialize in?",
-      answer:
-        "We have expertise across finance, technology, healthcare, marketing, and many more sectors.",
-    },
-  ];
-
   return (
     <div className="bg-white">
       {/* Hero Section */}
@@ -63,7 +41,7 @@ export function ContactPage() {
             <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100">
               <div className="flex items-center mb-4">
                 <Mail className="h-6 w-6 text-primary mr-3" />
-                <h3 className="text-xl font-semibold">Email Us</h3>
+                <h3 className="text-xl font-semibold text-primary">Email Us</h3>
               </div>
               <p className="text-gray-600 mb-4">
                 Send your questions to our support team
@@ -79,7 +57,7 @@ export function ContactPage() {
             <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100">
               <div className="flex items-center mb-4">
                 <Phone className="h-6 w-6 text-primary mr-3" />
-                <h3 className="text-xl font-semibold">Call Us</h3>
+                <h3 className="text-xl font-semibold text-primary">Call Us</h3>
               </div>
               <p className="text-gray-600 mb-4">
                 Speak directly with our career advisors
@@ -95,7 +73,7 @@ export function ContactPage() {
             <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100">
               <div className="flex items-center mb-4">
                 <MessageSquare className="h-6 w-6 text-primary mr-3" />
-                <h3 className="text-xl font-semibold">WhatsApp</h3>
+                <h3 className="text-xl font-semibold text-primary">WhatsApp</h3>
               </div>
               <p className="text-gray-600 mb-4">
                 Message us anytime for quick support
@@ -140,7 +118,7 @@ export function ContactPage() {
                     <p className="text-gray-700">
                       Monday - Friday
                       <br />
-                      9:00 AM - 6:00 PM
+                      9:00 AM - 5:00 PM
                       <br />
                       Weekends by appointment
                     </p>
@@ -258,7 +236,7 @@ export function ContactPage() {
           </div>
 
           {/* FAQs */}
-          <div className="mb-16">
+          {/* <div className="mb-16">
             <h2 className="text-3xl font-bold text-center text-foreground mb-8">
               Frequently Asked Questions
             </h2>
@@ -271,7 +249,8 @@ export function ContactPage() {
                 </div>
               ))}
             </div>
-          </div>
+          </div> */}
+          <FAQSection />
 
           {/* Final CTA */}
           <div className="text-center">
