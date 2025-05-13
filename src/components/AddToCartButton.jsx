@@ -23,9 +23,8 @@ function AddToCartButton({ course }) {
     dispatch(
       addToCart({
         id: course.id,
-        // Assuming course object has a 'name' property for the cart
-        // If it's 'title' as in the previous component, use course.title
         name: course.name,
+        image: course.course_image,
         price: course.price,
         quantity: 1,
       })

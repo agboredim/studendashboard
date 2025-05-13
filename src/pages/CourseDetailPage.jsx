@@ -18,7 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import Spinner from "../components/Spinner";
 import AddToCartButton from "../components/AddToCartButton";
-import WistiaVideo from "../components/WistiaVideo"; // Ensure this is the correct path to the WistiaVideo component
+import WistiaVideo from "../components/WistiaVideo";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -181,9 +181,7 @@ function CourseDetailPage() {
                 £{course.price}
               </div>
               {/* Using primary color for the button */}
-              <Button className="w-full py-3 bg-primary hover:bg-primary/90 text-white rounded-md text-lg">
-                Enroll Now
-              </Button>
+              <AddToCartButton course={course} />
             </div>
           </div>
 
@@ -200,19 +198,14 @@ function CourseDetailPage() {
               <div className="text-3xl font-bold text-primary mb-4">
                 £{course.price}
               </div>
-              {/* AddToCartButton likely needs internal color updates if it uses Tailwind */}
               <AddToCartButton course={course} />
             </div>
             <div className="border-t border-gray-200 pt-4 mt-4">
-              {" "}
-              {/* Border color might need adjustment */}
-              {/* Using foreground color for heading */}
               <h3 className="font-bold text-foreground/90 mb-3">
                 This course includes:
               </h3>
               <ul className="space-y-2">
                 <li className="flex items-start">
-                  {/* Keeping green for success/inclusion icon */}
                   <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
                   <span>{course.estimated_time} of on-demand video</span>{" "}
                   {/* Using default text color, adjust if needed */}

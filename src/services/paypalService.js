@@ -1,7 +1,7 @@
 // Format the cart items for PayPal
 export const formatItemsForPayPal = (cartItems) => {
   return cartItems.map((item) => ({
-    name: item.title,
+    name: item.name,
     description: item.description?.substring(0, 127) || "Course",
     sku: item.id.toString(),
     unit_amount: {
