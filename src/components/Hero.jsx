@@ -32,8 +32,8 @@ export function Hero() {
         </h1>
 
         <p className="mt-4 max-w-2xl text-lg text-white">
-          Join thousands of learners building the future through our powerful,
-          easy-to-use online platform
+          Get job-ready with Titans Careers. Learn global skills today and stand
+          out wherever you go.
         </p>
 
         <div className="mt-8 flex flex-col gap-4 sm:flex-row">

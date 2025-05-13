@@ -11,6 +11,14 @@ import {
   LifeBuoy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  FaFacebook,
+  FaInstagram,
+  FaLinkedin,
+  FaTiktok,
+  FaYoutube,
+} from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 
 export function WhyChooseUs() {
   const features = [
@@ -55,14 +63,41 @@ export function WhyChooseUs() {
   const audience = [
     "Recent graduates seeking a career in Compliance or IT",
     "Professionals looking to upskill or transition to better opportunities",
-    "International professionals, especially from African and Caribbean backgrounds, aiming to establish strong careers in the UK",
+    "International professionals, especially global professionals such as legal practitioners, bankers, and care workers.",
     "Individuals aspiring to roles that attract sponsorships and career growth",
   ];
 
   const socialLinks = [
-    { icon: <Linkedin className="h-5 w-5" />, name: "LinkedIn" },
-    { icon: <Instagram className="h-5 w-5" />, name: "Instagram" },
-    { icon: <Facebook className="h-5 w-5" />, name: "Facebook" },
+    {
+      icon: <FaLinkedin className="h-5 w-5" />,
+      name: "LinkedIn",
+      link: "https://www.linkedin.com/in/aml-pro-trainer-22ab41347/",
+    },
+    {
+      icon: <FaInstagram className="h-5 w-5" />,
+      name: "Instagram",
+      link: "https://www.instagram.com/titans.careers/",
+    },
+    {
+      icon: <FaFacebook className="h-5 w-5" />,
+      name: "Facebook",
+      link: "https://www.facebook.com/profile.php?id=61573103226117",
+    },
+    {
+      icon: <FaTiktok className="h-5 w-5" />,
+      name: "TikTok",
+      link: "https://www.tiktok.com/@titans.careers",
+    },
+    {
+      icon: <FaYoutube className="h-5 w-5" />,
+      name: "YouTube",
+      link: "https://www.youtube.com/channel/UCNUE2QZemJ4vlsvirzJ71kw",
+    },
+    {
+      icon: <FaXTwitter className="h-5 w-5" />,
+      name: "Twitter",
+      link: "https://x.com/TitansCareers",
+    },
   ];
 
   return (
@@ -132,9 +167,11 @@ export function WhyChooseUs() {
             {socialLinks.map((social, index) => (
               <a
                 key={index}
-                href="#"
+                href={social.link}
                 className="text-foreground hover:text-primary transition-colors"
                 aria-label={`Follow us on ${social.name}`}
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 {social.icon}
               </a>

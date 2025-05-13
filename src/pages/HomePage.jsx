@@ -13,7 +13,7 @@ function HomePage() {
     <>
       <Hero />
       <FeaturesBanner />
-      <CompanyLogosCarousel />
+      {/* <CompanyLogosCarousel /> */}
       <StatsSection />
       <WhyChooseUs />
       <ProjectsCarousel />
