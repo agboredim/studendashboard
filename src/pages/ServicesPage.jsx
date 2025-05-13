@@ -30,7 +30,7 @@ export function ServicesPage() {
             <Link to="/courses">Explore Our Programs</Link>
           </Button>
           <p className="text-sm text-muted-foreground mt-4">
-            94% success rate with professionals advancing their careers within 6
+            75% success rate with professionals advancing their careers within 6
             months
           </p>
         </div>
@@ -147,7 +147,7 @@ export function ServicesPage() {
             {[
               {
                 icon: <TrendingUp className="h-8 w-8 mx-auto" />,
-                value: "94%",
+                value: "75%",
                 label: "Success Rate",
                 description:
                   "Participants advance their careers within 6 months",
@@ -183,7 +183,7 @@ export function ServicesPage() {
       </div>
 
       {/* Final CTA */}
-      <div className="py-20 px-6 md:px-12 lg:px-16 bg-gradient-to-r from-primary to-primary/90 text-primary-foreground text-center">
+      <div className="py-20 px-6 md:px-12 lg:px-16 bg-primary/10 text-foreground text-center">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
             Your Trusted Learning Partner
@@ -193,7 +193,7 @@ export function ServicesPage() {
             organization building capabilities across teams, we deliver
             practical, expert-led training that produces measurable results.
           </p>
-          <Button className="bg-secondary text-secondary-foreground hover:bg-secondary/90 px-8 py-6 rounded-full text-lg">
+          <Button className="bg-secondary text-secondary-foreground hover:bg-foreground hover:text-secondary ease-in px-8 py-6 rounded-full text-lg">
             <Link to="/courses">Get Started Today</Link>
           </Button>
         </div>

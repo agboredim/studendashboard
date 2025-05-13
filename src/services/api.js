@@ -46,7 +46,7 @@ export const api = createApi({
     // Google authentication endpoint
     googleAuth: builder.mutation({
       query: (tokenData) => ({
-        url: "/customuser/google-auth/",
+        url: "/customuser/api/google-login/",
         method: "POST",
         body: tokenData,
       }),
@@ -83,7 +83,7 @@ export const api = createApi({
     // Create order
     createOrder: builder.mutation({
       query: (orderData) => ({
-        url: "/orders/",
+        url: "/courses/orders/",
         method: "POST",
         body: orderData,
       }),
@@ -93,7 +93,7 @@ export const api = createApi({
     // Process PayPal payment
     processPayPalPayment: builder.mutation({
       query: (paymentData) => ({
-        url: "/payments/paypal/",
+        url: "/paypal/create/",
         method: "POST",
         body: paymentData,
       }),
