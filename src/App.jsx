@@ -11,7 +11,6 @@ import Layout from "./components/Layout";
 // Components
 import { WhatsAppButton } from "./components/WhatsAppButton";
 import ProtectedRoute from "./components/ProtectedRoute";
-import CheckoutProtection from "./components/CheckoutProtection";
 
 // Pages
 import HomePage from "./pages/HomePage";
@@ -68,9 +67,7 @@ function App() {
                 path="checkout"
                 element={
                   <ProtectedRoute>
-                    {/* <CheckoutProtection> */}
                     <CheckoutPage />
-                    {/* </CheckoutProtection> */}
                   </ProtectedRoute>
                 }
               />
