@@ -27,7 +27,7 @@ export function Hero() {
         </div>
 
         <h1 className="mt-6 text-2xl font-bold text-white md:text-3xl lg:text-5xl">
-          Accelerate your career with expert-led training in Business Analysis
+          Accelerate your career with expert-led training in Business Analysis,
           Cybersecurity, Data Analytics, and Compliance.
         </h1>
 
