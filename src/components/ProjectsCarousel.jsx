@@ -103,7 +103,7 @@ export function ProjectsCarousel() {
                     </div>
 
                     {/* Service Title and Description */}
-                    <div className="absolute inset-x-0 bottom-0 p-6 text-secondary">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-primary text-center">
                       <h3 className="text-2xl font-bold">{service.title}</h3>
 
                       {/* Description that slides up on hover */}
