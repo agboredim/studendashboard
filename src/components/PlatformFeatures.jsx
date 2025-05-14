@@ -34,6 +34,11 @@ export function PlatformFeatures() {
         "An interview is your moment to shine—and we’ll make sure you’re ready. Our interview preparation training helps you master the art of communication, strategy, and confidence. You’ll participate in mock interviews tailored to your desired industry, get feedback on your performance, and learn how to answer even the toughest questions with clarity and purpose. We cover everything from posture and tone to storytelling and situational responses. You’ll also learn how to navigate technical, behavioural, and panel interviews with ease. With Titans Careers, you walk into your next interview not just prepared—but prepared to win. There will be 12 months support for all candidates",
       link: "/regulatory-updates",
     },
+    {
+      title: "CV Drafting",
+      description:
+        "Choose Titans Careers for expert-led CV drafting tailored to today’s competitive jobmarket. Our course blends proven strategies, personalized coaching, and real-world insights to help you craft a CV that highlights your strengths and achievements. You’ll gain the skills to stand out, attract recruiters, and secure interviews—whether you're entering the workforce or advancing your career. With Titans, your CV becomes your strongest career asset.",
+    },
   ];
 
   return (

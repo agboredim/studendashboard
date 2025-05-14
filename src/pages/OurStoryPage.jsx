@@ -100,10 +100,10 @@ export function OurStoryPage() {
                     The Impact
                   </h3>
                   <p className="text-muted-foreground">
-                    Today, we've transformed the professional trajectories of
-                    thousands worldwide, helping them overcome barriers, secure
-                    meaningful opportunities, and build fulfilling careers
-                    aligned with their unique strengths and aspirations.
+                    We’ve helped professionals around the world transform their
+                    career paths—overcoming barriers, securing meaningful roles,
+                    and building careers that reflect their strengths and
+                    aspirations.
                   </p>
                 </div>
                 <div className="hidden md:block md:w-2/12"></div>
@@ -402,7 +402,7 @@ export function OurStoryPage() {
             </div>
           </div>
 
-          <Button className="bg-secondary text-secondary-foreground hover:bg-secondary/90 px-8 py-6 rounded-full text-lg font-semibold">
+          <Button className="bg-secondary text-secondary-foreground hover:bg-foreground hover:text-secondary px-8 py-6 rounded-full text-lg font-semibold ease-in transition-all duration-200">
             <Link to="/courses">Start Your Transformation Today</Link>
           </Button>
         </div>
