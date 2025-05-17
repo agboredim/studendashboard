@@ -36,6 +36,7 @@ import ProgressAnalytics from "./pages/ProgressAnalytics";
 import AssignmentSubmission from "./pages/AssignmentSubmission";
 import Assignments from "./pages/Assignments";
 import StudentProfile from "./pages/StudentProfile";
+import CourseLibraryDetail from "./pages/CourseLibaryDetails";
 
 function App() {
   return (
@@ -132,6 +133,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Library />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/portal/library/:id"
+            element={
+              <ProtectedRoute>
+                <CourseLibraryDetail />
               </ProtectedRoute>
             }
           />

@@ -93,6 +93,26 @@ export const coursesApi = createApi({
         { type: "Progress", id: courseId },
       ],
     }),
+    // }),
+    // / NEW LIBRARY ENDPOINTS
+
+    // Get all library materials
+    getAllLibraryMaterials: builder.query({
+      query: () => "/courses/courselibrary/",
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: "Library", id })),
+              { type: "Library", id: "LIST" },
+            ]
+          : [{ type: "Library", id: "LIST" }],
+    }),
+
+    // Get a single library material by ID
+    getLibraryMaterialById: builder.query({
+      query: (id) => `/courses/courselibrary/${id}/`,
+      providesTags: (result, error, id) => [{ type: "Library", id }],
+    }),
   }),
 });
 
@@ -107,4 +127,7 @@ export const {
   useGetAssignmentByIdQuery,
   useGetEnrolledCoursesQuery,
   useGetCourseProgressDetailsQuery,
+  // New library hooks
+  useGetAllLibraryMaterialsQuery,
+  useGetLibraryMaterialByIdQuery,
 } = coursesApi;
