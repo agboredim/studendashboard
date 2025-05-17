@@ -21,6 +21,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { FolderKanban } from "lucide-react";
 
 // NavSection component for grouping navigation items
 function NavSection({ title, children }) {
@@ -166,6 +167,14 @@ export default function SidebarNav() {
             icon={<BookIcon className="h-5 w-5" />}
           >
             Course Library
+          </NavItem>
+          <NavItem
+            href="/portal/assignments"
+            active={location.pathname === "/portal/assignments"}
+            // active={location.pathname === "/portal/library"}
+            icon={<FolderKanban className="h-5 w-5" />}
+          >
+            Assignments
           </NavItem>
 
           <NavItem

@@ -69,7 +69,7 @@ export default function Dashboard() {
     isLoading,
     error,
   } = useGetEnrolledCoursesQuery(currentUserId);
-  const enrolledCourses = enrolledData?.course || [];
+  const enrolledCourses = enrolledData?.course_id || [];
 
   // These would be API calls in the future
   // const { data: user, isLoading: isUserLoading } = useGetMeQuery()
@@ -247,7 +247,7 @@ export default function Dashboard() {
                       .map((enrollment) => (
                         <CourseProgressCard
                           key={enrollment.id}
-                          id={enrollment.id}
+                          id={enrollment._id}
                           title={enrollment.name}
                           instructor={enrollment.instructor?.first_name}
                           progress={enrollment.progress ?? 0}
@@ -368,7 +368,7 @@ export default function Dashboard() {
                     {enrollments.map((course) => (
                       <CourseProgressDetail
                         key={course.id}
-                        courseId={course.id}
+                        courseId={course._id}
                         courseName={course.name}
                         courseImage={course.course_image}
                       />

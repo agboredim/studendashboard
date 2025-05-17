@@ -61,7 +61,10 @@ export const coursesApi = createApi({
 
     // Get all assignments
     getAllAssignments: builder.query({
-      query: () => "/courses/assignments/",
+      query: () => ({
+        url: "/courses/assignments/",
+        method: "GET",
+      }),
       providesTags: (result) =>
         result
           ? [
@@ -85,7 +88,7 @@ export const coursesApi = createApi({
     //  Get detailed course progress
     getCourseProgressDetails: builder.query({
       query: ({ userId, courseId }) =>
-        `/customuser/users/${userId}/courses/${"681a7baf07f36a7c58e11cd2"}/progress/details/`,
+        `/customuser/users/${userId}/courses/${courseId}/progress/details/`,
       providesTags: (result, error, { courseId }) => [
         { type: "Progress", id: courseId },
       ],

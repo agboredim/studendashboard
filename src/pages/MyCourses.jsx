@@ -35,10 +35,13 @@ export default function MyCourses() {
   console.log(enrolledData);
 
   // Extract courses from the enrolled data
-  const enrolledCourses = enrolledData?.course || [];
+  const enrolledCourses = enrolledData?.course_id || [];
 
   // Calculate progress for demo purposes (in a real app, this would come from the API)
   const getRandomProgress = (courseId) => {
+    // make the course id a string
+    courseId = String(courseId);
+    console.log(courseId);
     // Use the course ID to generate a consistent progress value
     const hash = courseId
       .split("")
@@ -181,7 +184,7 @@ export default function MyCourses() {
                                 {progress}% Complete
                               </span>
                               <Button
-                                onClick={() => handleStartCourse(course.id)}
+                                onClick={() => handleStartCourse(course._id)}
                               >
                                 <PlayIcon className="h-4 w-4 mr-2" />
                                 {progress === 0

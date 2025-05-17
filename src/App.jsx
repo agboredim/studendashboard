@@ -33,6 +33,9 @@ import CourseDetail from "./pages/CourseDetailsScreen";
 import MyCourses from "./pages/MyCourses";
 import CourseLearning from "./pages/CourseLearning";
 import ProgressAnalytics from "./pages/ProgressAnalytics";
+import AssignmentSubmission from "./pages/AssignmentSubmission";
+import Assignments from "./pages/Assignments";
+import StudentProfile from "./pages/StudentProfile";
 
 function App() {
   return (
@@ -129,6 +132,30 @@ function App() {
             element={
               <ProtectedRoute>
                 <Library />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/portal/assignments"
+            element={
+              <ProtectedRoute>
+                <Assignments />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/portal/assignments/:id/submit"
+            element={
+              <ProtectedRoute>
+                <AssignmentSubmission />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/portal/profile"
+            element={
+              <ProtectedRoute>
+                <StudentProfile />
               </ProtectedRoute>
             }
           />
