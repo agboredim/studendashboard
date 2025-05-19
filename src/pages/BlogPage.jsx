@@ -38,12 +38,15 @@ function BlogPage() {
       <div className="text-center mb-12">
         {/* Heading using primary color */}
         <h1 className="text-4xl font-bold text-primary mb-4">
-          AML Pro Training Blog
+          TITANS CAREERS Blog
         </h1>
         {/* Paragraph using foreground/80 color */}
         <p className="text-lg text-foreground/80 max-w-3xl mx-auto">
-          Expert insights, industry trends, and best practices in KYC & AML
-          compliance, data analysis, cybersecurity, and regulatory technology.
+          Stay ahead of the curve with expert insights, emerging trends, and
+          practical tips across KYC & AML compliance, data analysis,
+          cybersecurity, business analysis/project management, and regulatory
+          technology. Whether you're building your career or leading change,
+          Titans Careers has you covered.
         </p>
       </div>
 
