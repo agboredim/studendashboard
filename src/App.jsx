@@ -26,6 +26,15 @@ import OrderConfirmationPage from "./pages/OrderConfirmationPage";
 import NotFound from "./pages/not-found";
 import Dashboard from "./pages/Dashboard";
 import Library from "./components/portal/Library";
+import CourseLibrary from "./pages/EnrollCoursesPage";
+import CourseDetail from "./pages/CourseDetailsScreen";
+import MyCourses from "./pages/MyCourses";
+import CourseLearning from "./pages/CourseLearning";
+import ProgressAnalytics from "./pages/ProgressAnalytics";
+import AssignmentSubmission from "./pages/AssignmentSubmission";
+import Assignments from "./pages/Assignments";
+import StudentProfile from "./pages/StudentProfile";
+import CourseLibraryDetail from "./pages/CourseLibaryDetails";
 import { ContactPage } from "./pages/ContactPage";
 import { OurStoryPage } from "./pages/OurStoryPage";
 import { PartnerWithUs } from "./pages/PartnerWithUs";
@@ -91,6 +100,46 @@ function App() {
                 </ProtectedRoute>
               }
             />
+          <Route
+            path="/portal/enroll-courses"
+            element={
+              <ProtectedRoute>
+                <CourseLibrary />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/portal/enroll-courses/:courseId"
+            element={
+              <ProtectedRoute>
+                <CourseDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/portal/courses"
+            element={
+              <ProtectedRoute>
+                <MyCourses />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/portal/learn/:id"
+            element={
+              <ProtectedRoute>
+                <CourseLearning />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/portal/progress"
+            element={
+              <ProtectedRoute>
+                <ProgressAnalytics />
+              </ProtectedRoute>
+            }
+          />
             <Route
               path="/portal/library"
               element={
@@ -99,6 +148,38 @@ function App() {
                 </ProtectedRoute>
               }
             />
+          <Route
+            path="/portal/library/:id"
+            element={
+              <ProtectedRoute>
+                <CourseLibraryDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/portal/assignments"
+            element={
+              <ProtectedRoute>
+                <Assignments />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/portal/assignments/:id/submit"
+            element={
+              <ProtectedRoute>
+                <AssignmentSubmission />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/portal/profile"
+            element={
+              <ProtectedRoute>
+                <StudentProfile />
+              </ProtectedRoute>
+            }
+          />
 
             {/* Catch-all route for undefined paths */}
             <Route path="*" element={<NotFound />} />
