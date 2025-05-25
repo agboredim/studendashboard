@@ -12,6 +12,7 @@ import Layout from "./components/Layout";
 // Components
 import { WhatsAppButton } from "./components/WhatsAppButton";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { WorkshopEvents } from "./pages/WorkshopEvents";
 
 // Pages
 import HomePage from "./pages/HomePage";
@@ -71,6 +72,7 @@ function App() {
               <Route path="courses/:courseId" element={<CourseDetailPage />} />
               <Route path="blog" element={<BlogPage />} />
               <Route path="blog/:slug" element={<BlogPostPage />} />
+              <Route path="events" element={<WorkshopEvents />} />
 
               {/* Checkout Routes (require authentication AND non-empty cart) */}
               <Route
