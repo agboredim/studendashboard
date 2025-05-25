@@ -93,7 +93,7 @@ export const api = createApi({
     // Process PayPal payment
     processPayPalPayment: builder.mutation({
       query: (paymentData) => ({
-        url: "/paypal/create/",
+        url: `/courses/payment/initiate/${paymentData.id}/`,
         method: "POST",
         body: paymentData,
       }),

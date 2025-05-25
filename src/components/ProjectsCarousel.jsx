@@ -74,7 +74,7 @@ export function ProjectsCarousel() {
   return (
     <section className="py-16 bg-gray-50">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-primary text-center mb-12">
+        <h2 className="text-3xl font-bold text-foreground text-center mb-12">
           Our Programs
         </h2>
 
@@ -103,7 +103,7 @@ export function ProjectsCarousel() {
                     </div>
 
                     {/* Service Title and Description */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-primary text-center">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-secondary text-center">
                       <h3 className="text-2xl font-bold">{service.title}</h3>
 
                       {/* Description that slides up on hover */}

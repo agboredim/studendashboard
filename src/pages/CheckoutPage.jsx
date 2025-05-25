@@ -1,10 +1,8 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { Trash2, ShieldCheck, Award, Clock } from "lucide-react";
 
 // Components
@@ -62,16 +60,15 @@ const CheckoutPage = () => {
 
   // PayPal configuration
   const paypalOptions = {
-    "client-id": import.meta.env.VITE_PAYPAL_CLIENT_ID,
+    clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID,
     currency: "GBP",
     intent: "capture",
   };
 
   useEffect(() => {
-    // Redirect if cart is empty
     if (cartItems.length === 0) {
       navigate("/courses");
-      console.info("cart is empty. Please add courses to checkout.");
+      toast.error("Cart is empty. Please add courses to checkout.");
     }
   }, [cartItems, navigate]);
 
@@ -87,84 +84,6 @@ const CheckoutPage = () => {
     dispatch(removeFromCart(itemId));
     // console.info("Item removed from cart");
     navigate("/courses");
-  };
-
-  const handlePayPalCreateOrder = async () => {
-    try {
-      const items = formatItemsForPayPal(cartItems);
-      const orderTotal = calculateOrderTotal(cartItems);
-
-      // This would typically be handled by your backend
-      // For client-side demo purposes only
-      return {
-        purchase_units: [
-          {
-            amount: {
-              currency_code: "GBP",
-              value: orderTotal,
-              breakdown: {
-                item_total: {
-                  currency_code: "GBP",
-                  value: orderTotal,
-                },
-              },
-            },
-            items: items,
-          },
-        ],
-      };
-    } catch (error) {
-      console.error("Error creating PayPal order:", error);
-      toast.error("Failed to create order. Please try again.");
-      return null;
-    }
-  };
-
-  const handlePayPalApprove = async (data, actions) => {
-    setIsProcessing(true);
-    try {
-      // Capture the funds from the transaction
-      const paypalOrderData = data;
-      const paypalPaymentData = await actions.order.capture();
-
-      // Save the PayPal order ID
-      setPaypalOrderId(paypalOrderData.orderID);
-
-      // Format order data for backend
-      const orderData = formatOrderForBackend(
-        cartItems,
-        { id: paypalOrderData.orderID },
-        paypalPaymentData
-      );
-
-      // Add billing information to the order data
-      orderData.billing_info = billingInfo;
-
-      // Process payment on backend
-      const response = await processPayPalPayment(orderData).unwrap();
-
-      // Update Redux state
-      dispatch(setPaymentStatus("success"));
-      dispatch(setOrderId(response.order_id));
-      dispatch(clearCart());
-
-      // Redirect to confirmation page
-      toast.success("Payment successful! Thank you for your purchase.");
-      navigate(`/order-confirmation/${response.order_id}`);
-    } catch (error) {
-      console.error("Error processing PayPal payment:", error);
-      dispatch(setPaymentStatus("failed"));
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  const handlePayPalError = (error) => {
-    console.error("PayPal error:", error);
-    toast.error(
-      "Payment failed. Please try again or use a different payment method."
-    );
-    dispatch(setPaymentStatus("failed"));
   };
 
   return (
@@ -362,35 +281,72 @@ const CheckoutPage = () => {
           <div className="md:col-span-1">
             <Card className="p-6 mb-8">
               <h2 className="text-xl font-semibold mb-4">Payment</h2>
-
               <div className="space-y-4">
                 <div className="flex justify-between border-b pb-2">
-                  <span>Subtotal:</span>
-                  <span>£{cartTotal}</span>
-                </div>
-                <div className="flex justify-between font-bold text-lg">
                   <span>Total:</span>
                   <span>£{cartTotal}</span>
                 </div>
 
-                {/* PayPal Button */}
+                {/* PayPal Button Section */}
                 <div className="mt-6">
                   <PayPalScriptProvider options={paypalOptions}>
                     <PayPalButtons
                       style={{ layout: "vertical" }}
                       createOrder={(data, actions) => {
-                        return actions.order.create(handlePayPalCreateOrder());
+                        // Simplified order creation
+                        return actions.order.create({
+                          purchase_units: [
+                            {
+                              amount: {
+                                value: cartTotal,
+                                currency_code: "GBP",
+                              },
+                            },
+                          ],
+                        });
                       }}
-                      onApprove={handlePayPalApprove}
-                      onError={handlePayPalError}
-                      disabled={
-                        isProcessing || isCreatingOrder || isProcessingPayment
-                      }
+                      onApprove={async (data, actions) => {
+                        try {
+                          setIsProcessing(true);
+                          const order = await actions.order.capture();
+
+                          // Process the payment with your backend
+                          const response = await processPayPalPayment({
+                            id: data.orderID,
+                            payment_details: order,
+                            items: cartItems,
+                            billing_info: billingInfo,
+                          }).unwrap();
+
+                          // Update Redux state
+                          dispatch(setPaymentStatus("success"));
+                          dispatch(setOrderId(response.order_id));
+                          dispatch(clearCart());
+
+                          toast.success("Payment successful!");
+                          navigate(`/order-confirmation/${response.order_id}`);
+                        } catch (error) {
+                          console.error("Payment processing error:", error);
+                          toast.error("Payment failed. Please try again.");
+                          dispatch(setPaymentStatus("failed"));
+                        } finally {
+                          setIsProcessing(false);
+                        }
+                      }}
+                      onError={(err) => {
+                        console.error("PayPal error:", err);
+                        toast.error("Payment failed. Please try again.");
+                        dispatch(setPaymentStatus("failed"));
+                      }}
+                      onCancel={() => {
+                        toast.info("Payment cancelled");
+                      }}
+                      disabled={isProcessing}
                     />
                   </PayPalScriptProvider>
                 </div>
 
-                {(isProcessing || isCreatingOrder || isProcessingPayment) && (
+                {isProcessing && (
                   <div className="text-center mt-4">
                     <p className="text-sm text-gray-500">
                       Processing your payment, please wait...

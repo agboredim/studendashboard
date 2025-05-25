@@ -3,6 +3,7 @@ import { Provider } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import "react-toastify/dist/ReactToastify.css";
+import { Toaster } from "@/components/ui/sonner";
 
 import store from "./store";
 
@@ -11,6 +12,7 @@ import Layout from "./components/Layout";
 // Components
 import { WhatsAppButton } from "./components/WhatsAppButton";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { WorkshopEvents } from "./pages/WorkshopEvents";
 
 // Pages
 import HomePage from "./pages/HomePage";
@@ -70,6 +72,7 @@ function App() {
               <Route path="courses/:courseId" element={<CourseDetailPage />} />
               <Route path="blog" element={<BlogPage />} />
               <Route path="blog/:slug" element={<BlogPostPage />} />
+              <Route path="events" element={<WorkshopEvents />} />
 
               {/* Checkout Routes (require authentication AND non-empty cart) */}
               <Route
@@ -100,46 +103,46 @@ function App() {
                 </ProtectedRoute>
               }
             />
-          <Route
-            path="/portal/enroll-courses"
-            element={
-              <ProtectedRoute>
-                <CourseLibrary />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/portal/enroll-courses/:courseId"
-            element={
-              <ProtectedRoute>
-                <CourseDetail />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/portal/courses"
-            element={
-              <ProtectedRoute>
-                <MyCourses />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/portal/learn/:id"
-            element={
-              <ProtectedRoute>
-                <CourseLearning />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/portal/progress"
-            element={
-              <ProtectedRoute>
-                <ProgressAnalytics />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/portal/enroll-courses"
+              element={
+                <ProtectedRoute>
+                  <CourseLibrary />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portal/enroll-courses/:courseId"
+              element={
+                <ProtectedRoute>
+                  <CourseDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portal/courses"
+              element={
+                <ProtectedRoute>
+                  <MyCourses />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portal/learn/:id"
+              element={
+                <ProtectedRoute>
+                  <CourseLearning />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portal/progress"
+              element={
+                <ProtectedRoute>
+                  <ProgressAnalytics />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/portal/library"
               element={
@@ -148,38 +151,38 @@ function App() {
                 </ProtectedRoute>
               }
             />
-          <Route
-            path="/portal/library/:id"
-            element={
-              <ProtectedRoute>
-                <CourseLibraryDetail />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/portal/assignments"
-            element={
-              <ProtectedRoute>
-                <Assignments />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/portal/assignments/:id/submit"
-            element={
-              <ProtectedRoute>
-                <AssignmentSubmission />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/portal/profile"
-            element={
-              <ProtectedRoute>
-                <StudentProfile />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/portal/library/:id"
+              element={
+                <ProtectedRoute>
+                  <CourseLibraryDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portal/assignments"
+              element={
+                <ProtectedRoute>
+                  <Assignments />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portal/assignments/:id/submit"
+              element={
+                <ProtectedRoute>
+                  <AssignmentSubmission />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portal/profile"
+              element={
+                <ProtectedRoute>
+                  <StudentProfile />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Catch-all route for undefined paths */}
             <Route path="*" element={<NotFound />} />
@@ -188,6 +191,7 @@ function App() {
           {/* Global Components */}
           <WhatsAppButton />
           <ToastContainer position="top-right" autoClose={5000} />
+          <Toaster />
         </Router>
       </GoogleOAuthProvider>
     </Provider>
