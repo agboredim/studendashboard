@@ -186,11 +186,9 @@ function CoursesPage() {
                       <Star
                         key={i}
                         className={`h-4 w-4 ${
-                          // Using secondary color for filled stars
                           i < Math.floor(course.rating)
                             ? "text-secondary fill-current"
-                            : // Using a subtle foreground-like color for empty stars
-                              "text-foreground/30"
+                            : "text-foreground/30"
                         }`}
                       />
                     ))}
@@ -200,19 +198,25 @@ function CoursesPage() {
                   </span>
                 </div>
 
-                <div className="flex justify-between items-center">
-                  {/* Using primary color for price */}
-                  <div className="text-2xl font-bold text-primary">
-                    £{course.price}
+                {/* Price Display */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex flex-col">
+                    <span className="text-sm text-gray-500 line-through">
+                      £1,500
+                    </span>
+                    <span className="text-xl font-bold text-primary">£500</span>
                   </div>
-                  <Link
-                    to={`/courses/${course.id}`}
-                    // Using primary color for the button
-                    className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors duration-300"
-                  >
-                    View Details
-                  </Link>
+                  <span className="text-green-600 font-semibold">
+                    Save £1,000!
+                  </span>
                 </div>
+
+                <Link
+                  to={`/courses/${course.id}`}
+                  className="block w-full text-center bg-primary hover:bg-primary/90 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-300"
+                >
+                  Enroll Now
+                </Link>
               </div>
             </div>
           ))

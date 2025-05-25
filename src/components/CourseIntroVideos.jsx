@@ -183,7 +183,7 @@ export function CourseIntroVideos() {
         {" "}
         {/* Keep neutral background */}
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-primary mb-4">
+          <h2 className="text-4xl font-bold text-foreground mb-4">
             Explore our Courses
           </h2>
           <p className="text-lg text-foreground/80 max-w-3xl mx-auto mb-8">
@@ -217,7 +217,7 @@ export function CourseIntroVideos() {
             Course Previews
           </span>
           {/* Using primary color for the main heading */}
-          <h2 className="text-4xl font-bold text-primary mb-4">
+          <h2 className="text-4xl font-bold text-foreground mb-4">
             Explore our Courses
           </h2>
           {/* Using foreground color with opacity for paragraph text */}
@@ -258,41 +258,37 @@ export function CourseIntroVideos() {
                 {courses.map((course, index) => (
                   <div key={`course-${course.id}`} className="px-3 h-full">
                     <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group min-h-[400px] flex flex-col">
-                      <div className="relative h-52 overflow-hidden">
-                        {activeVideoId === course.id ? (
-                          <iframe
-                            key={`video-${course.id}-active-${index}`}
-                            className="w-full h-full"
-                            src={`https://fast.wistia.net/embed/iframe/${course.preview_id}?time=0&autoplay=1`}
-                            title={`${course.name} Preview`}
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                          ></iframe>
-                        ) : (
-                          <>
-                            <img
-                              src={`${baseUrl}${course.course_image}`}
-                              alt={`${course.name} preview`}
-                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                            />
-                            <div
-                              className="absolute inset-0 flex items-center justify-center cursor-pointer"
-                              onClick={() => toggleVideo(course.id)}
-                            >
-                              <div className="w-14 h-14 rounded-full bg-white bg-opacity-80 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
-                                <Play className="h-6 w-6 text-primary ml-1" />
-                              </div>
+                      <div className="relative h-48">
+                        <img
+                          src={`${baseUrl}${course.course_image}`}
+                          alt={course.name}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2">
+                              <Play
+                                className={`h-8 w-8 ${
+                                  activeVideoId === course.id
+                                    ? "text-primary"
+                                    : "text-white"
+                                }`}
+                              />
+                              <span className="text-white font-medium">
+                                Preview
+                              </span>
                             </div>
-                          </>
-                        )}
-                        {course.estimated_time && (
-                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
-                            <span className="text-white text-sm font-medium">
-                              {course.estimated_time} preview
-                            </span>
+                            <div className="flex flex-col items-end">
+                              <span className="text-gray-400 line-through">
+                                £1,500
+                              </span>
+                              <span className="text-white font-bold">£500</span>
+                              <span className="text-green-400 text-sm">
+                                Save £1,000!
+                              </span>
+                            </div>
                           </div>
-                        )}
+                        </div>
                       </div>
 
                       <div className="p-5 flex flex-col flex-grow">

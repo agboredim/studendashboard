@@ -116,24 +116,6 @@ function CourseDetailPage() {
             </p>
 
             <div className="flex flex-wrap items-center gap-4 mb-6">
-              {/* <div className="flex items-center">
-                  <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-4 w-4 ${
-                          i < Math.floor(course.rating)
-                            ? "text-secondary fill-current" // Secondary for filled stars
-                            : "text-foreground/30" // Subtle foreground for empty
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  <span className="text-sm text-foreground/70 ml-2">
-                    ({course.reviews} reviews)
-                  </span>
-                </div> */}
-
               <div className="flex items-center">
                 {/* Using a foreground-like color for icons and text */}
                 <Clock className="h-4 w-4 text-foreground/60 mr-1" />
@@ -176,11 +158,16 @@ function CourseDetailPage() {
             </div>
 
             <div className="md:hidden mb-6">
-              {/* Using primary color for price */}
-              <div className="text-3xl font-bold text-primary mb-2">
-                £{course.price}
+              {/* Price Display for Mobile */}
+              <div className="mb-4">
+                <span className="text-gray-500 line-through block">£1,500</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl font-bold text-primary">£500</span>
+                  <span className="text-green-600 font-semibold">
+                    Save £1,000!
+                  </span>
+                </div>
               </div>
-              {/* Using primary color for the button */}
               <AddToCartButton course={course} />
             </div>
           </div>
@@ -194,9 +181,15 @@ function CourseDetailPage() {
               </div>
             </div>
             <div className="hidden md:block">
-              {/* Using primary color for price */}
-              <div className="text-3xl font-bold text-primary mb-4">
-                £{course.price}
+              {/* Price Display for Desktop */}
+              <div className="mb-6">
+                <span className="text-gray-500 line-through block">£1,500</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl font-bold text-primary">£500</span>
+                  <span className="text-green-600 font-semibold">
+                    Save £1,000!
+                  </span>
+                </div>
               </div>
               <AddToCartButton course={course} />
             </div>
@@ -219,7 +212,7 @@ function CourseDetailPage() {
                 <li className="flex items-start">
                   {/* Keeping green for success/inclusion icon */}
                   <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                  <span>Full lifetime access</span>{" "}
+                  <span>12 months access</span>{" "}
                   {/* Using default text color, adjust if needed */}
                 </li>
                 {/* <li className="flex items-start">
