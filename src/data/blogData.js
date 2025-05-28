@@ -33,7 +33,7 @@ export const blogPosts = [
                 <p class="text-gray-600">${this.authorRole}</p>
               </div>
             </div>
-            <img src="${this.image}" alt="Anti-Money Laundering Guide" class="w-full rounded-lg mb-6"/>
+            <img src="${this.image}" alt="Anti-Money Laundering Guide" class="w-full h-[400px] object-cover rounded-lg mb-6"/>
           </div>
   
           <div class="article-body prose max-w-none">
@@ -250,7 +250,7 @@ export const blogPosts = [
                 <p class="text-gray-600">${this.authorRole}</p>
               </div>
             </div>
-            <img src="${this.image}" alt="Money Laundering Methods" class="w-full rounded-lg mb-6"/>
+            <img src="${this.image}" alt="Money Laundering Methods" class="w-full h-[400px] object-cover rounded-lg mb-6"/>
           </div>
 
           <div class="article-body prose max-w-none">
@@ -476,7 +476,7 @@ export const blogPosts = [
                 <p class="text-gray-600">${this.authorRole}</p>
               </div>
             </div>
-            <img src="${this.image}" alt="Money Laundering Scandals" class="w-full rounded-lg mb-6"/>
+            <img src="${this.image}" alt="Money Laundering Scandals" class="w-full h-[400px] object-cover rounded-lg mb-6"/>
           </div>
 
           <div class="article-body prose max-w-none">

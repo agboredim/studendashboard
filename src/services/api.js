@@ -44,6 +44,12 @@ export const api = createApi({
         method: "POST",
         body: credentials,
       }),
+      transformErrorResponse: (response) => {
+        return {
+          status: response.status,
+          message: response.data?.message || "Authentication failed",
+        };
+      },
       invalidatesTags: ["User"],
     }),
 

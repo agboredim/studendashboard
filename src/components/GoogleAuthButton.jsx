@@ -25,8 +25,9 @@ const GoogleAuthButton = ({ redirectPath = "/portal", className = "" }) => {
 
       console.log("Backend response:", response);
 
-      if (!response.user) {
-        throw new Error("No user data received from backend");
+      if (!response || !response.user) {
+        console.error("Invalid backend response:", response);
+        throw new Error("Invalid response from server");
       }
 
       // Handle successful authentication
@@ -45,9 +46,19 @@ const GoogleAuthButton = ({ redirectPath = "/portal", className = "" }) => {
       toast.success("Successfully signed in with Google!");
     } catch (error) {
       console.error("Google authentication error:", error);
-      toast.error(
-        error.data?.message || "Authentication failed. Please try again."
-      );
+
+      // More specific error messages based on the error type
+      let errorMessage = "Authentication failed. Please try again.";
+      if (error.status === 403) {
+        errorMessage =
+          "Your Google account is not authorized to access this application.";
+      } else if (error.status === 401) {
+        errorMessage = "Invalid authentication credentials.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      toast.error(errorMessage);
     }
   };
 

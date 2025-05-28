@@ -96,7 +96,7 @@ function BlogPostPage() {
             <img
               src={post.image || "/placeholder.svg"}
               alt={post.title}
-              className="w-full h-48 md:h-64 object-cover"
+              className="w-full h-[400px] object-cover"
             />
 
             {/* Article Content */}
