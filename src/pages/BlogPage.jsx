@@ -88,11 +88,11 @@ function BlogPage() {
         <div className="mb-12">
           <div className="bg-white rounded-lg overflow-hidden shadow-lg">
             <div className="md:flex">
-              <div className="md:w-1/2">
+              <div className="md:w-1/2 h-full">
                 <img
                   src={filteredPosts[0].image || "/placeholder.svg"}
                   alt={filteredPosts[0].title}
-                  className="w-full h-64 md:h-full object-cover"
+                  className="w-full h-64 md:h-96 object-cover"
                 />
               </div>
               <div className="md:w-1/2 p-6 md:p-8">
