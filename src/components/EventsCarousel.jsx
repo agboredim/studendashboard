@@ -17,57 +17,47 @@ export function EventsCarousel() {
   const [sectionRef] = useInView({ threshold: 0.3 });
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  // Temporary events data - this should be fetched from your API
+  // Events data from WorkshopEvents page
   const events = [
     {
       id: 1,
-      title: "AML Compliance Workshop",
-      date: "2024-05-15",
-      time: "10:00 AM - 4:00 PM",
-      location: "London Business Center",
+      title: "AML/KYC Compliance Workshop",
+      date: "2025-06-15",
+      time: "4:00 PM - 6:00 PM EST",
+      location: "Virtual Event",
       description:
-        "Join us for an intensive workshop on AML compliance and regulatory requirements.",
+        "Master complex regulatory frameworks, implement robust risk assessment methodologies, and harness cutting-edge compliance technologies to protect your organization.",
       image: "/assets/illustrations/compliance-workshop.svg",
     },
     {
       id: 2,
-      title: "Data Analysis Masterclass",
-      date: "2024-05-20",
-      time: "2:00 PM - 6:00 PM",
+      title: "Business Analysis/Project Management Workshop",
+      date: "2025-06-15",
+      time: "4:00 PM - 6:00 PM EST",
       location: "Virtual Event",
       description:
-        "Master the fundamentals of data analysis with industry experts.",
+        "Develop critical skills in requirements gathering, process optimization, and stakeholder management to effectively bridge technical and business objectives.",
       image: "/assets/illustrations/data-masterclass.svg",
     },
     {
       id: 3,
-      title: "Career Development Seminar",
-      date: "2024-05-25",
-      time: "11:00 AM - 3:00 PM",
-      location: "Manchester Conference Center",
+      title: "Data Analytics Workshop",
+      date: "2025-06-15",
+      time: "4:00 PM - 6:00 PM EST",
+      location: "Virtual Event",
       description:
-        "Learn how to advance your career in compliance and IT sectors.",
+        "Transform complex datasets into strategic insights using advanced analytical techniques and powerful visualization tools that drive informed business decisions.",
       image: "/assets/illustrations/career-growth.svg",
     },
     {
       id: 4,
-      title: "Cybersecurity Essentials",
-      date: "2024-06-01",
-      time: "1:00 PM - 5:00 PM",
+      title: "Cybersecurity Workshop",
+      date: "2025-06-15",
+      time: "4:00 PM - 6:00 PM EST",
       location: "Virtual Event",
       description:
-        "Learn essential cybersecurity practices to protect your organization.",
+        "Build expertise in proactive threat detection, comprehensive vulnerability assessment, and implementation of enterprise-grade security protocols to safeguard critical assets.",
       image: "/assets/illustrations/cyber-security.svg",
-    },
-    {
-      id: 5,
-      title: "Financial Technology Summit",
-      date: "2024-06-10",
-      time: "9:00 AM - 4:00 PM",
-      location: "Birmingham Tech Hub",
-      description:
-        "Explore the latest trends in FinTech and their impact on compliance.",
-      image: "/assets/illustrations/fintech-summit.svg",
     },
   ];
 
@@ -172,7 +162,7 @@ export function EventsCarousel() {
                       />
                       <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <Link
-                          to={`/events/${event.id}`}
+                          to="/events"
                           className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
                         >
                           Learn More
