@@ -129,7 +129,10 @@ export function WorkshopEvents() {
       </div>
 
       {/* Workshops Grid */}
-      <div id="upcoming-workshops" className="py-16 px-6 md:px-12 lg:px-16">
+      <div
+        id="upcoming-workshops"
+        className="py-16 px-6 md:px-12 lg:px-16 h-fit"
+      >
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-center text-foreground mb-12">
             Upcoming Masterclass Events
@@ -139,57 +142,68 @@ export function WorkshopEvents() {
             {workshops.map((workshop) => (
               <div
                 key={workshop.id}
-                className="bg-card p-8 rounded-xl border border-border hover:shadow-md transition-all"
+                className="bg-card p-6 rounded-xl border border-border hover:shadow-md transition-all"
               >
-                <div className="flex items-center mb-6">
-                  <div className="bg-primary/10 p-3 rounded-full mr-4">
+                <div className="flex items-center mb-4">
+                  <div className="bg-primary/10 p-2 rounded-full mr-3">
                     {workshop.icon}
                   </div>
-                  <h3 className="text-2xl font-bold">{workshop.title}</h3>
+                  <h3 className="text-xl font-bold line-clamp-1">
+                    {workshop.title}
+                  </h3>
                 </div>
 
+                <div className="flex items-center text-muted-foreground mb-3">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  <span className="text-sm">{workshop.date}</span>
+                </div>
                 <div className="flex items-center text-muted-foreground mb-4">
-                  <Calendar className="h-5 w-5 mr-2" />
-                  <span>{workshop.date}</span>
-                </div>
-                <div className="flex items-center text-muted-foreground mb-6">
-                  <Clock className="h-5 w-5 mr-2" />
-                  <span>{workshop.time}</span>
+                  <Clock className="h-4 w-4 mr-2" />
+                  <span className="text-sm">{workshop.time}</span>
                 </div>
 
-                <p className="text-muted-foreground mb-6">
+                <p className="text-muted-foreground text-sm mb-6 line-clamp-3 min-h-[4.5rem]">
                   {workshop.description}
                 </p>
 
                 <div className="mb-6">
-                  <h4 className="font-semibold mb-3">Workshop Highlights:</h4>
+                  <h4 className="font-semibold mb-3 text-sm">
+                    Workshop Highlights:
+                  </h4>
                   <ul className="space-y-2 text-muted-foreground">
                     {workshop.highlights.map((highlight, index) => (
-                      <li key={index} className="flex items-start">
+                      <li key={index} className="flex items-start text-sm">
                         <span className="mr-2">•</span>
-                        <span>{highlight}</span>
+                        <span className="line-clamp-2">{highlight}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
                 <div className="mb-6">
-                  <h4 className="font-semibold mb-3">Who Should Attend:</h4>
-                  <p className="text-muted-foreground">{workshop.audience}</p>
-                </div>
-
-                <div className="bg-muted/50 p-4 rounded-lg">
-                  <h4 className="font-semibold mb-2 flex items-center">
-                    <User className="h-5 w-5 mr-2" />
-                    Meet Your Instructor
+                  <h4 className="font-semibold mb-2 text-sm">
+                    Who Should Attend:
                   </h4>
-                  <p className="font-medium">{workshop.instructor.name}</p>
-                  <p className="text-muted-foreground text-sm">
-                    {workshop.instructor.bio}
+                  <p className="text-muted-foreground text-sm line-clamp-2">
+                    {workshop.audience}
                   </p>
                 </div>
 
-                <Button className="w-full mt-6 py-6 text-lg">
+                <div className="flex ">
+                  <div className="bg-muted/50 p-4 rounded-lg">
+                    <h4 className="font-semibold mb-2 flex items-center text-sm">
+                      <User className="h-4 w-4 mr-2" />
+                      Meet Your Instructor
+                    </h4>
+                    <p className="font-medium text-sm mb-1">
+                      {workshop.instructor.name}
+                    </p>
+                    <p className="text-muted-foreground text-sm line-clamp-3">
+                      {workshop.instructor.bio}
+                    </p>
+                  </div>
+                </div>
+                <Button className="w-full mt-6 py-5 text-base">
                   Register for {workshop.title}
                 </Button>
               </div>

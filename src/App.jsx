@@ -48,6 +48,8 @@ function App() {
   // Get Google Client ID from environment variables using Vite's import.meta.env
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
+  console.log("Using Google Client ID:", googleClientId);
+
   return (
     <Provider store={store}>
       <GoogleOAuthProvider clientId={googleClientId}>

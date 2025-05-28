@@ -7,6 +7,7 @@ import { StatsSection } from "@/components/StatsSection";
 import { PlatformFeatures } from "@/components/PlatformFeatures";
 import { CourseIntroVideos } from "@/components/CourseIntroVideos";
 import { WhyChooseUs } from "@/components/WhyChooseUs";
+import { EventsCarousel } from "@/components/EventsCarousel";
 
 function HomePage() {
   return (
@@ -16,8 +17,9 @@ function HomePage() {
       {/* <CompanyLogosCarousel /> */}
       <StatsSection />
       <WhyChooseUs />
-      <ProjectsCarousel />
+      {/* <ProjectsCarousel /> */}
       <CourseIntroVideos />
+      <EventsCarousel />
       <PlatformFeatures />
     </>
   );

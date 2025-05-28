@@ -144,25 +144,22 @@ function CoursesPage() {
               </div>
 
               <div className="p-6">
-                <h3 className="text-xl font-bold text-foreground mb-2">
+                <h3 className="text-base font-bold text-foreground mb-2 line-clamp-2 min-h-[2.5rem]">
                   {course.name}
                 </h3>
-                <p className="text-foreground/80 mb-4 line-clamp-2">
+                <p className="text-foreground/80 text-sm mb-4 line-clamp-3 min-h-[3.75rem]">
                   {course.description}
                 </p>
 
                 <div className="flex items-center mb-4">
                   <div className="flex items-center mr-4">
                     <Clock className="h-4 w-4 text-foreground/60 mr-1" />
-
                     <span className="text-sm text-foreground/70">
                       {course.estimated_time}
                     </span>
                   </div>
                   <div className="flex items-center">
-                    {/* Using a foreground-like color for icons */}
                     <BarChart className="h-4 w-4 text-foreground/60 mr-1" />
-
                     <span className="text-sm text-foreground/70">
                       {course?.curriculum.length} modules
                     </span>
@@ -198,22 +195,33 @@ function CoursesPage() {
                   </span>
                 </div>
 
-                {/* Price Display */}
-                <div className="flex items-center justify-between mb-4">
+                <div className="mt-auto space-y-3">
                   <div className="flex flex-col">
-                    <span className="text-sm text-gray-500 line-through">
-                      £1,500
-                    </span>
-                    <span className="text-xl font-bold text-primary">£500</span>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-gray-400 line-through text-sm">
+                        £1,500
+                      </span>
+                      <span className="text-green-600 text-xs font-medium">
+                        Save £1,000!
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-lg font-bold text-primary">
+                        £{course.price}
+                      </span>
+                      <Link
+                        to={`/courses/${course.id}`}
+                        className="text-sm text-primary hover:text-primary/80 font-medium"
+                      >
+                        View Course
+                      </Link>
+                    </div>
                   </div>
-                  <span className="text-green-600 font-semibold">
-                    Save £1,000!
-                  </span>
                 </div>
 
                 <Link
                   to={`/courses/${course.id}`}
-                  className="block w-full text-center bg-primary hover:bg-primary/90 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-300"
+                  className="block w-full text-center bg-primary hover:bg-primary/90 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-300 mt-4"
                 >
                   Enroll Now
                 </Link>

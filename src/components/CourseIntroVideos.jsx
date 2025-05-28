@@ -19,10 +19,9 @@ export function CourseIntroVideos() {
   const baseUrl = import.meta.env.VITE_BASE_URL;
 
   // Fetch courses using RTK Query
-  const { data: courses = [], isLoading, error } = useGetAllCoursesQuery();
+  const { data: courses = [], error } = useGetAllCoursesQuery();
 
   // Handle autoplay of first video when section comes into view
-  // Added a check for activeVideoId to prevent restarting if already playing
   useEffect(() => {
     if (
       isInView &&
@@ -38,11 +37,6 @@ export function CourseIntroVideos() {
       return () => clearTimeout(timer);
     }
   }, [isInView, courses, activeVideoId]);
-
-  // Function to toggle video play state
-  const toggleVideo = useCallback((courseId) => {
-    setActiveVideoId((prevId) => (prevId === courseId ? null : courseId));
-  }, []);
 
   // Stop video when slider changes
   const handleBeforeChange = useCallback(() => {
@@ -70,23 +64,6 @@ export function CourseIntroVideos() {
   useEffect(() => {
     if (sliderRef.current && courses.length > 0) {
       setSlideCount(courses.length);
-      // Initial check for disabling arrows
-      const settings = sliderRef.current.props.settings;
-      if (settings && typeof settings.slidesToShow === "number") {
-        const initialSlidesToShow = Array.isArray(settings.slidesToShow)
-          ? settings.slidesToShow[0].settings.slidesToShow // Handle responsive array if needed, simple check assumes object structure
-          : settings.slidesToShow;
-
-        // If total slides are less than or equal to slides shown, disable arrows initially
-        if (courses.length <= initialSlidesToShow) {
-        }
-      } else {
-        // Fallback or handle cases where settings.slidesToShow is not immediately available
-        if (courses.length <= 3) {
-          // Assume default slidesToShow is 3 if settings not ready
-          // Disable arrows initially
-        }
-      }
     }
   }, [courses]);
 
@@ -255,9 +232,9 @@ export function CourseIntroVideos() {
             {/* Render the Slider only if courses exist */}
             {courses.length > 0 && (
               <Slider ref={sliderRef} {...sliderSettings}>
-                {courses.map((course, index) => (
+                {courses.map((course) => (
                   <div key={`course-${course.id}`} className="px-3 h-full">
-                    <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group min-h-[400px] flex flex-col">
+                    <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group flex flex-col">
                       <div className="relative h-48">
                         <img
                           src={`${baseUrl}${course.course_image}`}
@@ -265,50 +242,51 @@ export function CourseIntroVideos() {
                           className="w-full h-full object-cover"
                         />
                         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-2">
-                              <Play
-                                className={`h-8 w-8 ${
-                                  activeVideoId === course.id
-                                    ? "text-primary"
-                                    : "text-white"
-                                }`}
-                              />
-                              <span className="text-white font-medium">
-                                Preview
-                              </span>
-                            </div>
-                            <div className="flex flex-col items-end">
-                              <span className="text-gray-400 line-through">
-                                £1,500
-                              </span>
-                              <span className="text-white font-bold">£500</span>
-                              <span className="text-green-400 text-sm">
-                                Save £1,000!
-                              </span>
-                            </div>
+                          <div className="flex items-center">
+                            <Play
+                              className={`h-6 w-6 ${
+                                activeVideoId === course.id
+                                  ? "text-primary"
+                                  : "text-white"
+                              }`}
+                            />
+                            <span className="text-white font-medium ml-2 text-sm">
+                              Preview
+                            </span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="p-5 flex flex-col flex-grow">
-                        <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2 h-14">
+                      <div className="p-4 flex flex-col flex-gro">
+                        <h3 className="text-base font-bold text-foreground mb-2 line-clamp-2">
                           {course.name}
                         </h3>
-                        <p className="text-foreground/80 text-sm mb-4 line-clamp-2 flex-grow">
+                        <p className="text-foreground/80 text-sm mb-4 line-clamp-3 min-h-[3.75rem]">
                           {course.preview_description}
                         </p>
 
-                        <div className="flex justify-between items-center mt-auto">
-                          <span className="text-foreground font-bold">
-                            £{course.price}
-                          </span>
-                          <Link
-                            to={`/courses/${course.id}`}
-                            className="text-sm text-primary hover:text-primary/80 font-medium"
-                          >
-                            View Course
-                          </Link>
+                        <div className="mt-auto space-y-3">
+                          <div className="flex flex-col">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-gray-400 line-through text-sm">
+                                £1,500
+                              </span>
+                              <span className="text-green-600 text-xs font-medium">
+                                Save £1,000!
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-lg font-bold text-primary">
+                                £{course.price}
+                              </span>
+                              <Link
+                                to={`/courses/${course.id}`}
+                                className="text-sm text-primary hover:text-primary/80 font-medium"
+                              >
+                                View Course
+                              </Link>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
