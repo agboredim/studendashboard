@@ -1,0 +1,249 @@
+import { useState, useRef, useCallback } from "react";
+import {
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+  MapPin,
+  Clock,
+} from "lucide-react";
+import { Link } from "react-router-dom";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import { useInView } from "../hooks/useInView";
+
+export function EventsCarousel() {
+  const sliderRef = useRef(null);
+  const [sectionRef] = useInView({ threshold: 0.3 });
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Temporary events data - this should be fetched from your API
+  const events = [
+    {
+      id: 1,
+      title: "AML Compliance Workshop",
+      date: "2024-05-15",
+      time: "10:00 AM - 4:00 PM",
+      location: "London Business Center",
+      description:
+        "Join us for an intensive workshop on AML compliance and regulatory requirements.",
+      image: "/assets/illustrations/compliance-workshop.svg",
+    },
+    {
+      id: 2,
+      title: "Data Analysis Masterclass",
+      date: "2024-05-20",
+      time: "2:00 PM - 6:00 PM",
+      location: "Virtual Event",
+      description:
+        "Master the fundamentals of data analysis with industry experts.",
+      image: "/assets/illustrations/data-masterclass.svg",
+    },
+    {
+      id: 3,
+      title: "Career Development Seminar",
+      date: "2024-05-25",
+      time: "11:00 AM - 3:00 PM",
+      location: "Manchester Conference Center",
+      description:
+        "Learn how to advance your career in compliance and IT sectors.",
+      image: "/assets/illustrations/career-growth.svg",
+    },
+    {
+      id: 4,
+      title: "Cybersecurity Essentials",
+      date: "2024-06-01",
+      time: "1:00 PM - 5:00 PM",
+      location: "Virtual Event",
+      description:
+        "Learn essential cybersecurity practices to protect your organization.",
+      image: "/assets/illustrations/cyber-security.svg",
+    },
+    {
+      id: 5,
+      title: "Financial Technology Summit",
+      date: "2024-06-10",
+      time: "9:00 AM - 4:00 PM",
+      location: "Birmingham Tech Hub",
+      description:
+        "Explore the latest trends in FinTech and their impact on compliance.",
+      image: "/assets/illustrations/fintech-summit.svg",
+    },
+  ];
+
+  const handleBeforeChange = useCallback(() => {
+    // Additional logic before slide change if needed
+  }, []);
+
+  const handleAfterChange = useCallback((index) => {
+    setCurrentSlide(index);
+  }, []);
+
+  const goToPrev = useCallback(() => {
+    if (sliderRef.current) {
+      sliderRef.current.slickPrev();
+    }
+  }, []);
+
+  const goToNext = useCallback(() => {
+    if (sliderRef.current) {
+      sliderRef.current.slickNext();
+    }
+  }, []);
+
+  const sliderSettings = {
+    dots: true,
+    infinite: false,
+    speed: 500,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    arrows: false,
+    beforeChange: handleBeforeChange,
+    afterChange: handleAfterChange,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 640,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
+  };
+
+  const isPrevArrowDisabled = currentSlide === 0;
+  const isNextArrowDisabled =
+    currentSlide >= events.length - sliderSettings.slidesToShow;
+
+  return (
+    <section ref={sectionRef} className="py-16 bg-gray-50">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-12">
+          <span className="inline-block px-6 py-2 bg-primary/10 text-foreground rounded-full text-sm font-semibold uppercase tracking-wider mb-4">
+            Upcoming Events
+          </span>
+          <h2 className="text-4xl font-bold text-foreground mb-4">
+            Join Our Events
+          </h2>
+          <p className="text-lg text-foreground/80 max-w-3xl mx-auto">
+            Participate in our workshops, seminars, and masterclasses to enhance
+            your skills and network with industry professionals.
+          </p>
+        </div>
+
+        <div className="relative">
+          {/* Left Arrow */}
+          <button
+            onClick={goToPrev}
+            className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full p-2 shadow-md -ml-4 transition-all duration-200 ease-in-out focus:outline-none
+                     ${
+                       isPrevArrowDisabled
+                         ? "cursor-not-allowed opacity-50"
+                         : ""
+                     }`}
+            aria-label="Previous slide"
+            disabled={isPrevArrowDisabled}
+          >
+            <ChevronLeft
+              className={`h-6 w-6 ${
+                isPrevArrowDisabled ? "text-gray-400" : "text-primary"
+              }`}
+            />
+          </button>
+
+          {/* Slider content area */}
+          <div className="mx-6">
+            <Slider ref={sliderRef} {...sliderSettings}>
+              {events.map((event) => (
+                <div key={event.id} className="px-3 h-full">
+                  <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group h-full">
+                    <div className="relative h-48 bg-gray-50">
+                      <img
+                        src={event.image}
+                        alt={event.title}
+                        className="w-full h-full object-contain p-4"
+                      />
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Link
+                          to={`/events/${event.id}`}
+                          className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+                        >
+                          Learn More
+                        </Link>
+                      </div>
+                    </div>
+
+                    <div className="p-6">
+                      <h3 className="text-xl font-bold text-foreground mb-3">
+                        {event.title}
+                      </h3>
+                      <p className="text-foreground/70 mb-4 line-clamp-2">
+                        {event.description}
+                      </p>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center text-sm text-foreground/70">
+                          <Calendar className="h-4 w-4 mr-2" />
+                          <span>
+                            {new Date(event.date).toLocaleDateString("en-GB", {
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                            })}
+                          </span>
+                        </div>
+                        <div className="flex items-center text-sm text-foreground/70">
+                          <Clock className="h-4 w-4 mr-2" />
+                          <span>{event.time}</span>
+                        </div>
+                        <div className="flex items-center text-sm text-foreground/70">
+                          <MapPin className="h-4 w-4 mr-2" />
+                          <span>{event.location}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </Slider>
+          </div>
+
+          {/* Right Arrow */}
+          <button
+            onClick={goToNext}
+            className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full p-2 shadow-md -mr-4 transition-all duration-200 ease-in-out focus:outline-none
+                     ${
+                       isNextArrowDisabled
+                         ? "cursor-not-allowed opacity-50"
+                         : ""
+                     }`}
+            aria-label="Next slide"
+            disabled={isNextArrowDisabled}
+          >
+            <ChevronRight
+              className={`h-6 w-6 ${
+                isNextArrowDisabled ? "text-gray-400" : "text-primary"
+              }`}
+            />
+          </button>
+        </div>
+
+        <div className="text-center mt-10">
+          <Link
+            to="/events"
+            className="inline-block px-8 py-3 bg-primary text-white rounded-md hover:bg-primary/80 transition-colors duration-300 font-medium"
+          >
+            View All Events
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}

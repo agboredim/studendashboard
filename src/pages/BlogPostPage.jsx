@@ -96,7 +96,7 @@ function BlogPostPage() {
             <img
               src={post.image || "/placeholder.svg"}
               alt={post.title}
-              className="w-full h-64 md:h-96 object-cover"
+              className="w-full h-48 md:h-64 object-cover"
             />
 
             {/* Article Content */}
@@ -139,7 +139,7 @@ function BlogPostPage() {
               {/* Article Body - prose class color handled by typography plugin or default */}
               <div
                 className="prose max-w-none"
-                dangerouslySetInnerHTML={{ __html: post.content }}
+                dangerouslySetInnerHTML={{ __html: post.content() }}
               />
 
               {/* Tags */}
