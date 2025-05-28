@@ -44,7 +44,10 @@ import { RefundPolicy } from "./pages/RefundPolicy";
 
 function App() {
   // Get Google Client ID from environment variables using Vite's import.meta.env
-  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  // const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "";
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+    ? import.meta.env.VITE_GOOGLE_CLIENT_ID
+    : "your-google-client-id"; // Replace with your actual client ID
 
   return (
     <Provider store={store}>
@@ -100,46 +103,46 @@ function App() {
                 </ProtectedRoute>
               }
             />
-          <Route
-            path="/portal/enroll-courses"
-            element={
-              <ProtectedRoute>
-                <CourseLibrary />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/portal/enroll-courses/:courseId"
-            element={
-              <ProtectedRoute>
-                <CourseDetail />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/portal/courses"
-            element={
-              <ProtectedRoute>
-                <MyCourses />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/portal/learn/:id"
-            element={
-              <ProtectedRoute>
-                <CourseLearning />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/portal/progress"
-            element={
-              <ProtectedRoute>
-                <ProgressAnalytics />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/portal/enroll-courses"
+              element={
+                <ProtectedRoute>
+                  <CourseLibrary />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portal/enroll-courses/:courseId"
+              element={
+                <ProtectedRoute>
+                  <CourseDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portal/courses"
+              element={
+                <ProtectedRoute>
+                  <MyCourses />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portal/learn/:id"
+              element={
+                <ProtectedRoute>
+                  <CourseLearning />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portal/progress"
+              element={
+                <ProtectedRoute>
+                  <ProgressAnalytics />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/portal/library"
               element={
@@ -148,38 +151,38 @@ function App() {
                 </ProtectedRoute>
               }
             />
-          <Route
-            path="/portal/library/:id"
-            element={
-              <ProtectedRoute>
-                <CourseLibraryDetail />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/portal/assignments"
-            element={
-              <ProtectedRoute>
-                <Assignments />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/portal/assignments/:id/submit"
-            element={
-              <ProtectedRoute>
-                <AssignmentSubmission />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/portal/profile"
-            element={
-              <ProtectedRoute>
-                <StudentProfile />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/portal/library/:id"
+              element={
+                <ProtectedRoute>
+                  <CourseLibraryDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portal/assignments"
+              element={
+                <ProtectedRoute>
+                  <Assignments />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portal/assignments/:id/submit"
+              element={
+                <ProtectedRoute>
+                  <AssignmentSubmission />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portal/profile"
+              element={
+                <ProtectedRoute>
+                  <StudentProfile />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Catch-all route for undefined paths */}
             <Route path="*" element={<NotFound />} />
