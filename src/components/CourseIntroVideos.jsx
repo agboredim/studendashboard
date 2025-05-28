@@ -19,10 +19,9 @@ export function CourseIntroVideos() {
   const baseUrl = import.meta.env.VITE_BASE_URL;
 
   // Fetch courses using RTK Query
-  const { data: courses = [], isLoading, error } = useGetAllCoursesQuery();
+  const { data: courses = [], error } = useGetAllCoursesQuery();
 
   // Handle autoplay of first video when section comes into view
-  // Added a check for activeVideoId to prevent restarting if already playing
   useEffect(() => {
     if (
       isInView &&
@@ -38,11 +37,6 @@ export function CourseIntroVideos() {
       return () => clearTimeout(timer);
     }
   }, [isInView, courses, activeVideoId]);
-
-  // Function to toggle video play state
-  const toggleVideo = useCallback((courseId) => {
-    setActiveVideoId((prevId) => (prevId === courseId ? null : courseId));
-  }, []);
 
   // Stop video when slider changes
   const handleBeforeChange = useCallback(() => {
@@ -70,23 +64,6 @@ export function CourseIntroVideos() {
   useEffect(() => {
     if (sliderRef.current && courses.length > 0) {
       setSlideCount(courses.length);
-      // Initial check for disabling arrows
-      const settings = sliderRef.current.props.settings;
-      if (settings && typeof settings.slidesToShow === "number") {
-        const initialSlidesToShow = Array.isArray(settings.slidesToShow)
-          ? settings.slidesToShow[0].settings.slidesToShow // Handle responsive array if needed, simple check assumes object structure
-          : settings.slidesToShow;
-
-        // If total slides are less than or equal to slides shown, disable arrows initially
-        if (courses.length <= initialSlidesToShow) {
-        }
-      } else {
-        // Fallback or handle cases where settings.slidesToShow is not immediately available
-        if (courses.length <= 3) {
-          // Assume default slidesToShow is 3 if settings not ready
-          // Disable arrows initially
-        }
-      }
     }
   }, [courses]);
 
@@ -183,7 +160,7 @@ export function CourseIntroVideos() {
         {" "}
         {/* Keep neutral background */}
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-primary mb-4">
+          <h2 className="text-4xl font-bold text-foreground mb-4">
             Explore our Courses
           </h2>
           <p className="text-lg text-foreground/80 max-w-3xl mx-auto mb-8">
@@ -217,7 +194,7 @@ export function CourseIntroVideos() {
             Course Previews
           </span>
           {/* Using primary color for the main heading */}
-          <h2 className="text-4xl font-bold text-primary mb-4">
+          <h2 className="text-4xl font-bold text-foreground mb-4">
             Explore our Courses
           </h2>
           {/* Using foreground color with opacity for paragraph text */}
@@ -255,64 +232,61 @@ export function CourseIntroVideos() {
             {/* Render the Slider only if courses exist */}
             {courses.length > 0 && (
               <Slider ref={sliderRef} {...sliderSettings}>
-                {courses.map((course, index) => (
+                {courses.map((course) => (
                   <div key={`course-${course.id}`} className="px-3 h-full">
-                    <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group min-h-[400px] flex flex-col">
-                      <div className="relative h-52 overflow-hidden">
-                        {activeVideoId === course.id ? (
-                          <iframe
-                            key={`video-${course.id}-active-${index}`}
-                            className="w-full h-full"
-                            src={`https://fast.wistia.net/embed/iframe/${course.preview_id}?time=0&autoplay=1`}
-                            title={`${course.name} Preview`}
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                          ></iframe>
-                        ) : (
-                          <>
-                            <img
-                              src={`${baseUrl}${course.course_image}`}
-                              alt={`${course.name} preview`}
-                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group flex flex-col">
+                      <div className="relative h-48">
+                        <img
+                          src={`${baseUrl}${course.course_image}`}
+                          alt={course.name}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                          <div className="flex items-center">
+                            <Play
+                              className={`h-6 w-6 ${
+                                activeVideoId === course.id
+                                  ? "text-primary"
+                                  : "text-white"
+                              }`}
                             />
-                            <div
-                              className="absolute inset-0 flex items-center justify-center cursor-pointer"
-                              onClick={() => toggleVideo(course.id)}
-                            >
-                              <div className="w-14 h-14 rounded-full bg-white bg-opacity-80 flex items-center justify-center transition-transform duration-300 group-hover:scale-110">
-                                <Play className="h-6 w-6 text-primary ml-1" />
-                              </div>
-                            </div>
-                          </>
-                        )}
-                        {course.estimated_time && (
-                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
-                            <span className="text-white text-sm font-medium">
-                              {course.estimated_time} preview
+                            <span className="text-white font-medium ml-2 text-sm">
+                              Preview
                             </span>
                           </div>
-                        )}
+                        </div>
                       </div>
 
-                      <div className="p-5 flex flex-col flex-grow">
-                        <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2 h-14">
+                      <div className="p-4 flex flex-col flex-gro">
+                        <h3 className="text-base font-bold text-foreground mb-2 line-clamp-2">
                           {course.name}
                         </h3>
-                        <p className="text-foreground/80 text-sm mb-4 line-clamp-2 flex-grow">
+                        <p className="text-foreground/80 text-sm mb-4 line-clamp-3 min-h-[3.75rem]">
                           {course.preview_description}
                         </p>
 
-                        <div className="flex justify-between items-center mt-auto">
-                          <span className="text-foreground font-bold">
-                            £{course.price}
-                          </span>
-                          <Link
-                            to={`/courses/${course.id}`}
-                            className="text-sm text-primary hover:text-primary/80 font-medium"
-                          >
-                            View Course
-                          </Link>
+                        <div className="mt-auto space-y-3">
+                          <div className="flex flex-col">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-gray-400 line-through text-sm">
+                                £1,500
+                              </span>
+                              <span className="text-green-600 text-xs font-medium">
+                                Save £1,000!
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-lg font-bold text-primary">
+                                £{course.price}
+                              </span>
+                              <Link
+                                to={`/courses/${course.id}`}
+                                className="text-sm text-primary hover:text-primary/80 font-medium"
+                              >
+                                View Course
+                              </Link>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>

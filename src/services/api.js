@@ -7,15 +7,9 @@ export const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
     baseUrl,
-    prepareHeaders: (headers, { getState }) => {
-      // Get the token from auth state
-      const token = getState().auth.user?.token;
-
-      // If we have a token, add it to the headers
-      if (token) {
-        headers.set("authorization", `Bearer ${token}`);
-      }
-
+    credentials: "include", // Enable sending cookies
+    prepareHeaders: (headers) => {
+      headers.set("Content-Type", "application/json");
       return headers;
     },
   }),
@@ -45,11 +39,17 @@ export const api = createApi({
 
     // Google authentication endpoint
     googleAuth: builder.mutation({
-      query: (tokenData) => ({
+      query: (credentials) => ({
         url: "/customuser/api/google-login/",
         method: "POST",
-        body: tokenData,
+        body: credentials,
       }),
+      transformErrorResponse: (response) => {
+        return {
+          status: response.status,
+          message: response.data?.message || "Authentication failed",
+        };
+      },
       invalidatesTags: ["User"],
     }),
 
@@ -93,7 +93,7 @@ export const api = createApi({
     // Process PayPal payment
     processPayPalPayment: builder.mutation({
       query: (paymentData) => ({
-        url: "/paypal/create/",
+        url: `/courses/payment/initiate/${paymentData.id}/`,
         method: "POST",
         body: paymentData,
       }),

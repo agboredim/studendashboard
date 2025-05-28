@@ -23,7 +23,7 @@ export function Hero() {
           <span className="flex h-8 w-8 items-center justify-center rounded-md bg-white text-primary">
             <Shield className="h-5 w-5" />
           </span>
-          <span className="text-xl font-bold text-primary">Titans Careers</span>
+          <span className="text-xl font-bold text-primary">TITANS CAREERS</span>
         </div>
 
         <h1 className="mt-6 text-2xl font-bold text-white md:text-3xl lg:text-5xl">
@@ -36,22 +36,22 @@ export function Hero() {
           out wherever you go.
         </p>
 
-        <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-          {/* Watch the Video Button */}
-          <button
-            onClick={() => setShowVideoModal(true)}
-            className="flex items-center justify-center gap-2 w-full rounded-full border bg-transparent px-6 py-2 border-primary hover:border-primary hover:bg-primary text-primary hover:text-foreground transition-all duration-300"
-          >
-            <Play className="h-5 w-5" />
-            <span>Watch the Video</span>
-          </button>
-
-          {/* Enrol Now Button */}
-          <Link to="/courses">
-            <Button className="w-full sm:w-48 rounded-full bg-primary px-6 py-6 text-foreground hover:border-primary hover:text-primary hover:bg-primary/1 border border-primary hover:shadow-lg transition-all duration-300">
+        <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
+          <Link to="/courses" className="relative group overflow-hidden">
+            <Button className="w-full sm:w-auto px-8 py-6 bg-secondary text-foreground hover:bg-transparent hover:text-secondary hover:border border-secondary border rounded-full text-lg font-semibold shadow-xl hover:shadow-2xl transform transition-all duration-300">
               Enrol Now
             </Button>
           </Link>
+
+          <button
+            onClick={() => setShowVideoModal(true)}
+            className="group flex items-center gap-3 px-6 py-3 text-white hover:text-secondary transition-colors duration-300"
+          >
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 group-hover:bg-white/20 transition-colors duration-300">
+              <Play className="h-4 w-4" />
+            </span>
+            <span className="text-lg">Watch Our Story</span>
+          </button>
         </div>
       </div>
 

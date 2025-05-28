@@ -32,12 +32,14 @@ const menuLinks = [
   { title: "Home", href: "/" },
   { title: "About Us", href: "/about" },
   { title: "Partner with Us", href: "/partner" },
+  { title: "Events", href: "/events" },
   { title: "Get Started", href: "/courses" },
 ];
 
 const lgScreenLinks = [
   { title: "Services", href: "/services" },
   { title: "Courses", href: "/courses" },
+  { title: "Events", href: "/events" },
   { title: "Student Portal", href: "/portal" },
   { title: "Blog", href: "/blog" },
   { title: "Our Story", href: "/story" },

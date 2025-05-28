@@ -9,6 +9,9 @@ import {
   Instagram,
   Facebook,
   LifeBuoy,
+  BookOpen,
+  ArrowUpRight,
+  Globe2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -64,7 +67,6 @@ export function WhyChooseUs() {
     "Recent graduates seeking a career in Compliance or IT",
     "Professionals looking to upskill or transition to better opportunities",
     "International professionals, especially global professionals such as legal practitioners, bankers, and care workers.",
-    "Individuals aspiring to roles that attract sponsorships and career growth",
   ];
 
   const socialLinks = [
@@ -137,27 +139,41 @@ export function WhyChooseUs() {
         {/* Who We Serve Section */}
         <div className="bg-blue-50 rounded-xl p-8 md:p-12 mb-12">
           <div className="max-w-4xl mx-auto">
-            <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-6 text-center">
+            <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-8 text-center">
               Who We Serve
             </h3>
-            <ul className="space-y-4 mb-8">
-              {audience.map((item, index) => (
-                <li key={index} className="flex items-start">
-                  <Check className="h-5 w-5 text-primary mt-1 mr-3 flex-shrink-0" />
-                  <span className="text-gray-700">{item}</span>
-                </li>
-              ))}
-            </ul>
-            <p className="text-center text-gray-600 mb-8 italic">
-              "At Titans Careers, diversity, ambition, and potential are
-              celebrated and cultivated."
-            </p>
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all">
+                <div className="flex items-center justify-center mb-4">
+                  <GraduationCap className="h-8 w-8 text-primary" />
+                </div>
+                <p className="text-gray-700 text-center">{audience[0]}</p>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all">
+                <div className="flex items-center justify-center mb-4">
+                  <ArrowUpRight className="h-8 w-8 text-primary" />
+                </div>
+                <p className="text-gray-700 text-center">{audience[1]}</p>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all">
+                <div className="flex items-center justify-center mb-4">
+                  <Globe2 className="h-8 w-8 text-primary" />
+                </div>
+                <p className="text-gray-700 text-center">{audience[2]}</p>
+              </div>
+            </div>
+            <div className="mt-8 text-center">
+              <p className="text-gray-600 italic text-lg">
+                "At Titans Careers, diversity, ambition, and potential are
+                celebrated and cultivated."
+              </p>
+            </div>
           </div>
         </div>
 
         {/* Social Media Section */}
         <div className="text-center">
-          <h3 className="text-2xl md:text-3xl font-bold text-primary mb-6 text-center">
+          <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-6 text-center">
             Join Our Community
           </h3>
           <h3 className="text-xl font-semibold text-gray-700 mb-4">
