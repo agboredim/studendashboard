@@ -38,7 +38,7 @@ export default function ProgressAnalytics() {
   } = useGetEnrolledCoursesQuery(currentUserId);
 
   // Extract courses from the enrolled data
-  const enrolledCourses = enrolledData?.course_id || [];
+  const enrolledCourses = enrolledData?.course || [];
 
   return (
     <Layout>
@@ -94,7 +94,7 @@ export default function ProgressAnalytics() {
                     {enrolledCourses.map((course) => (
                       <CourseProgressDetail
                         key={course.id}
-                        courseId={course._id}
+                        courseId={course.id}
                         courseName={course.name}
                         courseImage={course.course_image}
                       />

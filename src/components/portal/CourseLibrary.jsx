@@ -473,7 +473,7 @@ export default function CourseLibrary() {
 
                           <div className="flex items-center justify-between mt-4">
                             <div className="text-sm text-muted-foreground">
-                              {getCourseName(material.course_id)}
+                              {getCourseName(material.id)}
                             </div>
 
                             <div className="flex items-center text-sm font-medium text-primary">
