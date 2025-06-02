@@ -160,7 +160,7 @@ function CourseDetailPage() {
             <div className="md:hidden mb-6">
               {/* Price Display for Mobile */}
               <div className="mb-4">
-                <span className="text-gray-500 line-through block">£1,500</span>
+                <span className="text-red-500 line-through block">£1,500</span>
                 <div className="flex items-center gap-3">
                   <span className="text-3xl font-bold text-primary">£500</span>
                   <span className="text-green-600 font-semibold">
@@ -183,7 +183,7 @@ function CourseDetailPage() {
             <div className="hidden md:block">
               {/* Price Display for Desktop */}
               <div className="mb-6">
-                <span className="text-gray-500 line-through block">£1,500</span>
+                <span className="text-red-500 line-through block">£1,500</span>
                 <div className="flex items-center gap-3">
                   <span className="text-3xl font-bold text-primary">£500</span>
                   <span className="text-green-600 font-semibold">

@@ -198,7 +198,7 @@ function CoursesPage() {
                 <div className="mt-auto space-y-3">
                   <div className="flex flex-col">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-gray-400 line-through text-sm">
+                      <span className="text-red-500 line-through text-sm">
                         £1,500
                       </span>
                       <span className="text-green-600 text-xs font-medium">
