@@ -233,7 +233,7 @@ export function CourseIntroVideos() {
             {courses.length > 0 && (
               <Slider ref={sliderRef} {...sliderSettings}>
                 {courses.map((course) => (
-                  <div key={`course-${course.id}`} className="px-3 h-full">
+                  <div key={`course-${course.id}`} className="px-3 mb-4 h-full">
                     <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group flex flex-col">
                       <div className="relative h-48">
                         <img
@@ -258,7 +258,7 @@ export function CourseIntroVideos() {
                       </div>
 
                       <div className="p-4 flex flex-col flex-gro">
-                        <h3 className="text-base font-bold text-foreground mb-2 line-clamp-2">
+                        <h3 className="text-base h-14 font-bold text-foreground mb-2 line-clamp-2">
                           {course.name}
                         </h3>
                         <p className="text-foreground/80 text-sm mb-4 line-clamp-3 min-h-[3.75rem]">

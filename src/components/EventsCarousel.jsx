@@ -11,6 +11,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useInView } from "../hooks/useInView";
+import AddToCartButton from "./AddToCartButton";
 
 export function EventsCarousel() {
   const sliderRef = useRef(null);
@@ -113,10 +114,10 @@ export function EventsCarousel() {
     currentSlide >= events.length - sliderSettings.slidesToShow;
 
   return (
-    <section ref={sectionRef} className="py-16 bg-gray-50">
+    <section ref={sectionRef} className="py-16 bg-gray-100">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <span className="inline-block px-6 py-2 bg-primary/10 text-foreground rounded-full text-sm font-semibold uppercase tracking-wider mb-4">
+          <span className="inline-block px-6 py-2 bg-primary/10 text-foreground rounded-full text-xs font-semibold uppercase tracking-wider mb-4">
             Upcoming Events
           </span>
           <h2 className="text-4xl font-bold text-foreground mb-4">
@@ -161,25 +162,20 @@ export function EventsCarousel() {
                         className="w-full h-full object-contain p-4"
                       />
                       <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Link
-                          to="/events"
-                          className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
-                        >
-                          Learn More
-                        </Link>
+                        <AddToCartButton />
                       </div>
                     </div>
 
                     <div className="p-6">
-                      <h3 className="text-xl font-bold text-foreground mb-3">
+                      <h3 className="text-lg h-14 font-bold text-foreground mb-3">
                         {event.title}
                       </h3>
-                      <p className="text-foreground/70 mb-4 line-clamp-2">
+                      <p className="text-foreground/70 text-base mb-4 line-clamp-2">
                         {event.description}
                       </p>
 
                       <div className="space-y-2">
-                        <div className="flex items-center text-sm text-foreground/70">
+                        <div className="flex items-center text-xs text-foreground/70">
                           <Calendar className="h-4 w-4 mr-2" />
                           <span>
                             {new Date(event.date).toLocaleDateString("en-GB", {
@@ -189,11 +185,11 @@ export function EventsCarousel() {
                             })}
                           </span>
                         </div>
-                        <div className="flex items-center text-sm text-foreground/70">
+                        <div className="flex items-center text-xs text-foreground/70">
                           <Clock className="h-4 w-4 mr-2" />
                           <span>{event.time}</span>
                         </div>
-                        <div className="flex items-center text-sm text-foreground/70">
+                        <div className="flex items-center text-xs text-foreground/70">
                           <MapPin className="h-4 w-4 mr-2" />
                           <span>{event.location}</span>
                         </div>

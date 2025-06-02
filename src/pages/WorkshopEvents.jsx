@@ -138,7 +138,7 @@ export function WorkshopEvents() {
             Upcoming Masterclass Events
           </h2>
 
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-4">
             {workshops.map((workshop) => (
               <div
                 key={workshop.id}
@@ -162,50 +162,54 @@ export function WorkshopEvents() {
                   <span className="text-sm">{workshop.time}</span>
                 </div>
 
-                <p className="text-muted-foreground text-sm mb-6 line-clamp-3 min-h-[4.5rem]">
+                <p className="text-muted-foreground text-sm">
                   {workshop.description}
                 </p>
-
-                <div className="mb-6">
-                  <h4 className="font-semibold mb-3 text-sm">
-                    Workshop Highlights:
-                  </h4>
-                  <ul className="space-y-2 text-muted-foreground">
-                    {workshop.highlights.map((highlight, index) => (
-                      <li key={index} className="flex items-start text-sm">
-                        <span className="mr-2">•</span>
-                        <span className="line-clamp-2">{highlight}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="mb-6">
-                  <h4 className="font-semibold mb-2 text-sm">
-                    Who Should Attend:
-                  </h4>
-                  <p className="text-muted-foreground text-sm line-clamp-2">
-                    {workshop.audience}
-                  </p>
-                </div>
-
-                <div className="flex ">
-                  <div className="bg-muted/50 p-4 rounded-lg">
-                    <h4 className="font-semibold mb-2 flex items-center text-sm">
-                      <User className="h-4 w-4 mr-2" />
-                      Meet Your Instructor
+                <div className="flex flex-col gap-2 h-fit space-y-6 mt-4">
+                  <div className="h-full">
+                    <h4 className="font-semibold mb-3 text-sm">
+                      Workshop Highlights:
                     </h4>
-                    <p className="font-medium text-sm mb-1">
-                      {workshop.instructor.name}
-                    </p>
-                    <p className="text-muted-foreground text-sm line-clamp-3">
-                      {workshop.instructor.bio}
+                    <ul className="space-y-2 text-muted-foreground">
+                      {workshop.highlights.map((highlight, index) => (
+                        <li key={index} className="flex items-start text-sm">
+                          <span className="mr-2">•</span>
+                          <span className="line-clamp-2">{highlight}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className=" h-full">
+                    <h4 className="font-semibold mb-2 text-sm">
+                      Who Should Attend:
+                    </h4>
+                    <p className="text-muted-foreground text-sm line-clamp-2">
+                      {workshop.audience}
                     </p>
                   </div>
+
+                  <div className=" h-full">
+                    <div className="bg-muted/50 p-4 rounded-lg">
+                      <h4 className="font-semibold mb-2 flex items-center text-sm">
+                        <User className="h-4 w-4 mr-2" />
+                        Meet Your Instructor
+                      </h4>
+                      <p className="font-medium text-sm mb-1">
+                        {workshop.instructor.name}
+                      </p>
+                      <p className="text-muted-foreground text-sm line-clamp-3">
+                        {workshop.instructor.bio}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <Button className="w-full mt-6 py-5 text-base">
-                  Register for {workshop.title}
-                </Button>
+
+                <div className="mt-4">
+                  <Button className="w-full text-base">
+                    Register for {workshop.title}
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
