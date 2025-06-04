@@ -45,6 +45,8 @@ import { PartnerWithUs } from "./pages/PartnerWithUs";
 import { ServicesPage } from "./pages/ServicesPage";
 import { CommunityPage } from "./pages/CommunityPage";
 import { RefundPolicy } from "./pages/RefundPolicy";
+import TermsAndConditions from "./pages/TermsAndConditions";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -174,6 +176,8 @@ function App() {
               <Route path="blog" element={<BlogPage />} />
               <Route path="blog/:slug" element={<BlogPostPage />} />
               <Route path="events" element={<WorkshopEvents />} />
+              <Route path="terms" element={<TermsAndConditions />} />
+              <Route path="privacy" element={<PrivacyPolicy />} />
 
               {/* Protected Routes that should use main layout */}
               <Route

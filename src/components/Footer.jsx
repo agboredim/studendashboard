@@ -128,6 +128,22 @@ export function Footer() {
             reserved.
           </div>
 
+          {/* Policy Links */}
+          <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6 mb-4 md:mb-0">
+            <Link
+              to="/privacy"
+              className="text-blue-100 hover:underline text-xs md:text-sm"
+            >
+              Privacy Policy
+            </Link>
+            <Link
+              to="/refund-policy"
+              className="text-blue-100 hover:underline text-xs md:text-sm"
+            >
+              Refund Policy
+            </Link>
+          </div>
+
           <div className="flex space-x-6">
             <a
               href="https://www.facebook.com/profile.php?id=61573103226117"
