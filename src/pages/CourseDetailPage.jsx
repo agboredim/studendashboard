@@ -141,19 +141,32 @@ function CourseDetailPage() {
             <div className="flex items-center mb-6">
               <img
                 src={`${baseUrl}${course.instructor.profile_picture}`}
-                alt={course?.instructor?.name}
+                alt={course?.instructor?.first_name}
                 className="w-10 h-10 rounded-full mr-3 object-cover"
               />
               <div>
-                {/* Using foreground color for instructor name */}
                 <p className="font-medium text-foreground">
                   Instructor: {course?.instructor?.first_name}{" "}
                   {course?.instructor?.last_name}
                 </p>
-                {/* Using a foreground-like color for instructor title */}
                 <p className="text-sm text-foreground/70">
                   {course?.instructor?.title}
                 </p>
+                <div className="flex items-center mt-2">
+                  <Award className="h-5 w-5 text-primary mr-2" />
+                  <span className="text-foreground">
+                    {course?.instructor?.courses_taken} courses
+                  </span>
+                  <Users className="h-5 w-5 text-primary ml-4 mr-2" />
+                  <span className="text-foreground">
+                    {course?.instructor?.students?.toLocaleString()} students
+                  </span>
+                </div>
+                {course?.instructor?.bio && (
+                  <p className="text-foreground/80 mt-2">
+                    {course?.instructor?.bio}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -249,16 +262,14 @@ function CourseDetailPage() {
                 What You'll Learn
               </h3>
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                {Object.entries(course.learning_outcomes).map(
-                  ([key, value]) => (
+                {Object.entries(course.learning_outcomes)
+                  .filter(([, value]) => value && value !== "")
+                  .map(([key, value]) => (
                     <li key={key} className="flex items-start">
-                      {/* Keeping green for success/inclusion icon */}
                       <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                      <span>{value}</span>{" "}
-                      {/* Using default text color, adjust if needed */}
+                      <span>{value}</span>
                     </li>
-                  )
-                )}
+                  ))}
               </ul>
 
               {course?.required_materials &&
@@ -270,11 +281,11 @@ function CourseDetailPage() {
                     </h3>
                     {/* Using default text color for list items, adjust if needed */}
                     <ul className="list-disc pl-5 space-y-1">
-                      {Object.entries(course.required_materials).map(
-                        ([key, value]) => (
+                      {Object.entries(course.required_materials)
+                        .filter(([, value]) => value && value !== "")
+                        .map(([key, value]) => (
                           <li key={key}>{value}</li>
-                        )
-                      )}
+                        ))}
                     </ul>
                   </>
                 )}
@@ -288,11 +299,11 @@ function CourseDetailPage() {
                     </h3>
                     {/* Using default text color for list items, adjust if needed */}
                     <ul className="list-disc pl-5 space-y-1">
-                      {Object.entries(course.target_audience).map(
-                        ([key, value]) => (
+                      {Object.entries(course.target_audience)
+                        .filter(([, value]) => value && value !== "")
+                        .map(([key, value]) => (
                           <li key={key}>{value}</li>
-                        )
-                      )}
+                        ))}
                     </ul>
                   </>
                 )}
@@ -352,48 +363,6 @@ function CourseDetailPage() {
                     )} */}
                 </div>
               ))}
-            </div>
-          </div>
-
-          {/* Instructor */}
-          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-            {/* Using primary color for heading */}
-            <h2 className="text-2xl font-bold text-primary mb-4">
-              Your Instructor
-            </h2>
-            <div className="flex items-start">
-              <img
-                src={`${baseUrl}${course.instructor.profile_picture}`}
-                alt={course?.instructor?.first_name}
-                className="w-20 h-20 rounded-full mr-4 object-cover"
-              />
-              <div>
-                {/* Using foreground color for instructor name */}
-                <h3 className="text-xl font-bold text-foreground">
-                  {course?.instructor?.first_name}{" "}
-                  {course?.instructor?.last_name}
-                </h3>
-                {/* Using a foreground-like color for instructor title */}
-                <p className="text-foreground/70 mb-3">
-                  {course?.instructor?.title}
-                </p>
-                <div className="flex items-center mb-3">
-                  {/* Using primary color for icons */}
-                  <Award className="h-5 w-5 text-primary mr-2" />
-                  {/* Using foreground color for text */}
-                  <span className="text-foreground">
-                    {course?.instructor?.courses_taken} courses
-                  </span>
-                  {/* Using primary color for icons */}
-                  <Users className="h-5 w-5 text-primary ml-4 mr-2" />
-                  {/* Using foreground color for text */}
-                  <span className="text-foreground">
-                    {course?.instructor?.students?.toLocaleString()} students
-                  </span>
-                </div>
-                {/* Using foreground color for bio */}
-                <p className="text-foreground/80">{course?.instructor?.bio}</p>
-              </div>
             </div>
           </div>
         </div>
