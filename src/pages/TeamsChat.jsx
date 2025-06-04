@@ -15,20 +15,24 @@ import {
   AlertCircleIcon,
   UsersIcon,
   LockIcon,
+  RefreshCwIcon,
+  ShieldCheckIcon,
+  ZapIcon,
+  ArrowRightIcon,
+  ClockIcon,
 } from "lucide-react";
 import { Client, Account, Databases, Query } from "appwrite";
+import { useCallback } from "react";
 
 // Appwrite configuration
 const client = new Client()
   .setEndpoint(
-    import.meta.env.REACT_APP_APPWRITE_ENDPOINT ||
-      "https://cloud.appwrite.io/v1"
+    import.meta.env.VITE_APPWRITE_ENDPOINT || "https://cloud.appwrite.io/v1"
   )
-  .setProject(
-    import.meta.env.REACT_APP_APPWRITE_PROJECT_ID || "your-project-id"
-  );
-const account = new Account(client);
+  .setProject(import.meta.env.VITE_APPWRITE_PROJECT_ID || "your-project-id");
 const databases = new Databases(client);
+const database_id = import.meta.env.VITE_APPWRITE_DATABASE_ID;
+const memberCollectionId = import.meta.env.VITE_MEMBERS_COLLECTION_ID;
 
 export default function TeamsChat() {
   const [accountExists, setAccountExists] = useState(null);
@@ -44,13 +48,8 @@ export default function TeamsChat() {
   const TEAM_INVITE_LINK = "https://your-teams-chat-app.com/invite/team-123";
   const TEAMS_CHAT_APP_URL = "https://titans-career-pm.vercel.app/";
 
-  useEffect(() => {
-    if (userEmail) {
-      checkUserAccount();
-    }
-  }, [userEmail]);
-
-  const checkUserAccount = async () => {
+  const checkUserAccount = useCallback(async () => {
+    console.log("Checking user account for email:", userEmail);
     try {
       setLoading(true);
       setError(null);
@@ -58,46 +57,33 @@ export default function TeamsChat() {
       // Method 1: Try to get user by email from your users collection
       // Replace 'users' with your actual collection ID and 'email' with your email field name
       const response = await databases.listDocuments(
-        import.meta.env.REACT_APP_APPWRITE_DATABASE_ID, // Replace with your database ID
-        "users",
+        database_id,
+        memberCollectionId,
         [Query.equal("email", userEmail)]
       );
+      console.log("User account check response:", response);
 
       setAccountExists(response.documents.length > 0);
     } catch (err) {
       console.error("Error checking user account:", err);
-
-      try {
-        const response = await fetch(`${TEAMS_CHAT_APP_URL}/api/check-user`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email: userEmail }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setAccountExists(data.exists);
-        } else {
-          throw new Error("Failed to check user account");
-        }
-      } catch (apiError) {
-        console.error("API check failed:", apiError);
-        setError("Unable to verify account status. Please try again.");
-        setAccountExists(false);
-      }
+      setError("Unable to check account status. Please try again.");
     } finally {
       setLoading(false);
     }
-  };
+  }, [userEmail]);
+
+  useEffect(() => {
+    if (userEmail) {
+      checkUserAccount();
+    }
+  }, [checkUserAccount, userEmail]);
 
   const handleCreateAccount = async () => {
     try {
       setCreating(true);
       setError(null);
 
-      const registrationUrl = `${TEAMS_CHAT_APP_URL}/signup?email=${encodeURIComponent(
+      const registrationUrl = `${TEAMS_CHAT_APP_URL}/sign-up?email=${encodeURIComponent(
         userEmail
       )}&name=${encodeURIComponent(
         currentUser?.first_name + " " + currentUser?.last_name
@@ -105,27 +91,6 @@ export default function TeamsChat() {
 
       // Open in new tab
       window.open(registrationUrl, "_blank");
-
-      // Option 2: Create account directly via API (if your teams chat app supports it)
-      /*
-      const response = await fetch(`${TEAMS_CHAT_APP_URL}/api/create-account`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: userEmail,
-          name: currentUser?.first_name + ' ' + currentUser?.last_name,
-          // Add any other required fields
-        }),
-      });
-      
-      if (response.ok) {
-        setAccountExists(true);
-      } else {
-        throw new Error('Failed to create account');
-      }
-      */
     } catch (err) {
       console.error("Error creating account:", err);
       setError("Failed to create account. Please try again.");
@@ -160,20 +125,57 @@ export default function TeamsChat() {
   if (loading) {
     return (
       <Layout>
-        <div className="space-y-6">
-          <h1 className="text-2xl font-bold">Teams Chat</h1>
-          <Card>
-            <CardHeader>
-              <Skeleton className="h-6 w-1/3" />
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-4 w-1/2" />
-                <Skeleton className="h-10 w-32" />
+        <div className="max-w-6xl mx-auto">
+          {/* Header Skeleton */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-8 w-8 rounded-lg" />
+                <Skeleton className="h-8 w-48" />
               </div>
-            </CardContent>
-          </Card>
+              <Skeleton className="h-10 w-32" />
+            </div>
+            <Skeleton className="h-4 w-96 mx-auto" />
+          </div>
+
+          {/* Cards Skeleton */}
+          <div className="grid gap-6 md:grid-cols-2 mb-8">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-12 w-12 rounded-lg" />
+                  <div>
+                    <Skeleton className="h-5 w-32 mb-2" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <Skeleton className="h-16 w-full rounded-lg" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-12 w-12 rounded-lg" />
+                  <div>
+                    <Skeleton className="h-5 w-32 mb-2" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <Skeleton className="h-10 w-full" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </Layout>
     );
@@ -181,77 +183,169 @@ export default function TeamsChat() {
 
   return (
     <Layout>
-      <div className="space-y-6">
-        <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <MessageCircleIcon className="h-6 w-6" />
-            Teams Chat
-          </h1>
-          <Button
-            variant="outline"
-            onClick={refreshAccountStatus}
-            disabled={loading}
-          >
-            Refresh Status
-          </Button>
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <MessageCircleIcon className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-foreground">
+                  TITANS CAREER Teams Chat
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  Connect and collaborate with your intructors
+                </p>
+              </div>
+            </div>
+            <Button
+              variant="outline"
+              onClick={refreshAccountStatus}
+              disabled={loading}
+              className="self-start md:self-center"
+            >
+              <RefreshCwIcon
+                className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`}
+              />
+              Refresh Status
+            </Button>
+          </div>
+
+          {/* Progress Indicator */}
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <div
+              className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-medium ${
+                !accountExists
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-green-100 text-green-700"
+              }`}
+            >
+              {accountExists ? <CheckIcon className="h-4 w-4" /> : "1"}
+            </div>
+            <div
+              className={`h-1 w-12 ${
+                accountExists ? "bg-green-200" : "bg-muted"
+              }`}
+            />
+            <div
+              className={`flex items-center justify-center w-8 h-8 rounded-full text-xs font-medium ${
+                accountExists
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground"
+              }`}
+            >
+              {accountExists ? "2" : <ClockIcon className="h-4 w-4" />}
+            </div>
+          </div>
         </div>
 
+        {/* Error Alert */}
         {error && (
-          <Alert variant="destructive">
+          <Alert variant="destructive" className="mb-6">
             <AlertCircleIcon className="h-4 w-4" />
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
 
-        <div className="grid gap-6 md:grid-cols-2">
+        {/* Main Content */}
+        <div className="grid gap-6 lg:grid-cols-2 mb-8">
           {/* Account Status Card */}
-          <Card>
+          <Card className="h-fit">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <UsersIcon className="h-5 w-5" />
-                Account Status
+              <CardTitle className="flex items-center gap-3">
+                <div className="p-2 bg-blue-50 rounded-lg">
+                  <UsersIcon className="h-5 w-5 text-blue-600" />
+                </div>
+                <div>
+                  <div className="text-base">Account Status</div>
+                  <div className="text-sm font-normal text-muted-foreground">
+                    Your Teams Chat profile
+                  </div>
+                </div>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Status:</span>
+            <CardContent className="space-y-6">
+              {/* User Info */}
+              <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-primary-foreground font-medium text-sm">
+                    {currentUser?.first_name?.[0]}
+                    {currentUser?.last_name?.[0]}
+                  </div>
+                  <div>
+                    <p className="font-medium text-sm">
+                      {currentUser?.first_name} {currentUser?.last_name}
+                    </p>
+                    <p className="text-xs text-muted-foreground">{userEmail}</p>
+                  </div>
+                </div>
                 <Badge variant={accountExists ? "default" : "secondary"}>
-                  {accountExists ? "Account Found" : "No Account"}
+                  {accountExists ? "Active" : "Pending"}
                 </Badge>
               </div>
 
-              <div className="text-sm text-muted-foreground">
-                <p>Email: {userEmail}</p>
-                {accountExists ? (
-                  <p className="text-green-600 mt-2">
-                    ✓ You have an account on our Teams Chat platform
+              {/* Status Message */}
+              <div
+                className={`p-4 rounded-lg border ${
+                  accountExists
+                    ? "bg-green-50 border-green-200"
+                    : "bg-amber-50 border-amber-200"
+                }`}
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  {accountExists ? (
+                    <CheckIcon className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <ClockIcon className="h-4 w-4 text-amber-600" />
+                  )}
+                  <p
+                    className={`text-sm font-medium ${
+                      accountExists ? "text-green-900" : "text-amber-900"
+                    }`}
+                  >
+                    {accountExists ? "Account Ready" : "Setup Required"}
                   </p>
-                ) : (
-                  <p className="text-amber-600 mt-2">
-                    ⚠ We noticed you haven't created an account on our Teams
-                    Chat platform yet
-                  </p>
-                )}
+                </div>
+                <p
+                  className={`text-sm ${
+                    accountExists ? "text-green-700" : "text-amber-700"
+                  }`}
+                >
+                  {accountExists
+                    ? "Your Teams Chat account is active and ready to use."
+                    : "Create your Teams Chat account to access team features."}
+                </p>
               </div>
 
-              {!accountExists && (
+              {/* Action Button */}
+              {!accountExists ? (
                 <Button
                   onClick={handleCreateAccount}
                   disabled={creating}
                   className="w-full"
+                  size="lg"
                 >
-                  <ExternalLinkIcon className="h-4 w-4 mr-2" />
-                  {creating
-                    ? "Creating Account..."
-                    : "Create Teams Chat Account"}
+                  {creating ? (
+                    <>
+                      <RefreshCwIcon className="h-4 w-4 mr-2 animate-spin" />
+                      Creating Account...
+                    </>
+                  ) : (
+                    <>
+                      <ZapIcon className="h-4 w-4 mr-2" />
+                      Create Teams Chat Account
+                      <ArrowRightIcon className="h-4 w-4 ml-2" />
+                    </>
+                  )}
                 </Button>
-              )}
-
-              {accountExists && (
+              ) : (
                 <Button
-                  variant="outline"
+                  variant="default"
                   onClick={() => window.open(TEAMS_CHAT_APP_URL, "_blank")}
                   className="w-full"
+                  size="lg"
                 >
                   <ExternalLinkIcon className="h-4 w-4 mr-2" />
                   Open Teams Chat
@@ -261,51 +355,72 @@ export default function TeamsChat() {
           </Card>
 
           {/* Invite Link Card */}
-          <Card>
+          <Card className="h-fit">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <LockIcon className="h-5 w-5" />
-                Team Invite Link
+              <CardTitle className="flex items-center gap-3">
+                <div className="p-2 bg-purple-50 rounded-lg">
+                  <LockIcon className="h-5 w-5 text-purple-600" />
+                </div>
+                <div>
+                  <div className="text-base">Team Invite Link</div>
+                  <div className="text-sm font-normal text-muted-foreground">
+                    Secure access to your team
+                  </div>
+                </div>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="relative">
-                <Input
-                  value={TEAM_INVITE_LINK}
-                  readOnly
-                  className={`pr-10 ${
-                    !accountExists ? "blur-sm select-none" : ""
-                  }`}
-                  disabled={!accountExists}
-                />
-                {!accountExists && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-background/80">
-                    <LockIcon className="h-5 w-5 text-muted-foreground" />
-                  </div>
-                )}
-              </div>
-
               {accountExists ? (
-                <Button
-                  onClick={handleCopyInviteLink}
-                  disabled={copied}
-                  className="w-full"
-                >
-                  {copied ? (
-                    <>
-                      <CheckIcon className="h-4 w-4 mr-2" />
-                      Copied!
-                    </>
-                  ) : (
-                    <>
-                      <CopyIcon className="h-4 w-4 mr-2" />
-                      Copy Invite Link
-                    </>
-                  )}
-                </Button>
+                <>
+                  <div className="relative">
+                    <Input
+                      value={TEAM_INVITE_LINK}
+                      readOnly
+                      className="pr-12 font-mono text-xs"
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleCopyInviteLink}
+                      className="absolute right-1 top-1 h-8 w-8 p-0"
+                    >
+                      {copied ? (
+                        <CheckIcon className="h-4 w-4 text-green-600" />
+                      ) : (
+                        <CopyIcon className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+
+                  <Button
+                    onClick={handleCopyInviteLink}
+                    disabled={copied}
+                    className="w-full"
+                    variant={copied ? "secondary" : "default"}
+                  >
+                    {copied ? (
+                      <>
+                        <CheckIcon className="h-4 w-4 mr-2" />
+                        Copied to Clipboard!
+                      </>
+                    ) : (
+                      <>
+                        <CopyIcon className="h-4 w-4 mr-2" />
+                        Copy Invite Link
+                      </>
+                    )}
+                  </Button>
+
+                  <p className="text-xs text-muted-foreground text-center">
+                    Share this link with team members to invite them to the chat
+                  </p>
+                </>
               ) : (
-                <div className="text-center">
-                  <p className="text-sm text-muted-foreground mb-2">
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <LockIcon className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                  <p className="text-muted-foreground mb-4">
                     Create an account to access the invite link
                   </p>
                   <Button variant="outline" disabled className="w-full">
@@ -314,56 +429,97 @@ export default function TeamsChat() {
                   </Button>
                 </div>
               )}
-
-              <div className="text-xs text-muted-foreground">
-                {accountExists
-                  ? "Share this link with team members to invite them to the chat"
-                  : "The invite link will be available once you create your account"}
-              </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Instructions Card */}
+        {/* Features Section */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Why Teams Chat?</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-6 md:grid-cols-3">
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-green-50 rounded-lg flex-shrink-0">
+                  <ShieldCheckIcon className="h-5 w-5 text-green-600" />
+                </div>
+                <div>
+                  <h4 className="font-medium mb-1">Secure Communication</h4>
+                  <p className="text-sm text-muted-foreground">
+                    End-to-end encryption keeps your conversations private and
+                    secure.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-blue-50 rounded-lg flex-shrink-0">
+                  <ZapIcon className="h-5 w-5 text-blue-600" />
+                </div>
+                <div>
+                  <h4 className="font-medium mb-1">Real-time Messaging</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Instant messaging with typing indicators and read receipts.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-purple-50 rounded-lg flex-shrink-0">
+                  <UsersIcon className="h-5 w-5 text-purple-600" />
+                </div>
+                <div>
+                  <h4 className="font-medium mb-1">Team Collaboration</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Channels, file sharing, and integration with your workflow.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Getting Started Instructions */}
         <Card>
           <CardHeader>
             <CardTitle>Getting Started</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3 text-sm">
-              <div className="flex items-start gap-3">
-                <div className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
+            <div className="space-y-4">
+              <div className="flex items-start gap-4">
+                <div className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
                   1
                 </div>
                 <div>
-                  <p className="font-medium">Create Your Account</p>
-                  <p className="text-muted-foreground">
+                  <p className="font-medium mb-1">Create Your Account</p>
+                  <p className="text-sm text-muted-foreground">
                     Click "Create Teams Chat Account" to set up your profile on
                     our chat platform
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-3">
-                <div className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
+              <div className="flex items-start gap-4">
+                <div className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
                   2
                 </div>
                 <div>
-                  <p className="font-medium">Access Invite Link</p>
-                  <p className="text-muted-foreground">
+                  <p className="font-medium mb-1">Access Invite Link</p>
+                  <p className="text-sm text-muted-foreground">
                     Once your account is created, the team invite link will be
                     unlocked
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-3">
-                <div className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
+              <div className="flex items-start gap-4">
+                <div className="bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
                   3
                 </div>
                 <div>
-                  <p className="font-medium">Join Team Chat</p>
-                  <p className="text-muted-foreground">
+                  <p className="font-medium mb-1">Join Team Chat</p>
+                  <p className="text-sm text-muted-foreground">
                     Use the invite link to join your team's chat room and start
                     collaborating
                   </p>

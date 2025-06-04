@@ -113,6 +113,38 @@ export const coursesApi = createApi({
       query: (id) => `/courses/courselibrary/${id}/`,
       providesTags: (result, error, id) => [{ type: "Library", id }],
     }),
+    // NEW CERTIFICATE ENDPOINT
+    // Generate and download certificate
+    generateCertificate: builder.mutation({
+      query: () => ({
+        url: "/courses/GenerateCertificate/",
+        method: "GET",
+        // params: { course_id: courseId, user_id: userId },
+        responseHandler: async (response) => {
+          // Handle PDF blob response
+          if (response.status === 200) {
+            const blob = await response.blob();
+            return {
+              blob,
+              filename: response.headers.get("content-disposition"),
+            };
+          }
+          throw new Error("Failed to generate certificate");
+        },
+      }),
+      invalidatesTags: [{ type: "Certificate", id: "LIST" }],
+    }),
+
+    // Check if certificate is available for a course
+    checkCertificateAvailability: builder.query({
+      query: ({ courseId, userId }) => ({
+        url: `/courses/certificates/check/${courseId}/${userId}/`,
+        method: "GET",
+      }),
+      providesTags: (result, error, { courseId, userId }) => [
+        { type: "Certificate", id: `${courseId}-${userId}` },
+      ],
+    }),
   }),
 });
 
@@ -130,4 +162,6 @@ export const {
   // New library hooks
   useGetAllLibraryMaterialsQuery,
   useGetLibraryMaterialByIdQuery,
+  useGenerateCertificateMutation,
+  useCheckCertificateAvailabilityQuery,
 } = coursesApi;

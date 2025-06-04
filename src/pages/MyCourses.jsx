@@ -21,7 +21,7 @@ import {
 import { useSelector } from "react-redux";
 
 export default function MyCourses() {
-  const baseUrl = import.meta.env.VITE_BASE_URL;
+  // const baseUrl = import.meta.env.VITE_BASE_URL;
   const [activeTab, setActiveTab] = useState("all");
   const navigate = useNavigate();
   const currentUserId = useSelector((state) => state.auth.user?.id);
@@ -129,7 +129,8 @@ export default function MyCourses() {
                         <div className="flex flex-col md:flex-row">
                           <div className="relative h-40 md:w-64 bg-muted">
                             <img
-                              src={`${baseUrl}${course.course_image}`}
+                              // src={`${baseUrl}${course.course_image}`}
+                              src={course.course_image}
                               alt={course.name}
                               className="h-full w-full object-cover"
                             />
