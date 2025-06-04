@@ -1,45 +1,30 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useSendGuideMutation } from "@/services/api";
+import { toast } from "@/hooks/use-toast";
 
 function DownloadGuideSection() {
   const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [sendGuide, { isLoading, isError, isSuccess, error }] =
+    useSendGuideMutation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-
+    if (!email) return;
     try {
-      // Replace with your actual Brevo API integration
-      const response = await fetch("https://api.brevo.com/v3/contacts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "api-key": "YOUR_BREVO_API_KEY",
-        },
-        body: JSON.stringify({
-          email: email,
-          listIds: [YOUR_LIST_ID], // Your Brevo list ID
-          attributes: {
-            DOWNLOADED_GUIDE: true,
-          },
-        }),
+      await sendGuide({ email }).unwrap();
+      setSubmitted(true);
+    } catch {
+      toast({
+        title: "Error sending guide",
+        description:
+          error?.data?.detail ||
+          error?.message ||
+          "Something went wrong. Please try again.",
+        variant: "destructive",
       });
-
-      if (response.ok) {
-        setSuccess(true);
-        // Trigger PDF download
-        window.open(
-          "/path-to-pdf/Launch-Your-UK-Career-Titans-Careers-Guide.pdf",
-          "_blank"
-        );
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -56,7 +41,7 @@ function DownloadGuideSection() {
             success stories and avoid common pitfalls.
           </p>
 
-          {success ? (
+          {isSuccess && submitted ? (
             <div className="bg-green-50 text-green-700 p-4 rounded-lg">
               <p>Thank you! Your guide has been sent to your email.</p>
             </div>
@@ -72,15 +57,26 @@ function DownloadGuideSection() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="w-full sm:w-80"
+                disabled={isLoading || submitted}
               />
               <Button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || submitted}
                 className="bg-primary hover:bg-primary/90"
               >
-                {isLoading ? "Sending..." : "Get Free Guide"}
+                {isLoading
+                  ? "Sending..."
+                  : submitted && isSuccess
+                  ? "Sent!"
+                  : "Get Free Guide"}
               </Button>
             </form>
+          )}
+
+          {isError && (
+            <p className="mt-4 text-red-600">
+              Something went wrong. Please try again.
+            </p>
           )}
 
           <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
