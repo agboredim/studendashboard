@@ -142,7 +142,7 @@ export function WorkshopEvents() {
             {workshops.map((workshop) => (
               <div
                 key={workshop.id}
-                className="bg-card p-6 rounded-xl border border-border hover:shadow-md transition-all"
+                className="bg-card p-6 rounded-xl border border-border hover:shadow-md transition-all h-full"
               >
                 <div className="flex items-center mb-4">
                   <div className="bg-primary/10 p-2 rounded-full mr-3">
@@ -166,7 +166,7 @@ export function WorkshopEvents() {
                   {workshop.description}
                 </p>
                 <div className="flex flex-col gap-2 h-fit space-y-6 mt-4">
-                  <div className="h-full">
+                  <div className="h-36">
                     <h4 className="font-semibold mb-3 text-sm">
                       Workshop Highlights:
                     </h4>
@@ -180,7 +180,7 @@ export function WorkshopEvents() {
                     </ul>
                   </div>
 
-                  <div className=" h-full">
+                  <div className="h-20">
                     <h4 className="font-semibold mb-2 text-sm">
                       Who Should Attend:
                     </h4>
@@ -264,7 +264,7 @@ export function WorkshopEvents() {
                 approach..."
               </p>
               <p className="font-medium mt-2 text-blue-900">
-                — Jamie Chen, Lead Data Scientist
+                — Wonderful Oladipupo, Lead Data Scientist
               </p>
             </div>
 
