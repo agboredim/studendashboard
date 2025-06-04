@@ -63,13 +63,14 @@ export default function Dashboard() {
   const [timeRange, setTimeRange] = useState("week");
   const { user: authUser } = useSelector((state) => state.auth);
   const currentUserId = useSelector((state) => state.auth.user?.id);
+  console.log(authUser, currentUserId);
 
   const {
     data: enrolledData,
     isLoading,
     error,
   } = useGetEnrolledCoursesQuery(currentUserId);
-  const enrolledCourses = enrolledData?.course_id || [];
+  const enrolledCourses = enrolledData?.course || [];
 
   // These would be API calls in the future
   // const { data: user, isLoading: isUserLoading } = useGetMeQuery()
@@ -126,7 +127,9 @@ export default function Dashboard() {
                       <Skeleton className="h-8 w-48" />
                     ) : (
                       `Welcome back, ${
-                        user?.first_name || user?.name || "Student"
+                        user?.first_name || user.first_name === ""
+                          ? user.username
+                          : user.first_name || user?.last_name || "Student"
                       }`
                     )}
                   </h1>
@@ -247,7 +250,7 @@ export default function Dashboard() {
                       .map((enrollment) => (
                         <CourseProgressCard
                           key={enrollment.id}
-                          id={enrollment._id}
+                          id={enrollment.id}
                           title={enrollment.name}
                           instructor={enrollment.instructor?.first_name}
                           progress={enrollment.progress ?? 0}
@@ -368,7 +371,7 @@ export default function Dashboard() {
                     {enrollments.map((course) => (
                       <CourseProgressDetail
                         key={course.id}
-                        courseId={course._id}
+                        courseId={course.id}
                         courseName={course.name}
                         courseImage={course.course_image}
                       />

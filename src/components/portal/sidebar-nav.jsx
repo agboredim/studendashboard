@@ -206,7 +206,7 @@ export default function SidebarNav() {
 
         <NavSection title="Communication">
           <NavItem
-            href="/portal/teams"
+            href="/portal/chat"
             active={location.pathname.includes("/portal/teams")}
             icon={<UsersIcon className="h-5 w-5" />}
           >

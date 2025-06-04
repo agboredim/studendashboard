@@ -56,7 +56,7 @@ export default function StudentProfile() {
   } = useGetEnrolledCoursesQuery(currentUserId);
 
   // Extract courses from the enrolled data
-  const enrolledCourses = studentData?.course_id || [];
+  const enrolledCourses = studentData?.course || [];
 
   // Calculate overall progress
   const calculateOverallProgress = () => {

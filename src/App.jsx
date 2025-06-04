@@ -43,10 +43,15 @@ import { PartnerWithUs } from "./pages/PartnerWithUs";
 import { ServicesPage } from "./pages/ServicesPage";
 import { CommunityPage } from "./pages/CommunityPage";
 import { RefundPolicy } from "./pages/RefundPolicy";
+import TeamsChat from "./pages/TeamsChat";
+import CertificatesPage from "./pages/MyCertificates";
 
 function App() {
   // Get Google Client ID from environment variables using Vite's import.meta.env
-  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  // const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "";
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+    ? import.meta.env.VITE_GOOGLE_CLIENT_ID
+    : "your-google-client-id"; // Replace with your actual client ID
 
   console.log("Using Google Client ID:", googleClientId);
 
@@ -174,6 +179,22 @@ function App() {
               element={
                 <ProtectedRoute>
                   <AssignmentSubmission />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portal/chat"
+              element={
+                <ProtectedRoute>
+                  <TeamsChat />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portal/certificates"
+              element={
+                <ProtectedRoute>
+                  <CertificatesPage />
                 </ProtectedRoute>
               }
             />
