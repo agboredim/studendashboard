@@ -9,8 +9,12 @@ import {
   Briefcase,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useGetAllCoursesQuery } from "@/services/coursesApi";
+import AddToCartButton from "@/components/AddToCartButton";
 
 export function WorkshopEvents() {
+  const { data: allCourses = [] } = useGetAllCoursesQuery();
+
   const scrollToWorkshops = () => {
     const element = document.getElementById("upcoming-workshops");
     if (element) {
@@ -101,6 +105,23 @@ export function WorkshopEvents() {
     },
   ];
 
+  // Mapping from event title to backend course name
+  const eventToCourseName = {
+    "AML/KYC Compliance": "AML/KYC Compliance",
+    "Cybersecurity": "Cybersecurity",
+    "Business Analysis/Project Management": "Business Analysis & Project Management",
+    "Data Analytics": "Data Analysis",
+  };
+
+  // For each workshop, find the matching course
+  const workshopsWithCourse = workshops.map((workshop) => {
+    const backendName = eventToCourseName[workshop.title];
+    const matchedCourse = allCourses.find(
+      (course) => course.name.trim().toLowerCase() === backendName.trim().toLowerCase()
+    );
+    return { ...workshop, course: matchedCourse };
+  });
+
   return (
     <div className="bg-background">
       {/* Hero Section */}
@@ -139,7 +160,7 @@ export function WorkshopEvents() {
           </h2>
 
           <div className="grid md:grid-cols-2 gap-4">
-            {workshops.map((workshop) => (
+            {workshopsWithCourse.map((workshop) => (
               <div
                 key={workshop.id}
                 className="bg-card p-6 rounded-xl border border-border hover:shadow-md transition-all h-full"
@@ -206,9 +227,13 @@ export function WorkshopEvents() {
                 </div>
 
                 <div className="mt-4">
-                  <Button className="w-full text-base">
-                    Register for {workshop.title}
-                  </Button>
+                  {workshop.course ? (
+                    <AddToCartButton course={workshop.course} />
+                  ) : (
+                    <Button className="w-full text-base" disabled>
+                      Course Not Available
+                    </Button>
+                  )}
                 </div>
               </div>
             ))}

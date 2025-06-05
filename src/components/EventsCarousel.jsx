@@ -11,6 +11,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useInView } from "../hooks/useInView";
+import { useGetAllCoursesQuery } from "@/services/coursesApi";
 import AddToCartButton from "./AddToCartButton";
 
 export function EventsCarousel() {
@@ -61,6 +62,27 @@ export function EventsCarousel() {
       image: "/assets/illustrations/cyber-security.svg",
     },
   ];
+
+  // Mapping from event title to backend course name
+  const eventToCourseName = {
+    "AML/KYC Compliance Workshop": "AML/KYC Compliance",
+    "Cybersecurity Workshop": "Cybersecurity",
+    "Business Analysis/Project Management Workshop":
+      "Business Analysis & Project Management",
+    "Data Analytics Workshop": "Data Analysis",
+  };
+
+  const { data: allCourses = [] } = useGetAllCoursesQuery();
+
+  // For each event, find the matching course
+  const eventsWithCourse = events.map((event) => {
+    const backendName = eventToCourseName[event.title];
+    const matchedCourse = allCourses.find(
+      (course) =>
+        course.name.trim().toLowerCase() === backendName.trim().toLowerCase()
+    );
+    return { ...event, course: matchedCourse };
+  });
 
   const handleBeforeChange = useCallback(() => {
     // Additional logic before slide change if needed
@@ -152,7 +174,7 @@ export function EventsCarousel() {
           {/* Slider content area */}
           <div className="mx-6">
             <Slider ref={sliderRef} {...sliderSettings}>
-              {events.map((event) => (
+              {eventsWithCourse.map((event) => (
                 <div key={event.id} className="px-3 h-full">
                   <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group h-full">
                     <div className="relative h-48 bg-gray-50">
@@ -162,7 +184,11 @@ export function EventsCarousel() {
                         className="w-full h-full object-contain p-4"
                       />
                       <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <AddToCartButton />
+                        {event.course ? (
+                          <AddToCartButton course={event.course} />
+                        ) : (
+                          <AddToCartButton disabled />
+                        )}
                       </div>
                     </div>
 
