@@ -99,7 +99,7 @@ export function ContactPage() {
                   <MapPin className="h-6 w-6 text-primary mr-4 mt-1" />
                   <div>
                     <h3 className="text-xl font-semibold mb-2">Address</h3>
-                    <p className="text-gray-700">
+                    <p className="text-foreground/90">
                       3rd Floor
                       <br />
                       45 Albemarle Street
@@ -115,7 +115,7 @@ export function ContactPage() {
                   <Clock className="h-6 w-6 text-primary mr-4 mt-1" />
                   <div>
                     <h3 className="text-xl font-semibold mb-2">Office Hours</h3>
-                    <p className="text-gray-700">
+                    <p className="text-foreground/90">
                       Monday - Friday
                       <br />
                       9:00 AM - 5:00 PM
@@ -131,7 +131,7 @@ export function ContactPage() {
                     <h3 className="text-xl font-semibold mb-2">
                       Nearby Transport
                     </h3>
-                    <p className="text-gray-700">
+                    <p className="text-foreground/90">
                       Green Park Station - 5 min walk
                       <br />
                       Bus Routes: 8, 9, 14, 19, 22, 38
