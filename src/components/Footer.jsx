@@ -106,12 +106,15 @@ export function Footer() {
                   Contact
                 </Link>
               </li>
+              {/* <li>
+                <Link to="/privacy" className="hover:text-primary">
+                  Privacy Policy
+                </Link>
+              </li> */}
+              {/* Remove Refund Policy from Quick Links */}
               <li>
-                <Link
-                  to="/refund-policy"
-                  className="text-blue-100 hover:underline"
-                >
-                  Refund Policy
+                <Link to="/terms" className="text-blue-100 hover:underline">
+                  Terms & Conditions
                 </Link>
               </li>
             </ul>

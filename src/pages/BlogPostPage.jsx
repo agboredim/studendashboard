@@ -2,15 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import {
-  Calendar,
-  Tag,
-  ArrowLeft,
-  Share2,
-  Facebook,
-  Twitter,
-  Linkedin,
-} from "lucide-react";
+import { Calendar, Tag, ArrowLeft, Share2 } from "lucide-react";
+import { FaFacebookF, FaLinkedinIn } from "react-icons/fa";
+import { SiX } from "react-icons/si";
 import { blogPosts } from "../data/blogData";
 
 function BlogPostPage() {
@@ -36,6 +30,35 @@ function BlogPostPage() {
 
     setLoading(false);
   }, [slug]);
+
+  // Generate the current blog post's URL
+  const postUrl =
+    typeof window !== "undefined" && post
+      ? window.location.origin + "/blog/" + post.slug
+      : "";
+
+  const handleShare = (platform) => {
+    if (!post) return;
+    const encodedUrl = encodeURIComponent(postUrl);
+    const encodedTitle = encodeURIComponent(post.title);
+    let shareUrl = "";
+    if (platform === "facebook") {
+      shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+    } else if (platform === "x") {
+      shareUrl = `https://x.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`;
+    } else if (platform === "linkedin") {
+      shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
+    }
+    if (shareUrl) {
+      window.open(shareUrl, "_blank", "noopener,noreferrer");
+    }
+  };
+
+  const handleCopyLink = async () => {
+    if (!postUrl) return;
+    await navigator.clipboard.writeText(postUrl);
+    alert("Link copied to clipboard!"); // Replace with toast if you have one
+  };
 
   if (loading) {
     return (
@@ -160,24 +183,35 @@ function BlogPostPage() {
 
               {/* Share */}
               <div className="mt-8 flex flex-wrap items-center gap-4">
-                {/* Text foreground */}
                 <span className="font-medium text-foreground">
                   Share this article:
                 </span>
-                {/* Share button background primary/10, text primary, hover primary/20 */}
-                <button className="p-2 bg-primary/10 text-primary rounded-full hover:bg-primary/20">
-                  <Facebook className="h-5 w-5" />
+                <button
+                  className="p-2 bg-primary/10 text-primary rounded-full hover:bg-primary/20"
+                  onClick={() => handleShare("facebook")}
+                  aria-label="Share on Facebook"
+                >
+                  <FaFacebookF className="h-5 w-5" />
                 </button>
-                {/* Share button background primary/10, text primary, hover primary/20 */}
-                <button className="p-2 bg-primary/10 text-primary rounded-full hover:bg-primary/20">
-                  <Twitter className="h-5 w-5" />
+                <button
+                  className="p-2 bg-primary/10 text-primary rounded-full hover:bg-primary/20"
+                  onClick={() => handleShare("x")}
+                  aria-label="Share on X"
+                >
+                  <SiX className="h-5 w-5" />
                 </button>
-                {/* Share button background primary/10, text primary, hover primary/20 */}
-                <button className="p-2 bg-primary/10 text-primary rounded-full hover:bg-primary/20">
-                  <Linkedin className="h-5 w-5" />
+                <button
+                  className="p-2 bg-primary/10 text-primary rounded-full hover:bg-primary/20"
+                  onClick={() => handleShare("linkedin")}
+                  aria-label="Share on LinkedIn"
+                >
+                  <FaLinkedinIn className="h-5 w-5" />
                 </button>
-                {/* Share button background primary/10, text primary, hover primary/20 */}
-                <button className="p-2 bg-primary/10 text-primary rounded-full hover:bg-primary/20">
+                <button
+                  className="p-2 bg-primary/10 text-primary rounded-full hover:bg-primary/20"
+                  onClick={handleCopyLink}
+                  aria-label="Copy link"
+                >
                   <Share2 className="h-5 w-5" />
                 </button>
               </div>
