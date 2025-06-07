@@ -36,7 +36,7 @@ export function WorkshopEvents() {
         "Implement intelligent detection systems that dramatically reduce false positives",
       ],
       instructor: {
-        name: "Dr. Maria Rodriguez",
+        name: "LUMI OTOLORIN",
         bio: "Leading authority in AML/KYC Compliance with 12+ years transforming regulatory frameworks at Global Finance. Author of 'Modern Approaches to Financial Compliance,' adopted by premier financial institutions worldwide.",
       },
       audience:
@@ -56,7 +56,7 @@ export function WorkshopEvents() {
         "Gain frameworks for stakeholder alignment and precise ROI measurement",
       ],
       instructor: {
-        name: "Jennifer Park",
+        name: "WUNMI NWOGU",
         bio: "Senior Business Analyst and certified Project Management Professional at StrategyForge known for delivering projects with 98% stakeholder satisfaction across multiple sectors.",
       },
       audience:
@@ -76,7 +76,7 @@ export function WorkshopEvents() {
         "Learn practical skills in predictive modeling and anomaly detection",
       ],
       instructor: {
-        name: "Dr. James Wilson",
+        name: "TOBI OLADIPUPO",
         bio: "Innovative Data Analytics Director at AnalyticsPro whose breakthrough methodologies have generated over $500M in value for Fortune 100 companies.",
       },
       audience:
@@ -96,7 +96,7 @@ export function WorkshopEvents() {
         "Learn advanced vulnerability assessment and threat modeling",
       ],
       instructor: {
-        name: "Daniel Torres",
+        name: "DR. JAMES BROWN",
         bio: "Chief Information Security Officer at SecureDefend with 15+ years protecting critical infrastructure, having engineered security architectures preventing over $2B in potential breach damages.",
       },
       audience:
@@ -108,8 +108,9 @@ export function WorkshopEvents() {
   // Mapping from event title to backend course name
   const eventToCourseName = {
     "AML/KYC Compliance": "AML/KYC Compliance",
-    "Cybersecurity": "Cybersecurity",
-    "Business Analysis/Project Management": "Business Analysis & Project Management",
+    Cybersecurity: "Cybersecurity",
+    "Business Analysis/Project Management":
+      "Business Analysis & Project Management",
     "Data Analytics": "Data Analysis",
   };
 
@@ -117,7 +118,8 @@ export function WorkshopEvents() {
   const workshopsWithCourse = workshops.map((workshop) => {
     const backendName = eventToCourseName[workshop.title];
     const matchedCourse = allCourses.find(
-      (course) => course.name.trim().toLowerCase() === backendName.trim().toLowerCase()
+      (course) =>
+        course.name.trim().toLowerCase() === backendName.trim().toLowerCase()
     );
     return { ...workshop, course: matchedCourse };
   });

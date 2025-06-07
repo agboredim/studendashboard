@@ -72,6 +72,13 @@ export function EventsCarousel() {
     "Data Analytics Workshop": "Data Analysis",
   };
 
+  const instructorMap = {
+    "AML/KYC Compliance Workshop": "LUMI OTOLORIN",
+    "Data Analytics Workshop": "TOBI OLADIPUPO",
+    "Business Analysis/Project Management Workshop": "WUNMI NWOGU",
+    "Cybersecurity Workshop": "DR. JAMES BROWN",
+  };
+
   const { data: allCourses = [] } = useGetAllCoursesQuery();
 
   // For each event, find the matching course
@@ -199,6 +206,14 @@ export function EventsCarousel() {
                       <p className="text-foreground/70 text-base mb-4 line-clamp-2">
                         {event.description}
                       </p>
+                      <div className="mb-2">
+                        <span className="text-xs font-semibold text-primary">
+                          INSTRUCTOR:{" "}
+                        </span>
+                        <span className="text-xs text-foreground font-bold">
+                          {instructorMap[event.title]}
+                        </span>
+                      </div>
 
                       <div className="space-y-2">
                         <div className="flex items-center text-xs text-foreground/70">
