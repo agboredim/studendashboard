@@ -95,7 +95,9 @@ const CertificateDownloadButton = ({
           </h3>
           <p className="text-sm text-gray-600">This is to certify that</p>
           <p className="text-xl font-bold text-blue-800">
-            {currentUser?.first_name} {currentUser?.last_name}
+            {currentUser?.first_name || currentUser.first_name === ""
+              ? currentUser.username
+              : currentUser.first_name || currentUser?.last_name || "Student"}
           </p>
           <p className="text-sm text-gray-600">
             has successfully completed the
