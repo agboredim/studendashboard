@@ -167,14 +167,29 @@ function CoursesPage() {
                 </div>
 
                 <div className="flex items-center mb-4">
-                  <img
-                    src={`${baseUrl}${course.instructor.profile_picture}`}
-                    alt={course?.instructor?.name}
-                    className="w-8 h-8 rounded-full mr-2 object-cover"
-                  />
-                  <span className="text-sm text-foreground">
-                    {course.instructor.name || "No Instructor Name"}
-                  </span>
+                  {course.instructor ? (
+                    <>
+                      <img
+                        src={`${baseUrl}${course.instructor.profile_picture}`}
+                        alt={
+                          course.instructor.first_name
+                            ? `${course.instructor.first_name} ${course.instructor.last_name}`
+                            : "Instructor"
+                        }
+                        className="w-8 h-8 rounded-full mr-2 object-cover"
+                      />
+                      <span className="text-sm text-foreground">
+                        {course.instructor.first_name &&
+                        course.instructor.last_name
+                          ? `${course.instructor.first_name} ${course.instructor.last_name}`
+                          : "Instructor"}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-sm text-foreground/60 italic">
+                      No instructor assigned
+                    </span>
+                  )}
                 </div>
 
                 <div className="flex items-center mb-4">
