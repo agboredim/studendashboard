@@ -5,7 +5,7 @@ import { useGetAllCoursesQuery } from "../services/coursesApi";
 import Spinner from "../components/Spinner";
 import ErrorMessage from "@/components/ErrorMessage";
 
-// const baseUrl = import.meta.env.VITE_BASE_URL;
+const baseUrl = import.meta.env.VITE_BASE_URL;
 
 function CoursesPage() {
   const [filter, setFilter] = useState("all");
@@ -168,15 +168,29 @@ function CoursesPage() {
                 </div>
 
                 <div className="flex items-center mb-4">
-                  <img
-                    // src={`${baseUrl}${course.instructor.profile_picture}`}
-                    src={course.instructor.profile_picture}
-                    alt={course?.instructor?.name}
-                    className="w-8 h-8 rounded-full mr-2 object-cover"
-                  />
-                  <span className="text-sm text-foreground">
-                    {course.instructor.name || "No Instructor Name"}
-                  </span>
+                  {course.instructor ? (
+                    <>
+                      <img
+                        src={`${baseUrl}${course.instructor.profile_picture}`}
+                        alt={
+                          course.instructor.first_name
+                            ? `${course.instructor.first_name} ${course.instructor.last_name}`
+                            : "Instructor"
+                        }
+                        className="w-8 h-8 rounded-full mr-2 object-cover"
+                      />
+                      <span className="text-sm text-foreground">
+                        {course.instructor.first_name &&
+                        course.instructor.last_name
+                          ? `${course.instructor.first_name} ${course.instructor.last_name}`
+                          : "Instructor"}
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-sm text-foreground/60 italic">
+                      No instructor assigned
+                    </span>
+                  )}
                 </div>
 
                 <div className="flex items-center mb-4">
@@ -200,7 +214,7 @@ function CoursesPage() {
                 <div className="mt-auto space-y-3">
                   <div className="flex flex-col">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-gray-400 line-through text-sm">
+                      <span className="text-red-500 line-through text-sm">
                         £1,500
                       </span>
                       <span className="text-green-600 text-xs font-medium">

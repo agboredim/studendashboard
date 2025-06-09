@@ -105,6 +105,13 @@ export const api = createApi({
       query: () => "/orders/user/",
       providesTags: ["Orders"],
     }),
+    sendGuide: builder.mutation({
+      query: (body) => ({
+        url: "/send-guide/", // Django endpoint
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
@@ -120,4 +127,5 @@ export const {
   useCreateOrderMutation,
   useProcessPayPalPaymentMutation,
   useGetUserOrdersQuery,
+  useSendGuideMutation,
 } = api;
