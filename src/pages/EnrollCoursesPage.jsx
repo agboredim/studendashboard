@@ -471,7 +471,8 @@ export default function CourseLibrary() {
                   >
                     <div className="relative">
                       <img
-                        src={`${baseUrl}${course.course_image}`}
+                        // src={`${baseUrl}${course.course_image}`}
+                        src={course.course_image || "/placeholder.svg"}
                         alt={course.name}
                         className="h-48 w-full object-cover"
                       />

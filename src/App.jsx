@@ -45,6 +45,8 @@ import { CommunityPage } from "./pages/CommunityPage";
 import { RefundPolicy } from "./pages/RefundPolicy";
 import TeamsChat from "./pages/TeamsChat";
 import CertificatesPage from "./pages/MyCertificates";
+import LiveClassesSchedule from "./pages/LiveClassesSchedule";
+import NotificationsPage from "./pages/Notifications";
 
 function App() {
   // Get Google Client ID from environment variables using Vite's import.meta.env
@@ -187,6 +189,22 @@ function App() {
               element={
                 <ProtectedRoute>
                   <TeamsChat />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portal/live-classes"
+              element={
+                <ProtectedRoute>
+                  <LiveClassesSchedule />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portal/notifications"
+              element={
+                <ProtectedRoute>
+                  <NotificationsPage />
                 </ProtectedRoute>
               }
             />
