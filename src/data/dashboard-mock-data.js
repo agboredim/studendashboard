@@ -246,14 +246,14 @@ export const mockLearningTimeData = {
 
 // Mock stats data
 export const mockStats = {
-  completionRate: 52, // Based on the average progress of enrolled courses
-  completionTrend: 5,
-  attendanceRate: 78,
-  attendanceTrend: -2,
-  learningHours: 54,
-  learningHoursTrend: 8,
-  certificatesEarned: 1, // Based on the number of certificates
-  certificatesTrend: 1,
+  completionRate: 0, // Based on the average progress of enrolled courses
+  completionTrend: 0,
+  attendanceRate: 0,
+  attendanceTrend: 0,
+  learningHours: 0,
+  learningHoursTrend: 0,
+  certificatesEarned: 0, // Based on the number of certificates
+  certificatesTrend: 0,
 };
 
 // Mock progress details data based on the API response format

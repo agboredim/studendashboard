@@ -73,7 +73,7 @@ export default function CourseLibraryDetail() {
         .filter(
           (item) =>
             item.id !== material.id &&
-            (item.course_id === material.course_id ||
+            (item.id === material.id ||
               (item.category &&
                 material.category &&
                 item.category === material.category))
@@ -239,7 +239,7 @@ export default function CourseLibraryDetail() {
                   variant="outline"
                   className="bg-purple-50 text-purple-700 border-purple-200"
                 >
-                  {getCourseName(material.course_id)}
+                  {getCourseName(material.id)}
                 </Badge>
               </div>
             </div>
@@ -309,7 +309,7 @@ export default function CourseLibraryDetail() {
                       `This is a ${
                         material.file ? "document" : "link"
                       } resource for the ${getCourseName(
-                        material.course_id
+                        material.id
                       )} course. 
                       ${
                         material.file
