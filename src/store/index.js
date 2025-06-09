@@ -4,6 +4,7 @@ import authReducer from "./slices/authSlice";
 import cartReducer from "./slices/cartSlice";
 import { api } from "../services/api";
 import { coursesApi } from "../services/coursesApi";
+import { blogsApi } from "@/services/blogsApi";
 
 export const store = configureStore({
   reducer: {
@@ -11,9 +12,13 @@ export const store = configureStore({
     cart: cartReducer,
     [api.reducerPath]: api.reducer,
     [coursesApi.reducerPath]: coursesApi.reducer,
+    [blogsApi.reducerPath]: blogsApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(api.middleware).concat(coursesApi.middleware),
+    getDefaultMiddleware()
+      .concat(api.middleware)
+      .concat(coursesApi.middleware)
+      .concat(blogsApi.middleware),
 });
 
 // Enable refetchOnFocus and refetchOnReconnect

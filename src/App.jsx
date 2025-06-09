@@ -47,6 +47,7 @@ import { CommunityPage } from "./pages/CommunityPage";
 import { RefundPolicy } from "./pages/RefundPolicy";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import AdminBlogUpload from "./pages/AdminBlogUpload";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -159,6 +160,17 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+            {/* Admin Routes - Add after Portal Routes */}
+            {/* <Route
+              path="/admin/blog/create"
+              element={
+                <ProtectedRoute>
+                  <AdminBlogUpload />
+                </ProtectedRoute>
+              }
+            /> */}
+            <Route path="/admin/blog/create" element={<AdminBlogUpload />} />
 
             {/* Main Layout Routes */}
             <Route path="/" element={<Layout />}>
