@@ -5,7 +5,7 @@ import { useGetAllCoursesQuery } from "../services/coursesApi";
 import Spinner from "../components/Spinner";
 import ErrorMessage from "@/components/ErrorMessage";
 
-// const baseUrl = import.meta.env.VITE_BASE_URL;
+const baseUrl = import.meta.env.VITE_BASE_URL;
 
 function CoursesPage() {
   const [filter, setFilter] = useState("all");
