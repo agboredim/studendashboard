@@ -8,12 +8,14 @@ import { PlatformFeatures } from "@/components/PlatformFeatures";
 import { CourseIntroVideos } from "@/components/CourseIntroVideos";
 import { WhyChooseUs } from "@/components/WhyChooseUs";
 import { EventsCarousel } from "@/components/EventsCarousel";
+import DownloadGuideSection from "@/components/DownloadGuideSection";
 
 function HomePage() {
   return (
     <>
       <Hero />
       <FeaturesBanner />
+      <DownloadGuideSection />
       {/* <CompanyLogosCarousel /> */}
       <StatsSection />
       <WhyChooseUs />

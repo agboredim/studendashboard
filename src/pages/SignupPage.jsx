@@ -250,13 +250,17 @@ function SignupPage() {
               <Link
                 to="/terms"
                 className="font-medium text-primary hover:text-primary/80"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                Terms of Service
+                Terms and Conditions
               </Link>{" "}
               and{" "}
               <Link
                 to="/privacy"
                 className="font-medium text-primary hover:text-primary/80"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 Privacy Policy
               </Link>

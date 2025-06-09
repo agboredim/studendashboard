@@ -4,6 +4,8 @@ import { ToastContainer } from "react-toastify";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import "react-toastify/dist/ReactToastify.css";
 import { Toaster } from "@/components/ui/sonner";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 import store from "./store";
 
@@ -47,6 +49,17 @@ import TeamsChat from "./pages/TeamsChat";
 import CertificatesPage from "./pages/MyCertificates";
 import LiveClassesSchedule from "./pages/LiveClassesSchedule";
 import NotificationsPage from "./pages/Notifications";
+import TermsAndConditions from "./pages/TermsAndConditions";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import AdminBlogUpload from "./pages/AdminBlogUpload";
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
 
 function App() {
   // Get Google Client ID from environment variables using Vite's import.meta.env
@@ -55,12 +68,11 @@ function App() {
     ? import.meta.env.VITE_GOOGLE_CLIENT_ID
     : "your-google-client-id"; // Replace with your actual client ID
 
-  console.log("Using Google Client ID:", googleClientId);
-
   return (
     <Provider store={store}>
       <GoogleOAuthProvider clientId={googleClientId}>
         <Router>
+          <ScrollToTop />
           <Routes>
             {/* Authentication Pages (outside main layout) */}
             <Route path="/login" element={<LoginPage />} />
@@ -188,6 +200,17 @@ function App() {
               }
             />
 
+            {/* Admin Routes - Add after Portal Routes */}
+            {/* <Route
+              path="/admin/blog/create"
+              element={
+                <ProtectedRoute>
+                  <AdminBlogUpload />
+                </ProtectedRoute>
+              }
+            /> */}
+            <Route path="/admin/blog/create" element={<AdminBlogUpload />} />
+
             {/* Main Layout Routes */}
             <Route path="/" element={<Layout />}>
               {/* Public Routes */}
@@ -204,6 +227,8 @@ function App() {
               <Route path="blog" element={<BlogPage />} />
               <Route path="blog/:slug" element={<BlogPostPage />} />
               <Route path="events" element={<WorkshopEvents />} />
+              <Route path="terms" element={<TermsAndConditions />} />
+              <Route path="privacy" element={<PrivacyPolicy />} />
 
               {/* Protected Routes that should use main layout */}
               <Route

@@ -11,6 +11,8 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useInView } from "../hooks/useInView";
+import { useGetAllCoursesQuery } from "@/services/coursesApi";
+import AddToCartButton from "./AddToCartButton";
 
 export function EventsCarousel() {
   const sliderRef = useRef(null);
@@ -60,6 +62,34 @@ export function EventsCarousel() {
       image: "/assets/illustrations/cyber-security.svg",
     },
   ];
+
+  // Mapping from event title to backend course name
+  const eventToCourseName = {
+    "AML/KYC Compliance Workshop": "AML/KYC Compliance",
+    "Cybersecurity Workshop": "Cybersecurity",
+    "Business Analysis/Project Management Workshop":
+      "Business Analysis & Project Management",
+    "Data Analytics Workshop": "Data Analysis",
+  };
+
+  const instructorMap = {
+    "AML/KYC Compliance Workshop": "LUMI OTOLORIN",
+    "Data Analytics Workshop": "TOBI OLADIPUPO",
+    "Business Analysis/Project Management Workshop": "WUNMI NWOGU",
+    "Cybersecurity Workshop": "DR. JAMES BROWN",
+  };
+
+  const { data: allCourses = [] } = useGetAllCoursesQuery();
+
+  // For each event, find the matching course
+  const eventsWithCourse = events.map((event) => {
+    const backendName = eventToCourseName[event.title];
+    const matchedCourse = allCourses.find(
+      (course) =>
+        course.name.trim().toLowerCase() === backendName.trim().toLowerCase()
+    );
+    return { ...event, course: matchedCourse };
+  });
 
   const handleBeforeChange = useCallback(() => {
     // Additional logic before slide change if needed
@@ -113,10 +143,10 @@ export function EventsCarousel() {
     currentSlide >= events.length - sliderSettings.slidesToShow;
 
   return (
-    <section ref={sectionRef} className="py-16 bg-gray-50">
+    <section ref={sectionRef} className="py-16 bg-gray-100">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <span className="inline-block px-6 py-2 bg-primary/10 text-foreground rounded-full text-sm font-semibold uppercase tracking-wider mb-4">
+          <span className="inline-block px-6 py-2 bg-primary/10 text-foreground rounded-full text-xs font-semibold uppercase tracking-wider mb-4">
             Upcoming Events
           </span>
           <h2 className="text-4xl font-bold text-foreground mb-4">
@@ -151,7 +181,7 @@ export function EventsCarousel() {
           {/* Slider content area */}
           <div className="mx-6">
             <Slider ref={sliderRef} {...sliderSettings}>
-              {events.map((event) => (
+              {eventsWithCourse.map((event) => (
                 <div key={event.id} className="px-3 h-full">
                   <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group h-full">
                     <div className="relative h-48 bg-gray-50">
@@ -161,25 +191,32 @@ export function EventsCarousel() {
                         className="w-full h-full object-contain p-4"
                       />
                       <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Link
-                          to="/events"
-                          className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
-                        >
-                          Learn More
-                        </Link>
+                        {event.course ? (
+                          <AddToCartButton course={event.course} />
+                        ) : (
+                          <AddToCartButton disabled />
+                        )}
                       </div>
                     </div>
 
                     <div className="p-6">
-                      <h3 className="text-xl font-bold text-foreground mb-3">
+                      <h3 className="text-lg h-14 font-bold text-foreground mb-3">
                         {event.title}
                       </h3>
-                      <p className="text-foreground/70 mb-4 line-clamp-2">
+                      <p className="text-foreground/70 text-base mb-4 line-clamp-2">
                         {event.description}
                       </p>
+                      <div className="mb-2">
+                        <span className="text-xs font-semibold text-primary">
+                          INSTRUCTOR:{" "}
+                        </span>
+                        <span className="text-xs text-foreground font-bold">
+                          {instructorMap[event.title]}
+                        </span>
+                      </div>
 
                       <div className="space-y-2">
-                        <div className="flex items-center text-sm text-foreground/70">
+                        <div className="flex items-center text-xs text-foreground/70">
                           <Calendar className="h-4 w-4 mr-2" />
                           <span>
                             {new Date(event.date).toLocaleDateString("en-GB", {
@@ -189,11 +226,11 @@ export function EventsCarousel() {
                             })}
                           </span>
                         </div>
-                        <div className="flex items-center text-sm text-foreground/70">
+                        <div className="flex items-center text-xs text-foreground/70">
                           <Clock className="h-4 w-4 mr-2" />
                           <span>{event.time}</span>
                         </div>
-                        <div className="flex items-center text-sm text-foreground/70">
+                        <div className="flex items-center text-xs text-foreground/70">
                           <MapPin className="h-4 w-4 mr-2" />
                           <span>{event.location}</span>
                         </div>

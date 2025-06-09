@@ -24,18 +24,6 @@ export const blogPosts = [
     content: function () {
       return `
         <div class="article-content">
-          <div class="intro-section mb-8">
-            <h1 class="text-3xl font-bold mb-4">${this.title}</h1>
-            <div class="article-meta flex items-center mb-6">
-              <img src="${this.authorImage}" alt="${this.author}" class="w-12 h-12 rounded-full mr-4"/>
-              <div>
-                <p class="font-medium">${this.author}</p>
-                <p class="text-gray-600">${this.authorRole}</p>
-              </div>
-            </div>
-            <img src="${this.image}" alt="Anti-Money Laundering Guide" class="w-full h-[400px] object-cover rounded-lg mb-6"/>
-          </div>
-  
           <div class="article-body prose max-w-none">
             <p class="mb-6 text-lg leading-relaxed">Globally, anti-money laundering denotes a set of laws, regulations and procedures designed with the intention of preventing, detecting and reporting money laundering activities within the financial ecosystem. In simple clear terms, it is a strong resistance put up by Government and relevant bodies to prevent, fight, and punish those involved in money laundering.</p>
             
@@ -241,18 +229,6 @@ export const blogPosts = [
     content: function () {
       return `
         <div class="article-content">
-          <div class="intro-section mb-8">
-            <h1 class="text-3xl font-bold mb-4">${this.title}</h1>
-            <div class="article-meta flex items-center mb-6">
-              <img src="${this.authorImage}" alt="${this.author}" class="w-12 h-12 rounded-full mr-4"/>
-              <div>
-                <p class="font-medium">${this.author}</p>
-                <p class="text-gray-600">${this.authorRole}</p>
-              </div>
-            </div>
-            <img src="${this.image}" alt="Money Laundering Methods" class="w-full h-[400px] object-cover rounded-lg mb-6"/>
-          </div>
-
           <div class="article-body prose max-w-none">
             <p class="mb-6 text-lg leading-relaxed">Money laundering enables criminals to camouflage the origin of illicit funds and make it appear to be legitimate. From drug trafficking, human trafficking to terrorism financing, money laundering paves the way for these and other illegal activities to thrive, which in turn hurts businesses, society and economies on a global scale.</p>
             
@@ -467,18 +443,6 @@ export const blogPosts = [
     content: function () {
       return `
         <div class="article-content">
-          <div class="intro-section mb-8">
-            <h1 class="text-3xl font-bold mb-4">${this.title}</h1>
-            <div class="article-meta flex items-center mb-6">
-              <img src="${this.authorImage}" alt="${this.author}" class="w-12 h-12 rounded-full mr-4"/>
-              <div>
-                <p class="font-medium">${this.author}</p>
-                <p class="text-gray-600">${this.authorRole}</p>
-              </div>
-            </div>
-            <img src="${this.image}" alt="Money Laundering Scandals" class="w-full h-[400px] object-cover rounded-lg mb-6"/>
-          </div>
-
           <div class="article-body prose max-w-none">
             <p class="mb-6 text-lg leading-relaxed">The biggest money laundering scandals in the last 34 years were rocked by weak internal controls, insufficient due diligence carried out on the identity of customers and origin of funds, ignoring red flags and sacrificing business ethics for profit. Money laundering is indeed a global challenge, gulping 2-5% of the global GDP yearly.</p>
             

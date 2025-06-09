@@ -106,12 +106,15 @@ export function Footer() {
                   Contact
                 </Link>
               </li>
+              {/* <li>
+                <Link to="/privacy" className="hover:text-primary">
+                  Privacy Policy
+                </Link>
+              </li> */}
+              {/* Remove Refund Policy from Quick Links */}
               <li>
-                <Link
-                  to="/refund-policy"
-                  className="text-blue-100 hover:underline"
-                >
-                  Refund Policy
+                <Link to="/terms" className="text-blue-100 hover:underline">
+                  Terms & Conditions
                 </Link>
               </li>
             </ul>
@@ -126,6 +129,22 @@ export function Footer() {
           <div className="text-primary text-sm mb-4 md:mb-0">
             &copy; {new Date().getFullYear()} Titans Careers. All rights
             reserved.
+          </div>
+
+          {/* Policy Links */}
+          <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6 mb-4 md:mb-0">
+            <Link
+              to="/privacy"
+              className="text-blue-100 hover:underline text-xs md:text-sm"
+            >
+              Privacy Policy
+            </Link>
+            <Link
+              to="/refund-policy"
+              className="text-blue-100 hover:underline text-xs md:text-sm"
+            >
+              Refund Policy
+            </Link>
           </div>
 
           <div className="flex space-x-6">
