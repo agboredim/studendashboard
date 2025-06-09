@@ -141,7 +141,7 @@ export default function Dashboard() {
                 <div className="flex gap-3">
                   <Button
                     variant="outline"
-                    onClick={() => navigate("/portal/library")}
+                    onClick={() => navigate("/portal/enroll-courses")}
                   >
                     Browse Courses
                   </Button>

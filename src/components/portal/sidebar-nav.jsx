@@ -178,8 +178,8 @@ export default function SidebarNav() {
           </NavItem>
 
           <NavItem
-            // href="/portal/live-classes"
-            href=""
+            href="/portal/live-classes"
+            // href=""
             active={location.pathname.includes("/portal/live-classes")}
             icon={<VideoIcon className="h-5 w-5" />}
           >
@@ -215,8 +215,8 @@ export default function SidebarNav() {
           </NavItem>
 
           <NavItem
-            // href="/portal/notifications"
-            href=""
+            href="/portal/notifications"
+            // href=""
             active={location.pathname.includes("/portal/notifications")}
             icon={<BellIcon className="h-5 w-5" />}
             badge={notificationCount}

@@ -45,6 +45,8 @@ import { CommunityPage } from "./pages/CommunityPage";
 import { RefundPolicy } from "./pages/RefundPolicy";
 import TeamsChat from "./pages/TeamsChat";
 import CertificatesPage from "./pages/MyCertificates";
+import LiveClassesSchedule from "./pages/LiveClassesSchedule";
+import NotificationsPage from "./pages/Notifications";
 
 function App() {
   // Get Google Client ID from environment variables using Vite's import.meta.env
@@ -64,44 +66,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
 
-            {/* Main Layout Routes */}
-            <Route path="/" element={<Layout />}>
-              {/* Public Routes */}
-              <Route index element={<HomePage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/story" element={<OurStoryPage />} />
-              <Route path="/partner" element={<PartnerWithUs />} />
-              <Route path="/refund-policy" element={<RefundPolicy />} />
-              <Route path="/services" element={<ServicesPage />} />
-              <Route path="/community" element={<CommunityPage />} />
-              <Route path="courses" element={<CoursesPage />} />
-              <Route path="courses/:courseId" element={<CourseDetailPage />} />
-              <Route path="blog" element={<BlogPage />} />
-              <Route path="blog/:slug" element={<BlogPostPage />} />
-              <Route path="events" element={<WorkshopEvents />} />
-
-              {/* Checkout Routes (require authentication AND non-empty cart) */}
-              <Route
-                path="checkout"
-                element={
-                  <ProtectedRoute>
-                    <CheckoutPage />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="order-confirmation"
-                element={
-                  <ProtectedRoute>
-                    <OrderConfirmationPage />
-                  </ProtectedRoute>
-                }
-              />
-            </Route>
-
-            {/* Protected Routes (require authentication) */}
+            {/* Portal Routes - Kept flat as in historical version */}
             <Route
               path="/portal"
               element={
@@ -191,6 +156,22 @@ function App() {
               }
             />
             <Route
+              path="/portal/live-classes"
+              element={
+                <ProtectedRoute>
+                  <LiveClassesSchedule />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portal/notifications"
+              element={
+                <ProtectedRoute>
+                  <NotificationsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/portal/certificates"
               element={
                 <ProtectedRoute>
@@ -207,14 +188,50 @@ function App() {
               }
             />
 
-            {/* Catch-all route for undefined paths */}
-            <Route path="*" element={<NotFound />} />
+            {/* Main Layout Routes */}
+            <Route path="/" element={<Layout />}>
+              {/* Public Routes */}
+              <Route index element={<HomePage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/story" element={<OurStoryPage />} />
+              <Route path="/partner" element={<PartnerWithUs />} />
+              <Route path="/refund-policy" element={<RefundPolicy />} />
+              <Route path="/services" element={<ServicesPage />} />
+              <Route path="/community" element={<CommunityPage />} />
+              <Route path="courses" element={<CoursesPage />} />
+              <Route path="courses/:courseId" element={<CourseDetailPage />} />
+              <Route path="blog" element={<BlogPage />} />
+              <Route path="blog/:slug" element={<BlogPostPage />} />
+              <Route path="events" element={<WorkshopEvents />} />
+
+              {/* Protected Routes that should use main layout */}
+              <Route
+                path="checkout"
+                element={
+                  <ProtectedRoute>
+                    <CheckoutPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="order-confirmation"
+                element={
+                  <ProtectedRoute>
+                    <OrderConfirmationPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* 404 catch-all route */}
+              <Route path="*" element={<NotFound />} />
+            </Route>
           </Routes>
 
           {/* Global Components */}
-          <WhatsAppButton />
-          <ToastContainer position="top-right" autoClose={5000} />
           <Toaster />
+          <ToastContainer />
+          <WhatsAppButton />
         </Router>
       </GoogleOAuthProvider>
     </Provider>
