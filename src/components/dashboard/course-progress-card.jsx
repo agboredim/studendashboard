@@ -16,6 +16,15 @@ export default function CourseProgressCard({
   nextLesson,
 }) {
   const navigate = useNavigate();
+  console.log("CourseProgressCard props:", {
+    id,
+    title,
+    instructor,
+    progress,
+    lastActivity,
+    thumbnail,
+    nextLesson,
+  });
 
   const formattedLastActivity = lastActivity
     ? formatDistanceToNow(new Date(lastActivity), { addSuffix: true })
@@ -25,7 +34,8 @@ export default function CourseProgressCard({
     <Card className="overflow-hidden">
       <div className="relative h-32 w-full">
         <img
-          src={`${baseUrl}${thumbnail}`}
+          // src={`${baseUrl}${thumbnail}`}
+          src={thumbnail}
           alt={title}
           className="h-full w-full object-cover"
         />

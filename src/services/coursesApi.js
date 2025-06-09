@@ -113,6 +113,73 @@ export const coursesApi = createApi({
       query: (id) => `/courses/courselibrary/${id}/`,
       providesTags: (result, error, id) => [{ type: "Library", id }],
     }),
+    // NEW CERTIFICATE ENDPOINT
+    // Generate and download certificate
+    generateCertificate: builder.mutation({
+      query: () => ({
+        url: "/courses/GenerateCertificate/",
+        method: "GET",
+        // params: { course_id: courseId, user_id: userId },
+        // responseHandler: async (response) => {
+        //   // Handle PDF blob response
+        //   if (response.status === 200) {
+        //     const blob = await response.blob();
+        //     return {
+        //       blob,
+        //       filename: response.headers.get("content-disposition"),
+        //     };
+        //   }
+        //   throw new Error("Failed to generate certificate");
+        // },
+        responseHandler: async (response) => {
+          // Handle blob response properly
+          const blob = await response.blob();
+          return {
+            blob,
+            filename: response.headers.get("content-disposition"),
+          };
+        },
+      }),
+      // Transform response to avoid storing blob in Redux state
+      transformResponse: (response) => {
+        // Don't store the blob in Redux state
+        // Instead, return metadata only
+        return {
+          success: true,
+          filename: response.filename,
+          timestamp: new Date().toISOString(),
+        };
+      },
+      // Handle the blob separately in your component
+      onQueryStarted: async (arg, { queryFulfilled }) => {
+        try {
+          const { data } = await queryFulfilled;
+          // Handle blob download here instead of storing in state
+        } catch (error) {
+          console.error("Certificate generation failed:", error);
+        }
+      },
+      transformErrorResponse: (error) => ({
+        error:
+          error.status === 404
+            ? "Certificate not found"
+            : "Failed to generate certificate",
+        status: error.status,
+        data: error.data,
+      }),
+      invalidatesTags: [{ type: "Certificate", id: "LIST" }],
+    }),
+
+    // Check if certificate is available for a course
+    checkCertificateAvailability: builder.query({
+      query: ({ courseId, userId }) => ({
+        url: `/courses/certificates/check/${courseId}/${userId}/`,
+        method: "GET",
+      }),
+      providesTags: (result, error, { courseId, userId }) => [
+        { type: "Certificate", id: `${courseId}-${userId}` },
+      ],
+    }),
   }),
 });
 
@@ -130,4 +197,6 @@ export const {
   // New library hooks
   useGetAllLibraryMaterialsQuery,
   useGetLibraryMaterialByIdQuery,
+  useGenerateCertificateMutation,
+  useCheckCertificateAvailabilityQuery,
 } = coursesApi;

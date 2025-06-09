@@ -38,8 +38,8 @@ import {
 } from "@/components/ui/accordion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
-import WistiaVideo from "@/components/WistiaVideo"; 
-const baseUrl = import.meta.env.VITE_BASE_URL;
+import WistiaVideo from "@/components/WistiaVideo";
+// const baseUrl = import.meta.env.VITE_BASE_URL;
 
 export default function CourseDetail() {
   const { courseId: id } = useParams();
@@ -223,7 +223,8 @@ export default function CourseDetail() {
                   ) : (
                     <>
                       <img
-                        src={`${baseUrl}${course.course_image}`}
+                        // src={`${baseUrl}${course.course_image}`}
+                        src={course.course_image}
                         alt={course.name}
                         className="h-full w-full object-cover"
                       />
@@ -431,7 +432,8 @@ export default function CourseDetail() {
                           <div className="flex flex-col items-center md:items-start">
                             <Avatar className="h-24 w-24 mb-3">
                               <AvatarImage
-                                src={`${baseUrl}${course.instructor.profile_picture}`}
+                                // src={`${baseUrl}${course.instructor.profile_picture}`}
+                                src={course.instructor.profile_picture}
                                 alt={`${course.instructor.first_name} ${course.instructor.last_name}`}
                               />
                               <AvatarFallback className="text-lg">

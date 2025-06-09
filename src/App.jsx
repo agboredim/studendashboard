@@ -45,6 +45,10 @@ import { PartnerWithUs } from "./pages/PartnerWithUs";
 import { ServicesPage } from "./pages/ServicesPage";
 import { CommunityPage } from "./pages/CommunityPage";
 import { RefundPolicy } from "./pages/RefundPolicy";
+import TeamsChat from "./pages/TeamsChat";
+import CertificatesPage from "./pages/MyCertificates";
+import LiveClassesSchedule from "./pages/LiveClassesSchedule";
+import NotificationsPage from "./pages/Notifications";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import AdminBlogUpload from "./pages/AdminBlogUpload";
@@ -59,7 +63,10 @@ function ScrollToTop() {
 
 function App() {
   // Get Google Client ID from environment variables using Vite's import.meta.env
-  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  // const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "";
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+    ? import.meta.env.VITE_GOOGLE_CLIENT_ID
+    : "your-google-client-id"; // Replace with your actual client ID
 
   return (
     <Provider store={store}>
@@ -149,6 +156,38 @@ function App() {
               element={
                 <ProtectedRoute>
                   <AssignmentSubmission />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portal/chat"
+              element={
+                <ProtectedRoute>
+                  <TeamsChat />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portal/live-classes"
+              element={
+                <ProtectedRoute>
+                  <LiveClassesSchedule />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portal/notifications"
+              element={
+                <ProtectedRoute>
+                  <NotificationsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portal/certificates"
+              element={
+                <ProtectedRoute>
+                  <CertificatesPage />
                 </ProtectedRoute>
               }
             />

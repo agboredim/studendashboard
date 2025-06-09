@@ -5,7 +5,7 @@ import { useGetAllCoursesQuery } from "../services/coursesApi";
 import Spinner from "../components/Spinner";
 import ErrorMessage from "@/components/ErrorMessage";
 
-const baseUrl = import.meta.env.VITE_BASE_URL;
+// const baseUrl = import.meta.env.VITE_BASE_URL;
 
 function CoursesPage() {
   const [filter, setFilter] = useState("all");
@@ -134,7 +134,8 @@ function CoursesPage() {
             >
               <div className="relative h-48 overflow-hidden">
                 <img
-                  src={`${baseUrl}${course.course_image}`}
+                  // src={`${baseUrl}${course.course_image}`}
+                  src={course.course_image}
                   alt={course.name}
                   className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                 />
