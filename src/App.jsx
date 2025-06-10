@@ -51,7 +51,7 @@ import LiveClassesSchedule from "./pages/LiveClassesSchedule";
 import NotificationsPage from "./pages/Notifications";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
-import AdminBlogUpload from "./pages/AdminBlogUpload";
+// import AdminBlogUpload from "./pages/AdminBlogUpload";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -209,7 +209,7 @@ function App() {
                 </ProtectedRoute>
               }
             /> */}
-            <Route path="/admin/blog/create" element={<AdminBlogUpload />} />
+            {/* <Route path="/admin/blog/create" element={<AdminBlogUpload />} /> */}
 
             {/* Main Layout Routes */}
             <Route path="/" element={<Layout />}>
