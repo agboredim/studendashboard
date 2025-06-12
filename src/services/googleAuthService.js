@@ -1,4 +1,7 @@
 import { toast } from "react-toastify";
+import { store } from "../store"; // Import the Redux store
+import { api } from "../services/api"; // Import the RTK Query API
+import { logout } from "../slices/authSlice"; // Import the logout action
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
@@ -91,20 +94,26 @@ class GoogleAuthService {
    */
   async handleCredentialResponse(onSuccess, response) {
     try {
-      // Send the ID token to your backend
-      const result = await this.verifyGoogleToken(response.credential);
+      // Send the ID token to your backend via RTK Query mutation
+      const result = await store
+        .dispatch(
+          api.endpoints.googleAuth.initiate({ token: response.credential })
+        )
+        .unwrap(); // Use unwrap to handle success/error directly
 
-      if (result.success) {
-        // Call the success callback with the user data and token
-        onSuccess(result.data);
-      } else {
-        toast.error(
-          result.message || "Authentication failed. Please try again."
-        );
+      if (result) {
+        // Check if result exists, unwrap throws error on failure
+        // The RTK Query mutation will automatically update the Redux state via authSlice extraReducers.
+        // We can now call the onSuccess callback, if needed by the component that uses GoogleAuthButton,
+        // with the data returned by the backend (which is handled by the RTK Query endpoint).
+        onSuccess(result);
       }
     } catch (error) {
       console.error("Google authentication error:", error);
-      toast.error("Authentication failed. Please try again.");
+      // RTK Query's transformErrorResponse will format the error, so we can access it directly
+      const errorMessage =
+        error.data?.message || "Authentication failed. Please try again.";
+      toast.error(errorMessage);
     }
   }
 
@@ -112,8 +121,11 @@ class GoogleAuthService {
    * Send the Google token to the backend for verification
    * @param {string} token - Google ID token
    * @returns {Promise<Object>} - Backend response
+   * @deprecated - No longer needed as handleCredentialResponse now uses RTK Query directly.
    */
   async verifyGoogleToken(token) {
+    // This method is now deprecated as handleCredentialResponse directly uses RTK Query.
+    // It's kept for reference but its functionality is superseded.
     try {
       const response = await fetch(`${baseUrl}/customuser/api/google-login/`, {
         method: "POST",
@@ -149,12 +161,19 @@ class GoogleAuthService {
   }
 
   /**
-   * Sign out the user from Google
+   * Sign out the user from Google and clear local storage/Redux state
    */
   signOut() {
     if (this.scriptLoaded && window.google?.accounts?.id) {
       window.google.accounts.id.disableAutoSelect();
     }
+    // Clear the authentication token from local storage
+    localStorage.removeItem("token");
+    // Dispatch the logout action to clear Redux state
+    store.dispatch(logout());
+    // Trigger the server-side logout mutation
+    store.dispatch(api.endpoints.logout.initiate());
+    toast.success("Successfully logged out!");
   }
 }
 
