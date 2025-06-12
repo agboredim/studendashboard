@@ -112,6 +112,24 @@ export const api = createApi({
         body,
       }),
     }),
+
+    // New: Request Password Reset Email
+    requestPasswordReset: builder.mutation({
+      query: (email) => ({
+        url: "/customuser/password-reset/", // Adjust this URL if your backend differs
+        method: "POST",
+        body: email, // Should be { email: "user@example.com" }
+      }),
+    }),
+
+    // New: Confirm Password Reset with Token
+    confirmPasswordReset: builder.mutation({
+      query: (data) => ({
+        url: "/customuser/password-reset-confirm/", // Adjust this URL if your backend differs
+        method: "POST",
+        body: data, // Should be { uid: "...", token: "...", new_password: "..." }
+      }),
+    }),
   }),
 });
 
@@ -128,4 +146,7 @@ export const {
   useProcessPayPalPaymentMutation,
   useGetUserOrdersQuery,
   useSendGuideMutation,
+  // New exports for password reset
+  useRequestPasswordResetMutation,
+  useConfirmPasswordResetMutation,
 } = api;
