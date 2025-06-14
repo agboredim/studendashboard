@@ -102,11 +102,10 @@ class GoogleAuthService {
         .unwrap(); // Use unwrap to handle success/error directly
 
       if (result) {
-        // Check if result exists, unwrap throws error on failure
-        // The RTK Query mutation will automatically update the Redux state via authSlice extraReducers.
-        // We can now call the onSuccess callback, if needed by the component that uses GoogleAuthButton,
-        // with the data returned by the backend (which is handled by the RTK Query endpoint).
+        // The RTK Query mutation will automatically update the Redux state via authSlice extraReducers
+        // with the new JWT tokens (access, refresh, user_info)
         onSuccess(result);
+        toast.success("Successfully logged in with Google!");
       }
     } catch (error) {
       console.error("Google authentication error:", error);
@@ -118,12 +117,50 @@ class GoogleAuthService {
   }
 
   /**
+   * Sign out the user from Google and clear local storage/Redux state
+   */
+  signOut() {
+    try {
+      if (this.scriptLoaded && window.google?.accounts?.id) {
+        window.google.accounts.id.disableAutoSelect();
+      }
+
+      // Clear the NEW JWT tokens from localStorage
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      localStorage.removeItem("user");
+
+      // Also clear old token format for backwards compatibility
+      localStorage.removeItem("token");
+
+      // Dispatch the logout action to clear Redux state
+      store.dispatch(logout());
+
+      // Trigger the server-side logout mutation
+      store.dispatch(api.endpoints.logout.initiate());
+
+      toast.success("Successfully logged out!");
+    } catch (error) {
+      console.error("Error during logout:", error);
+      // Still clear localStorage even if logout API fails
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      store.dispatch(logout());
+    }
+  }
+
+  /**
    * Send the Google token to the backend for verification
    * @param {string} token - Google ID token
    * @returns {Promise<Object>} - Backend response
    * @deprecated - No longer needed as handleCredentialResponse now uses RTK Query directly.
    */
   async verifyGoogleToken(token) {
+    console.warn(
+      "verifyGoogleToken is deprecated. Use RTK Query googleAuth mutation instead."
+    );
     // This method is now deprecated as handleCredentialResponse directly uses RTK Query.
     // It's kept for reference but its functionality is superseded.
     try {
@@ -144,7 +181,7 @@ class GoogleAuthService {
         };
       }
 
-      // Store the authentication token
+      // NOTE: This is deprecated - new tokens should be handled by authSlice
       localStorage.setItem("token", data.token);
 
       return {
@@ -158,22 +195,6 @@ class GoogleAuthService {
         message: "Failed to verify authentication. Please try again.",
       };
     }
-  }
-
-  /**
-   * Sign out the user from Google and clear local storage/Redux state
-   */
-  signOut() {
-    if (this.scriptLoaded && window.google?.accounts?.id) {
-      window.google.accounts.id.disableAutoSelect();
-    }
-    // Clear the authentication token from local storage
-    localStorage.removeItem("token");
-    // Dispatch the logout action to clear Redux state
-    store.dispatch(logout());
-    // Trigger the server-side logout mutation
-    store.dispatch(api.endpoints.logout.initiate());
-    toast.success("Successfully logged out!");
   }
 }
 
