@@ -18,10 +18,21 @@ import {
   selectCartItems,
   selectCartTotal,
   removeFromCart,
+  clearCart,
 } from "@/store/slices/cartSlice";
 
 // API
-import { useCreateStripePaymentIntentMutation } from "@/services/api";
+import {
+  useCreateStripePaymentIntentMutation,
+  useProcessPayPalPaymentMutation,
+} from "@/services/api";
+
+// PayPal Services
+import {
+  formatSecurePaymentData,
+  validatePaymentData,
+  getCourseFromCart,
+} from "@/services/paypalService";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -65,6 +76,7 @@ const CheckoutPage = () => {
   // State for managing payment method and Stripe client secret
   const [paymentMethod, setPaymentMethod] = useState("paypal"); // 'paypal' or 'stripe'
   const [clientSecret, setClientSecret] = useState("");
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false); // NEW: Prevent duplicate submissions
   const [billingInfo, setBillingInfo] = useState({
     firstName: "",
     lastName: "",
@@ -78,6 +90,10 @@ const CheckoutPage = () => {
   // RTK Query mutations
   const [createStripePaymentIntent, { isLoading: isCreatingStripeIntent }] =
     useCreateStripePaymentIntentMutation();
+
+  // NEW: PayPal mutation for secure processing
+  const [processPayPalPayment, { isLoading: isProcessingPayPal }] =
+    useProcessPayPalPaymentMutation();
 
   // Redirect if cart is empty
   useEffect(() => {
@@ -121,6 +137,75 @@ const CheckoutPage = () => {
     }
   };
 
+  // NEW: Secure PayPal payment handler
+  const handlePayPalPaymentSuccess = async (
+    paypalOrderData,
+    paypalPaymentData
+  ) => {
+    if (isProcessingPayment) {
+      toast.warning("Payment is already being processed...");
+      return;
+    }
+
+    setIsProcessingPayment(true);
+
+    try {
+      // Format secure payment data
+      const securePaymentData = formatSecurePaymentData(
+        cartItems,
+        paypalOrderData,
+        paypalPaymentData,
+        billingInfo
+      );
+
+      // Validate payment data
+      const validation = validatePaymentData(securePaymentData);
+      if (!validation.isValid) {
+        throw new Error(`Validation failed: ${validation.errors.join(", ")}`);
+      }
+
+      // Process payment with backend verification
+      const result = await processPayPalPayment(securePaymentData).unwrap();
+
+      // Success handling
+      toast.success("Payment processed successfully!");
+
+      // Clear cart and redirect
+      dispatch(clearCart());
+      navigate("/courses/success", {
+        state: {
+          orderDetails: result,
+          course: getCourseFromCart(cartItems),
+        },
+      });
+    } catch (error) {
+      console.error("PayPal payment processing error:", error);
+
+      // Enhanced error handling
+      if (error.status === 400) {
+        toast.error(error.message || "Payment validation failed");
+      } else if (error.status === 401) {
+        toast.error("Authentication failed. Please log in again.");
+        navigate("/login");
+      } else if (error.status === 409) {
+        toast.error("Payment already processed or duplicate transaction");
+      } else if (error.error_code === "PAYMENT_VERIFICATION_FAILED") {
+        toast.error("Payment verification failed. Please contact support.");
+      } else {
+        toast.error("Payment processing failed. Please try again.");
+      }
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
+
+  // NEW: PayPal payment error handler
+  const handlePayPalPaymentError = (error) => {
+    console.error("PayPal payment error:", error);
+    toast.error("PayPal payment failed. Please try again.");
+    setIsProcessingPayment(false);
+  };
+
   // Stripe appearance and options
   const stripeOptions = {
     clientSecret,
@@ -146,6 +231,9 @@ const CheckoutPage = () => {
       billingInfo.email.includes("@")
     );
   };
+
+  // Get current course for display
+  const currentCourse = getCourseFromCart(cartItems);
 
   return (
     <CheckoutProtection>
@@ -175,7 +263,8 @@ const CheckoutPage = () => {
                     name="firstName"
                     value={billingInfo.firstName}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    disabled={isProcessingPayment} // NEW: Disable during processing
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
                     required
                   />
                 </div>
@@ -192,7 +281,8 @@ const CheckoutPage = () => {
                     name="lastName"
                     value={billingInfo.lastName}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    disabled={isProcessingPayment}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
                     required
                   />
                 </div>
@@ -209,7 +299,8 @@ const CheckoutPage = () => {
                     name="email"
                     value={billingInfo.email}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    disabled={isProcessingPayment}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
                     required
                   />
                 </div>
@@ -226,7 +317,8 @@ const CheckoutPage = () => {
                     name="address"
                     value={billingInfo.address}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    disabled={isProcessingPayment}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
                   />
                 </div>
                 <div>
@@ -242,7 +334,8 @@ const CheckoutPage = () => {
                     name="city"
                     value={billingInfo.city}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    disabled={isProcessingPayment}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
                   />
                 </div>
                 <div>
@@ -258,7 +351,8 @@ const CheckoutPage = () => {
                     name="postalCode"
                     value={billingInfo.postalCode}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    disabled={isProcessingPayment}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
                   />
                 </div>
                 <div className="md:col-span-2">
@@ -273,7 +367,8 @@ const CheckoutPage = () => {
                     name="country"
                     value={billingInfo.country}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    disabled={isProcessingPayment}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
                   >
                     <option value="United Kingdom">United Kingdom</option>
                     <option value="United States">United States</option>
@@ -288,41 +383,38 @@ const CheckoutPage = () => {
             {/* Order Summary */}
             <Card className="p-6">
               <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
-              {cartItems.length > 0 ? (
+              {currentCourse ? (
                 <div className="space-y-4">
-                  {cartItems.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex justify-between items-center border-b pb-4 last:border-b-0"
-                    >
-                      <div className="flex items-center">
-                        <img
-                          src={`${baseUrl}${item.image}`}
-                          alt={item.name}
-                          className="w-16 h-16 object-cover rounded mr-4"
-                        />
-                        <div>
-                          <h3 className="font-medium">{item.name}</h3>
-                          <p className="text-sm text-gray-500">
-                            {item.level && `Level: ${item.level}`}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center">
-                        <p className="font-semibold mr-4">
-                          £{item.price?.toFixed(2)}
+                  <div className="flex justify-between items-center border-b pb-4">
+                    <div className="flex items-center">
+                      <img
+                        src={`${baseUrl}${currentCourse.image}`}
+                        alt={currentCourse.name}
+                        className="w-16 h-16 object-cover rounded mr-4"
+                      />
+                      <div>
+                        <h3 className="font-medium">{currentCourse.name}</h3>
+                        <p className="text-sm text-gray-500">
+                          {currentCourse.level &&
+                            `Level: ${currentCourse.level}`}
                         </p>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                          onClick={() => handleRemoveFromCart(item.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
                       </div>
                     </div>
-                  ))}
+                    <div className="flex items-center">
+                      <p className="font-semibold mr-4">
+                        £{currentCourse.price?.toFixed(2)}
+                      </p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                        onClick={() => handleRemoveFromCart(currentCourse.id)}
+                        disabled={isProcessingPayment}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
                   <div className="flex justify-between items-center pt-4 border-t font-semibold text-lg">
                     <span>Total:</span>
                     <span>£{cartTotal}</span>
@@ -339,6 +431,16 @@ const CheckoutPage = () => {
             <Card className="p-6">
               <h2 className="text-xl font-semibold mb-4">Payment</h2>
 
+              {/* Processing Indicator */}
+              {isProcessingPayment && (
+                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                  <p className="text-sm text-blue-800 flex items-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-800 mr-2"></div>
+                    Processing your payment securely...
+                  </p>
+                </div>
+              )}
+
               {/* Total Display */}
               <div className="flex justify-between items-center text-lg font-semibold border-b pb-4 mb-6">
                 <span>Total:</span>
@@ -350,6 +452,7 @@ const CheckoutPage = () => {
                 <Button
                   variant={paymentMethod === "paypal" ? "default" : "outline"}
                   onClick={() => setPaymentMethod("paypal")}
+                  disabled={isProcessingPayment}
                   className="w-full"
                 >
                   <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -363,6 +466,7 @@ const CheckoutPage = () => {
                 <Button
                   variant={paymentMethod === "stripe" ? "default" : "outline"}
                   onClick={() => setPaymentMethod("stripe")}
+                  disabled={isProcessingPayment}
                   className="w-full"
                 >
                   <CreditCard className="w-5 h-5 mr-2" />
@@ -371,7 +475,7 @@ const CheckoutPage = () => {
               </div>
 
               {/* Payment Form Section */}
-              {!isFormValid() && (
+              {!isFormValid() && !isProcessingPayment && (
                 <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
                   <p className="text-sm text-yellow-800">
                     Please fill in required billing information before
@@ -382,17 +486,22 @@ const CheckoutPage = () => {
 
               <div className="space-y-4">
                 {/* PayPal Button Section */}
-                {paymentMethod === "paypal" && isFormValid() && (
-                  <PayPalCheckoutForm
-                    cartTotal={cartTotal}
-                    cartItems={cartItems}
-                    billingInfo={billingInfo}
-                  />
-                )}
+                {paymentMethod === "paypal" &&
+                  isFormValid() &&
+                  !isProcessingPayment && (
+                    <PayPalCheckoutForm
+                      cartTotal={cartTotal}
+                      cartItems={cartItems}
+                      billingInfo={billingInfo}
+                      onSuccess={handlePayPalPaymentSuccess}
+                      onError={handlePayPalPaymentError}
+                    />
+                  )}
 
                 {/* Stripe Elements Section */}
                 {paymentMethod === "stripe" &&
                   isFormValid() &&
+                  !isProcessingPayment &&
                   clientSecret && (
                     <Elements options={stripeOptions} stripe={stripePromise}>
                       <StripeCheckoutForm
@@ -407,6 +516,7 @@ const CheckoutPage = () => {
                 {/* Loading States */}
                 {paymentMethod === "stripe" &&
                   isFormValid() &&
+                  !isProcessingPayment &&
                   (isCreatingStripeIntent || !clientSecret) && (
                     <div className="text-center py-4">
                       <p className="text-sm text-gray-500">
@@ -429,10 +539,10 @@ const CheckoutPage = () => {
                   <Award className="h-5 w-5 text-blue-500 mr-3" />
                   <span className="text-sm">Instant course access</span>
                 </div>
-                {/* <div className="flex items-center">
+                <div className="flex items-center">
                   <Clock className="h-5 w-5 text-purple-500 mr-3" />
-                  <span className="text-sm">Lifetime access</span>
-                </div> */}
+                  <span className="text-sm">12 months access</span>
+                </div>
               </div>
             </Card>
           </div>

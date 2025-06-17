@@ -97,17 +97,34 @@ export const api = createApi({
       invalidatesTags: ["Orders"],
     }),
 
-    // Process PayPal payment (client-side pattern)
+    // UPDATED: Secure PayPal payment processing with backend verification
     processPayPalPayment: builder.mutation({
       query: (paymentData) => ({
-        url: `/payment/paypal/capture-order/`, // Changed from server-side initiate pattern
+        url: `/payment/paypal/capture-order/`, // NEW SECURE ENDPOINT
         method: "POST",
-        body: paymentData,
+        body: {
+          payment_id: paymentData.payment_id, // PayPal payment ID
+          order_id: paymentData.order_id, // PayPal order ID
+          expected_amount: paymentData.expected_amount, // Expected payment amount
+          course_id: paymentData.course_id, // Single course ID
+          currency: paymentData.currency || "GBP", // Payment currency
+          payer_email: paymentData.payer_email, // Payer's email
+          billing_info: paymentData.billing_info, // Billing information
+        },
       }),
+      transformResponse: (response) => {
+        return {
+          success: true,
+          order_id: response.order_id,
+          message: response.message || "Payment processed successfully",
+          course_access: response.course_access,
+        };
+      },
       transformErrorResponse: (response) => {
         return {
           status: response.status,
           message: response.data?.message || "Failed to process PayPal payment",
+          error_code: response.data?.error_code,
         };
       },
       invalidatesTags: ["Orders"],
