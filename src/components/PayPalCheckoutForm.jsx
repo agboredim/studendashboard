@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { toast } from "sonner";
@@ -22,6 +22,9 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [processPayPalPayment] = useProcessPayPalPaymentMutation();
 
+  // 🆕 GET USER FROM REDUX - This is the key addition!
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
+
   // PayPal options
   const paypalOptions = {
     clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID,
@@ -33,6 +36,13 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
 
   const createOrder = (data, actions) => {
     try {
+      // 🆕 AUTHENTICATION CHECK
+      if (!isAuthenticated || !user?.id) {
+        toast.error("Please log in to make a purchase");
+        navigate("/login");
+        throw new Error("User not authenticated");
+      }
+
       // Get single course (since system only supports single course)
       const course = getCourseFromCart(cartItems);
       if (!course) {
@@ -41,6 +51,23 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
 
       // Format items for PayPal
       const items = formatItemsForPayPal(cartItems);
+
+      // 🆕 CREATE CUSTOM_ID IN BACKEND-EXPECTED FORMAT
+      const customId = `${user.id}|${course.id}`;
+
+      // 🆕 ENHANCED DEBUG LOGGING FOR MONGODB
+      console.log("🔍 PayPal Order Creation Debug (MongoDB):");
+      console.log("  User ID:", user.id, "Type:", typeof user.id);
+      console.log("  Course ID:", course.id, "Type:", typeof course.id);
+      console.log("  Custom ID:", customId);
+      console.log("  Custom ID Length:", customId.length);
+      console.log("  Split Test:", customId.split("|"));
+      console.log("  Cart Total:", cartTotal);
+
+      // 🆕 VALIDATE OBJECTID FORMATS
+      const isValidObjectId = (id) => /^[0-9a-fA-F]{24}$/.test(id);
+      console.log("  User ID valid ObjectId:", isValidObjectId(user.id));
+      console.log("  Course ID valid ObjectId:", isValidObjectId(course.id));
 
       return actions.order.create({
         purchase_units: [
@@ -57,7 +84,8 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
             },
             items: items,
             description: `Course: ${course.name}`,
-            custom_id: `course_${course.id}_${Date.now()}`,
+            // 🆕 FIXED: Use backend expected format user_id|course_id
+            custom_id: customId,
           },
         ],
         application_context: {
@@ -84,12 +112,23 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
     setIsProcessing(true);
 
     try {
+      // 🆕 ADDITIONAL AUTH CHECK BEFORE PAYMENT
+      if (!isAuthenticated || !user?.id) {
+        toast.error("Authentication lost. Please log in again.");
+        navigate("/login");
+        return;
+      }
+
       // Capture the payment
       const orderData = await actions.order.capture();
 
       console.log("✅ PayPal Payment Captured:", orderData);
       console.log("📦 Order ID:", data.orderID);
       console.log("💳 Payment ID:", orderData.id);
+      console.log(
+        "🔍 Custom ID from PayPal:",
+        orderData.purchase_units[0]?.custom_id
+      );
 
       // Format secure payment data using our service
       const securePaymentData = formatSecurePaymentData(
@@ -106,6 +145,17 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
       if (!validation.isValid) {
         throw new Error(`Validation failed: ${validation.errors.join(", ")}`);
       }
+
+      // 🆕 DETAILED LOGGING BEFORE SENDING
+      console.log("🔍 DEBUGGING PAYMENT DATA:");
+      console.log("Raw cartItems:", cartItems);
+      console.log("Raw orderData:", { id: data.orderID });
+      console.log("Raw paymentData:", orderData);
+      console.log("Raw billingInfo:", billingInfo);
+      console.log(
+        "Formatted securePaymentData:",
+        JSON.stringify(securePaymentData, null, 2)
+      );
 
       // Send to secure backend endpoint
       const response = await processPayPalPayment(securePaymentData).unwrap();
@@ -136,6 +186,9 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
         errorMessage = error.message || "Payment validation failed";
       } else if (error.status === 401) {
         errorMessage = "Authentication failed. Please log in again.";
+      } else if (error.status === 403) {
+        errorMessage =
+          "Payment authorization failed. Please try again or contact support.";
       } else if (error.status === 409) {
         errorMessage = "Payment already processed or duplicate transaction";
       } else if (error.error_code === "PAYMENT_VERIFICATION_FAILED") {
@@ -172,6 +225,19 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
   // Get current course for display
   const currentCourse = getCourseFromCart(cartItems);
 
+  // 🆕 SHOW WARNING IF NOT AUTHENTICATED
+  if (!isAuthenticated || !user?.id) {
+    return (
+      <div className="paypal-checkout-form">
+        <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+          <p className="text-yellow-800 text-sm">
+            ⚠️ Please log in to complete your purchase.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="paypal-checkout-form">
       <PayPalScriptProvider options={paypalOptions}>
@@ -187,7 +253,7 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
           onApprove={onApprove}
           onError={onError}
           onCancel={onCancel}
-          disabled={isProcessing || !currentCourse}
+          disabled={isProcessing || !currentCourse || !isAuthenticated}
         />
       </PayPalScriptProvider>
 
@@ -210,10 +276,15 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
           </p>
           <p>Course: {currentCourse.name}</p>
           <p>Price: £{cartTotal}</p>
+          <p>User ID: {user?.id}</p>
+          <p>
+            Custom ID Format: {user?.id}|{currentCourse.id}
+          </p>
           <p>
             PayPal:{" "}
             {paypalOptions.clientId ? "Configured" : "❌ Missing Client ID"}
           </p>
+          <p>Auth: {isAuthenticated ? "✅ Logged in" : "❌ Not logged in"}</p>
         </div>
       )}
 

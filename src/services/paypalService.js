@@ -33,34 +33,6 @@ export const calculateOrderTotal = (cartItems) => {
   return (course.price || 0).toFixed(2);
 };
 
-// DEPRECATED: Old format for backend processing (kept for compatibility)
-// export const formatOrderForBackend = (
-//   cartItems,
-//   paypalOrderData,
-//   paypalPaymentData
-// ) => {
-//   const course = cartItems[0]; // Single course only
-
-//   return {
-//     order_items: [
-//       {
-//         course_id: course.id,
-//         price: course.price,
-//       },
-//     ],
-//     payment_details: {
-//       payment_method: "paypal",
-//       payment_id: paypalPaymentData.id,
-//       order_id: paypalOrderData.id,
-//       status: paypalPaymentData.status,
-//       amount: calculateOrderTotal(cartItems),
-//       currency: "GBP",
-//       payer_email: paypalPaymentData.payer?.email_address || "",
-//       payer_id: paypalPaymentData.payer?.payer_id || "",
-//     },
-//   };
-// };
-
 // NEW: Secure format for backend verification and processing
 export const formatSecurePaymentData = (
   cartItems,
@@ -75,11 +47,31 @@ export const formatSecurePaymentData = (
   const course = cartItems[0]; // Single course only
   const amount = calculateOrderTotal(cartItems);
 
+  // 🆕 DEBUGGING: Check course ID format
+  console.log("🔍 Course ID Debug:");
+  console.log("Original course.id:", course.id);
+  console.log("Type:", typeof course.id);
+
+  // 🆕 TRY TO CONVERT TO INTEGER IF POSSIBLE
+  let courseId = course.id;
+
+  // If it's a MongoDB ObjectId (24 char hex string), keep as string
+  // If it's a number string, convert to integer
+  if (typeof courseId === "string" && /^\d+$/.test(courseId)) {
+    courseId = parseInt(courseId);
+    console.log("✅ Converted to integer:", courseId);
+  } else if (typeof courseId === "string" && courseId.length === 24) {
+    // Looks like MongoDB ObjectId, keep as string
+    console.log("✅ Keeping as MongoDB ObjectId string:", courseId);
+  } else {
+    console.log("✅ Using course ID as-is:", courseId);
+  }
+
   return {
     payment_id: paypalPaymentData.id, // PayPal payment ID for verification
-    order_id: paypalOrderData.id, // PayPal order ID
+    order_id: paypalOrderData.id || paypalOrderData,
     expected_amount: amount, // Expected payment amount
-    course_id: course.id, // Single course ID
+    course_id: courseId, // Course ID (ObjectId string)
     currency: "GBP", // Payment currency
     payer_email: paypalPaymentData.payer?.email_address || billingInfo?.email,
     billing_info: {
@@ -126,6 +118,12 @@ export const validatePaymentData = (paymentData) => {
 
   if (!paymentData.payer_email || !paymentData.payer_email.includes("@")) {
     errors.push("Valid payer email is required");
+  }
+
+  // 🆕 VALIDATE COURSE ID FORMAT
+  const courseId = paymentData.course_id;
+  if (typeof courseId !== "string" && typeof courseId !== "number") {
+    errors.push("Course ID must be string or number");
   }
 
   return {

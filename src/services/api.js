@@ -100,7 +100,7 @@ export const api = createApi({
     // UPDATED: Secure PayPal payment processing with backend verification
     processPayPalPayment: builder.mutation({
       query: (paymentData) => ({
-        url: `/payment/paypal/capture-order/`, // NEW SECURE ENDPOINT
+        url: `/payment/paypal/verify-order/`, // NEW SECURE ENDPOINT
         method: "POST",
         body: {
           payment_id: paymentData.payment_id, // PayPal payment ID
