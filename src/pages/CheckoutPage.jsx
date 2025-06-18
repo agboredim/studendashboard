@@ -39,34 +39,6 @@ const baseUrl = import.meta.env.VITE_BASE_URL;
 // Initialize Stripe outside of the component to avoid re-creating the object on every render
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
-const PaymentDiagnostic = () => {
-  const { isAuthenticated, accessToken, user } = useSelector(
-    (state) => state.auth
-  );
-  return (
-    <div className="mb-4 p-4 bg-gray-100 rounded border">
-      <h3 className="font-bold mb-2">🔍 Payment Diagnostic</h3>
-      <div className="space-y-1 text-sm">
-        <div>✅ User Authenticated: {isAuthenticated ? "Yes" : "❌ No"}</div>
-        <div>✅ Access Token: {accessToken ? "Present" : "❌ Missing"}</div>
-        <div>✅ User Info: {user?.email || "❌ No user data"}</div>
-        <div>
-          ✅ PayPal Client ID:{" "}
-          {import.meta.env.VITE_PAYPAL_CLIENT_ID ? "Set" : "❌ Missing"}
-        </div>
-        <div>
-          ✅ Backend URL: {import.meta.env.VITE_BASE_URL || "❌ Missing"}
-        </div>
-      </div>
-      {!isAuthenticated && (
-        <div className="mt-2 p-2 bg-red-100 text-red-700 rounded">
-          ⚠️ User must be logged in to make payments
-        </div>
-      )}
-    </div>
-  );
-};
-
 const CheckoutPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -237,7 +209,6 @@ const CheckoutPage = () => {
 
   return (
     <CheckoutProtection>
-      <PaymentDiagnostic />
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8">Checkout</h1>
 
@@ -388,7 +359,11 @@ const CheckoutPage = () => {
                   <div className="flex justify-between items-center border-b pb-4">
                     <div className="flex items-center">
                       <img
-                        src={`${baseUrl}${currentCourse.image}`}
+                        src={
+                          currentCourse.image.startsWith("http")
+                            ? currentCourse.image
+                            : `${baseUrl}${currentCourse.image}`
+                        }
                         alt={currentCourse.name}
                         className="w-16 h-16 object-cover rounded mr-4"
                       />
@@ -539,10 +514,10 @@ const CheckoutPage = () => {
                   <Award className="h-5 w-5 text-blue-500 mr-3" />
                   <span className="text-sm">Instant course access</span>
                 </div>
-                <div className="flex items-center">
+                {/* <div className="flex items-center">
                   <Clock className="h-5 w-5 text-purple-500 mr-3" />
                   <span className="text-sm">12 months access</span>
-                </div>
+                </div> */}
               </div>
             </Card>
           </div>

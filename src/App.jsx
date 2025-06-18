@@ -237,7 +237,6 @@ function App() {
               <Route path="events" element={<WorkshopEvents />} />
               <Route path="terms" element={<TermsAndConditions />} />
               <Route path="privacy" element={<PrivacyPolicy />} />
-
               {/* Protected Routes that should use main layout */}
               <Route
                 path="checkout"
@@ -247,6 +246,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              // Keep your existing route for the base path
               <Route
                 path="order-confirmation"
                 element={
@@ -255,7 +255,15 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-
+              // ADD this new route for the orderId parameter
+              <Route
+                path="order-confirmation/:orderId"
+                element={
+                  <ProtectedRoute>
+                    <OrderConfirmationPage />
+                  </ProtectedRoute>
+                }
+              />
               {/* 404 catch-all route */}
               <Route path="*" element={<NotFound />} />
             </Route>
