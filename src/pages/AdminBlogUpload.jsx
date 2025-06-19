@@ -1,797 +1,926 @@
-import React, { useState, useMemo } from "react";
-import { Editor } from "@tinymce/tinymce-react";
-import "react-quill/dist/quill.snow.css";
+import React, { useState, useEffect } from "react";
+import { useCreateBlogMutation } from "../services/blogsApi"; // RTK Query hook for creating blogs
+import { toast } from "sonner"; // For showing success/error messages
+import { useNavigate } from "react-router-dom";
 import {
   Plus,
-  Minus,
-  Eye,
-  Save,
-  ArrowLeft,
-  Upload,
-  AlertCircle,
-  CheckCircle,
-} from "lucide-react";
-import {
-  useCreateBlogMutation,
-  useUploadBlogImageMutation,
-} from "../services/blogsApi";
+  Trash2,
+  Heading1,
+  FileText,
+  Info,
+  Lightbulb,
+  AlertTriangle,
+  Star,
+  Image as ImageIcon,
+  List,
+} from "lucide-react"; // Icons for block types
 
-const AdminBlogUpload = () => {
-  const [blogData, setBlogData] = useState({
-    title: "",
-    slug: "",
-    author: "",
-    authorRole: "",
-    authorImage: "",
-    date: new Date().toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    }),
-    category: "",
-    tags: [],
-    image: "",
-    excerpt: "",
-    content: "", // WYSIWYG content as HTML
-    specialBlocks: [], // For special blocks like CTA, Table of Contents
-  });
+// Initial state for a new blog post form
+const initialBlogState = {
+  title: "",
+  slug: "",
+  author: "Titans Careers Editorial Team", // Default author
+  authorRole: "AML/KYC Compliance Experts", // Default role
+  authorImage:
+    "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80", // Default author image
+  date: new Date().toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }), // Auto-generated date
+  category: "Compliance", // Default category
+  tags: [], // Array for tags
+  image: "", // Featured image URL
+  excerpt: "", // Short summary
+  content: [], // This will hold our structured content blocks
+};
 
-  const [newTag, setNewTag] = useState("");
-  const [showPreview, setShowPreview] = useState(false);
-  const [contentMode, setContentMode] = useState("wysiwyg"); // 'wysiwyg' or 'blocks'
+function AdminBlogUpload() {
+  const [blog, setBlog] = useState(initialBlogState);
+  const [currentTagInput, setCurrentTagInput] = useState(""); // State for adding new tags
+  const [createBlog, { isLoading, isSuccess, isError, error }] =
+    useCreateBlogMutation(); // RTK Query mutation hook
+  const navigate = useNavigate(); // For programmatic navigation
 
-  // RTK Query mutations
-  const [createBlog, { isLoading: isCreating, error: createError }] =
-    useCreateBlogMutation();
-  const [uploadImage, { isLoading: isUploading }] =
-    useUploadBlogImageMutation();
+  // Effect to handle success/error states after blog creation attempt
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("Blog post uploaded successfully!");
+      setBlog(initialBlogState); // Reset the form after successful upload
+      navigate("/blog"); // Navigate to the blog listing page
+    }
+    if (isError) {
+      toast.error(
+        `Failed to upload blog: ${
+          error?.data?.message || error?.message || "Unknown error"
+        }`
+      );
+      console.error("Blog upload error:", error); // Log the full error for debugging
+    }
+  }, [isSuccess, isError, error, navigate]);
 
-  const specialBlockTypes = [
-    { value: "tableOfContents", label: "Table of Contents" },
-    { value: "cta", label: "Call to Action" },
-    { value: "callout", label: "Callout Box" },
-  ];
-
-  const calloutStyles = [
-    {
-      value: "info",
-      label: "Info (Blue)",
-      class: "bg-blue-50 border-l-4 border-blue-500",
-    },
-    {
-      value: "warning",
-      label: "Warning (Yellow)",
-      class: "bg-yellow-50 border-l-4 border-yellow-500",
-    },
-    {
-      value: "danger",
-      label: "Danger (Red)",
-      class: "bg-red-50 border-l-4 border-red-500",
-    },
-    {
-      value: "success",
-      label: "Success (Green)",
-      class: "bg-green-50 border-l-4 border-green-500",
-    },
-    { value: "neutral", label: "Neutral (Gray)", class: "bg-gray-100" },
-  ];
-
-  // ReactQuill modules configuration
-  const modules = useMemo(
-    () => ({
-      toolbar: {
-        container: [
-          [{ header: [1, 2, 3, 4, 5, 6, false] }],
-          ["bold", "italic", "underline", "strike"],
-          [{ color: [] }, { background: [] }],
-          [{ script: "sub" }, { script: "super" }],
-          ["blockquote", "code-block"],
-          [{ list: "ordered" }, { list: "bullet" }],
-          [{ indent: "-1" }, { indent: "+1" }],
-          [{ align: [] }],
-          ["link", "image"],
-          ["clean"],
-        ],
-        handlers: {
-          image: imageHandler,
-        },
-      },
-      clipboard: {
-        matchVisual: false,
-      },
-    }),
-    []
-  );
-
-  const formats = [
-    "header",
-    "bold",
-    "italic",
-    "underline",
-    "strike",
-    "color",
-    "background",
-    "script",
-    "blockquote",
-    "code-block",
-    "list",
-    "bullet",
-    "indent",
-    "align",
-    "link",
-    "image",
-  ];
-
-  // Custom image handler for ReactQuill
-  function imageHandler() {
-    const input = document.createElement("input");
-    input.setAttribute("type", "file");
-    input.setAttribute("accept", "image/*");
-    input.click();
-
-    input.onchange = async () => {
-      const file = input.files[0];
-      if (!file) return;
-
-      try {
-        const formData = new FormData();
-        formData.append("image", file);
-
-        const result = await uploadImage(formData).unwrap();
-
-        // Get the Quill instance and insert the image
-        const quill = this.quill;
-        const range = quill.getSelection();
-        quill.insertEmbed(range.index, "image", result.url);
-      } catch (error) {
-        console.error("Image upload failed:", error);
-        alert("Failed to upload image. Please try again.");
-      }
-    };
-  }
-
-  const generateSlug = (title) => {
-    return title
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, "")
-      .replace(/\s+/g, "-")
-      .replace(/-+/g, "-")
-      .trim("-");
+  // Handle changes for basic blog details (except title, which has special slug logic)
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setBlog((prev) => ({ ...prev, [name]: value }));
   };
 
-  const addTag = () => {
-    if (newTag.trim() && !blogData.tags.includes(newTag.trim())) {
-      setBlogData((prev) => ({
+  // Handle title change and auto-generate slug
+  const handleSlugChange = (e) => {
+    const title = e.target.value;
+    // Basic slug generation logic
+    const slug = title
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, "") // Remove non-alphanumeric chars (keep spaces and hyphens)
+      .replace(/\s+/g, "-") // Replace spaces with single hyphens
+      .replace(/-+/g, "-") // Replace multiple hyphens with single hyphen
+      .trim(); // Trim leading/trailing hyphens/spaces
+    setBlog((prev) => ({ ...prev, title: title, slug: slug }));
+  };
+
+  // Handle adding a new tag
+  const handleAddTag = () => {
+    if (currentTagInput.trim() && !blog.tags.includes(currentTagInput.trim())) {
+      setBlog((prev) => ({
         ...prev,
-        tags: [...prev.tags, newTag.trim()],
+        tags: [...prev.tags, currentTagInput.trim()],
       }));
-      setNewTag("");
+      setCurrentTagInput(""); // Clear the input field
     }
   };
 
-  const removeTag = (tagToRemove) => {
-    setBlogData((prev) => ({
+  // Handle removing an existing tag
+  const handleRemoveTag = (tagToRemove) => {
+    setBlog((prev) => ({
       ...prev,
       tags: prev.tags.filter((tag) => tag !== tagToRemove),
     }));
   };
 
-  const addSpecialBlock = (type) => {
-    const newBlock = {
-      id: Date.now(),
-      type,
-      content: "",
-      style: type === "callout" ? "info" : undefined,
-      title: type === "cta" ? "" : undefined,
-      buttonText: type === "cta" ? "" : undefined,
-      link: type === "cta" ? "" : undefined,
-    };
-    setBlogData((prev) => ({
+  // --- Content Block Management Functions ---
+
+  // Add a new content block to the blog's content array
+  const addContentBlock = (type) => {
+    let newBlock;
+    // Initialize block based on its type to match JSON structure
+    if (type === "heading") {
+      newBlock = { type: "heading", level: 2, id: "", value: "" }; // Default to h2
+    } else if (["infoBox", "highlightBox", "warningBox"].includes(type)) {
+      newBlock = { type, title: "", value: "" }; // Simple text boxes
+    } else if (type === "primaryBox") {
+      newBlock = { type: "primaryBox", title: "", value: [] }; // Primary box can have nested paragraphs/links
+    } else if (type === "alertBox") {
+      newBlock = {
+        type: "alertBox",
+        title: "",
+        value: [{ type: "paragraph", value: "" }],
+      }; // Alert box can have paragraphs or list items
+    } else if (type === "list") {
+      newBlock = { type: "list", value: [{ value: "" }] }; // List block
+    } else if (type === "image") {
+      newBlock = { type: "image", src: "", alt: "", caption: "" }; // Image block
+    } else {
+      newBlock = { type, value: "" }; // Default for paragraph or other simple types
+    }
+    setBlog((prev) => ({
       ...prev,
-      specialBlocks: [...prev.specialBlocks, newBlock],
+      content: [...prev.content, newBlock], // Add new block to the end
     }));
   };
 
-  const updateSpecialBlock = (id, field, value) => {
-    setBlogData((prev) => ({
+  // Update a specific field of a content block
+  const updateContentBlock = (index, field, value) => {
+    const updatedContent = [...blog.content];
+    updatedContent[index] = { ...updatedContent[index], [field]: value };
+
+    // Special logic for heading: auto-generate id from value
+    if (field === "value" && updatedContent[index].type === "heading") {
+      updatedContent[index].id = value
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-")
+        .trim();
+    }
+    setBlog((prev) => ({ ...prev, content: updatedContent }));
+  };
+
+  // Remove a content block
+  const removeContentBlock = (index) => {
+    setBlog((prev) => ({
       ...prev,
-      specialBlocks: prev.specialBlocks.map((block) =>
-        block.id === id ? { ...block, [field]: value } : block
-      ),
+      content: prev.content.filter((_, i) => i !== index),
     }));
   };
 
-  const deleteSpecialBlock = (id) => {
-    setBlogData((prev) => ({
-      ...prev,
-      specialBlocks: prev.specialBlocks.filter((block) => block.id !== id),
-    }));
-  };
-
-  const handleSave = async (status = "draft") => {
-    try {
-      // Convert WYSIWYG content to content blocks format for backend
-      const contentBlocks = [];
-
-      // Add main WYSIWYG content as HTML block
-      if (blogData.content) {
-        contentBlocks.push({
-          id: 1,
-          type: "html",
-          content: blogData.content,
+  // Add a nested item within a content block (e.g., list item in alertBox, paragraph/link in primaryBox)
+  const addNestedContentItem = (blockIndex, itemType) => {
+    const updatedContent = [...blog.content];
+    if (
+      updatedContent[blockIndex].value &&
+      Array.isArray(updatedContent[blockIndex].value)
+    ) {
+      if (itemType === "paragraph") {
+        updatedContent[blockIndex].value.push({ type: "paragraph", value: "" });
+      } else if (itemType === "link") {
+        updatedContent[blockIndex].value.push({
+          type: "link",
+          text: "",
+          href: "",
         });
+      } else if (itemType === "listItem") {
+        updatedContent[blockIndex].value.push({ value: "" });
       }
+      setBlog((prev) => ({ ...prev, content: updatedContent }));
+    }
+  };
 
-      // Add special blocks
-      blogData.specialBlocks.forEach((block, index) => {
-        contentBlocks.push({
-          id: index + 2,
-          ...block,
-        });
-      });
-
-      const blogPayload = {
-        title: blogData.title,
-        slug: blogData.slug || generateSlug(blogData.title),
-        author: blogData.author,
-        authorRole: blogData.authorRole,
-        authorImage: blogData.authorImage,
-        date: blogData.date,
-        category: blogData.category,
-        tags: blogData.tags,
-        image: blogData.image,
-        excerpt: blogData.excerpt,
-        content: contentBlocks,
-        status,
+  // Update a nested item within a content block
+  const updateNestedContentItem = (blockIndex, itemIndex, field, value) => {
+    const updatedContent = [...blog.content];
+    if (
+      updatedContent[blockIndex].value &&
+      Array.isArray(updatedContent[blockIndex].value)
+    ) {
+      updatedContent[blockIndex].value[itemIndex] = {
+        ...updatedContent[blockIndex].value[itemIndex],
+        [field]: value,
       };
+      setBlog((prev) => ({ ...prev, content: updatedContent }));
+    }
+  };
 
-      const result = await createBlog(blogPayload).unwrap();
+  // Remove a nested item within a content block
+  const removeNestedContentItem = (blockIndex, itemIndex) => {
+    const updatedContent = [...blog.content];
+    if (
+      updatedContent[blockIndex].value &&
+      Array.isArray(updatedContent[blockIndex].value)
+    ) {
+      updatedContent[blockIndex].value = updatedContent[
+        blockIndex
+      ].value.filter((_, i) => i !== itemIndex);
+      setBlog((prev) => ({ ...prev, content: updatedContent }));
+    }
+  };
 
-      alert(
-        `Blog ${
-          status === "published" ? "published" : "saved as draft"
-        } successfully!`
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Basic validation for main blog fields
+    if (
+      !blog.title ||
+      !blog.slug ||
+      !blog.category ||
+      !blog.excerpt ||
+      !blog.image
+    ) {
+      toast.error(
+        "Please fill in all basic blog details (Title, Slug, Category, Excerpt, Image URL)."
       );
+      return;
+    }
+    if (blog.content.length === 0) {
+      toast.error("Please add some content blocks to your blog post.");
+      return;
+    }
 
-      // Optionally redirect to the new blog post
-      if (status === "published") {
-        setTimeout(() => {
-          window.location.href = `/blog/${result.slug}`;
-        }, 2000);
+    // More granular validation for content blocks
+    for (const block of blog.content) {
+      if (
+        ["paragraph", "heading", "highlightBox"].includes(block.type) &&
+        !block.value?.trim()
+      ) {
+        toast.error(`"${block.type}" block cannot be empty.`);
+        return;
       }
-    } catch (error) {
-      console.error("Save error:", error);
-      alert("Failed to save blog post. Please try again.");
+      if (block.type === "image" && !block.src?.trim()) {
+        toast.error("Image block requires a source URL.");
+        return;
+      }
+      if (
+        block.type === "list" &&
+        (!block.value ||
+          block.value.length === 0 ||
+          block.value.some((item) => !item.value?.trim()))
+      ) {
+        toast.error("List blocks must contain at least one non-empty item.");
+        return;
+      }
+      if (
+        ["infoBox", "alertBox", "warningBox", "primaryBox"].includes(block.type)
+      ) {
+        if (!block.title?.trim()) {
+          toast.error(`"${block.type}" block requires a title.`);
+          return;
+        }
+        if (!block.value || block.value.length === 0) {
+          toast.error(`"${block.type}" block must contain content.`);
+          return;
+        }
+        if (
+          block.value.some(
+            (item) => item.type === "paragraph" && !item.value?.trim()
+          )
+        ) {
+          toast.error(
+            `All paragraphs within "${block.type}" must have content.`
+          );
+          return;
+        }
+        if (
+          block.value.some(
+            (item) => item.type === "listItem" && !item.value?.trim()
+          )
+        ) {
+          toast.error(
+            `All list items within "${block.type}" must have content.`
+          );
+          return;
+        }
+        if (
+          block.value.some(
+            (item) =>
+              item.type === "link" && (!item.text?.trim() || !item.href?.trim())
+          )
+        ) {
+          toast.error(
+            `All links within "${block.type}" must have text and a URL.`
+          );
+          return;
+        }
+      }
+    }
+
+    try {
+      // Send the blog object (which now contains the structured content array) to the backend
+      await createBlog(blog).unwrap();
+    } catch (err) {
+      // Error handling is managed by the useEffect hook
+      console.error("Blog creation failed:", err);
     }
   };
-
-  const renderSpecialBlock = (block, isPreview = false) => {
-    switch (block.type) {
-      case "tableOfContents":
-        return isPreview ? (
-          <div key={block.id} className="bg-gray-100 p-6 rounded-lg mb-8">
-            <h2 className="text-xl font-bold mb-4">Table of Contents</h2>
-            <p className="text-gray-500 italic">
-              Table of contents will be auto-generated from headings in the main
-              content.
-            </p>
-          </div>
-        ) : (
-          <div key={block.id} className="mb-4 p-4 border rounded-lg bg-blue-50">
-            <label className="block text-sm font-medium mb-2">
-              Table of Contents
-            </label>
-            <p className="text-blue-600 text-sm">
-              This will automatically generate a table of contents from headings
-              in your main content.
-            </p>
-          </div>
-        );
-
-      case "callout":
-        const calloutStyle =
-          calloutStyles.find((s) => s.value === block.style) ||
-          calloutStyles[0];
-        return isPreview ? (
-          <div key={block.id} className={`${calloutStyle.class} p-6 mb-6`}>
-            <p className="font-semibold text-gray-800">{block.content}</p>
-          </div>
-        ) : (
-          <div key={block.id} className="mb-4 p-4 border rounded-lg bg-gray-50">
-            <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm font-medium">Callout Box</label>
-              <button
-                onClick={() => deleteSpecialBlock(block.id)}
-                className="text-red-600 hover:text-red-800"
-              >
-                <Minus className="h-4 w-4" />
-              </button>
-            </div>
-            <select
-              value={block.style}
-              onChange={(e) =>
-                updateSpecialBlock(block.id, "style", e.target.value)
-              }
-              className="w-full p-2 border rounded-md mb-2"
-            >
-              {calloutStyles.map((style) => (
-                <option key={style.value} value={style.value}>
-                  {style.label}
-                </option>
-              ))}
-            </select>
-            <textarea
-              value={block.content}
-              onChange={(e) =>
-                updateSpecialBlock(block.id, "content", e.target.value)
-              }
-              className="w-full p-3 border rounded-md"
-              rows="3"
-              placeholder="Enter callout content..."
-            />
-          </div>
-        );
-
-      case "cta":
-        return isPreview ? (
-          <div
-            key={block.id}
-            className="bg-primary text-white p-8 rounded-lg mb-8"
-          >
-            <h3 className="text-2xl font-bold mb-4">{block.title}</h3>
-            <p className="mb-4">{block.content}</p>
-            <a
-              href={block.link}
-              className="inline-block bg-white text-primary px-6 py-3 rounded-md font-semibold hover:bg-gray-100 transition-colors"
-            >
-              {block.buttonText}
-            </a>
-          </div>
-        ) : (
-          <div key={block.id} className="mb-4 p-4 border rounded-lg bg-gray-50">
-            <div className="flex justify-between items-center mb-2">
-              <label className="block text-sm font-medium">
-                Call to Action
-              </label>
-              <button
-                onClick={() => deleteSpecialBlock(block.id)}
-                className="text-red-600 hover:text-red-800"
-              >
-                <Minus className="h-4 w-4" />
-              </button>
-            </div>
-            <input
-              type="text"
-              value={block.title || ""}
-              onChange={(e) =>
-                updateSpecialBlock(block.id, "title", e.target.value)
-              }
-              className="w-full p-3 border rounded-md mb-2"
-              placeholder="CTA Title..."
-            />
-            <textarea
-              value={block.content}
-              onChange={(e) =>
-                updateSpecialBlock(block.id, "content", e.target.value)
-              }
-              className="w-full p-3 border rounded-md mb-2"
-              rows="3"
-              placeholder="CTA content..."
-            />
-            <input
-              type="text"
-              value={block.buttonText || ""}
-              onChange={(e) =>
-                updateSpecialBlock(block.id, "buttonText", e.target.value)
-              }
-              className="w-full p-2 border rounded-md mb-2"
-              placeholder="Button text..."
-            />
-            <input
-              type="url"
-              value={block.link || ""}
-              onChange={(e) =>
-                updateSpecialBlock(block.id, "link", e.target.value)
-              }
-              className="w-full p-2 border rounded-md"
-              placeholder="Button link..."
-            />
-          </div>
-        );
-
-      default:
-        return null;
-    }
-  };
-
-  if (showPreview) {
-    return (
-      <div className="container mx-auto px-4 py-12">
-        <div className="mb-6 flex items-center gap-4">
-          <button
-            onClick={() => setShowPreview(false)}
-            className="flex items-center text-primary hover:text-primary/80"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" /> Back to Editor
-          </button>
-          <h1 className="text-2xl font-bold">Preview</h1>
-        </div>
-
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <img
-              src={blogData.image || "/placeholder.svg"}
-              alt={blogData.title}
-              className="w-full h-[400px] object-cover"
-            />
-
-            <div className="p-6 md:p-8">
-              <div className="flex flex-wrap items-center gap-4 mb-4">
-                <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
-                  {blogData.category}
-                </span>
-                <span className="text-sm text-foreground/70">
-                  {blogData.date}
-                </span>
-              </div>
-
-              <h1 className="text-3xl md:text-4xl font-bold text-primary mb-4">
-                {blogData.title}
-              </h1>
-
-              <div className="flex items-center mb-6 border-b border-foreground/10 pb-6">
-                <img
-                  src={blogData.authorImage || "/placeholder.svg"}
-                  alt={blogData.author}
-                  className="w-12 h-12 rounded-full mr-4 object-cover"
-                />
-                <div>
-                  <p className="font-medium text-foreground">
-                    {blogData.author}
-                  </p>
-                  <p className="text-sm text-foreground/70">
-                    {blogData.authorRole}
-                  </p>
-                </div>
-              </div>
-
-              <div className="prose max-w-none">
-                {/* Main WYSIWYG content */}
-                {blogData.content && (
-                  <div dangerouslySetInnerHTML={{ __html: blogData.content }} />
-                )}
-
-                {/* Special blocks */}
-                {blogData.specialBlocks.map((block) =>
-                  renderSpecialBlock(block, true)
-                )}
-              </div>
-
-              {blogData.tags.length > 0 && (
-                <div className="mt-8 pt-6 border-t border-foreground/10">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-medium">Tags:</span>
-                    {blogData.tags.map((tag, index) => (
-                      <span
-                        key={index}
-                        className="px-3 py-1 bg-gray-100 text-foreground rounded-full text-sm"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="container mx-auto px-4 py-12">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-8 flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-primary">
-            Create New Blog Post
-          </h1>
-          <div className="flex gap-4">
-            <button
-              onClick={() => setShowPreview(true)}
-              className="flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
+      <h1 className="text-4xl font-bold text-primary mb-8 text-center">
+        Upload New Blog Post
+      </h1>
+
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto"
+      >
+        {/* Basic Blog Details Section */}
+        <h2 className="text-2xl font-semibold text-foreground mb-6">
+          Blog Details
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div>
+            <label
+              htmlFor="title"
+              className="block text-sm font-medium text-foreground mb-1"
             >
-              <Eye className="h-4 w-4 mr-2" /> Preview
-            </button>
-            <button
-              onClick={() => handleSave("draft")}
-              disabled={isCreating}
-              className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 disabled:opacity-50"
-            >
-              <Save className="h-4 w-4 mr-2" /> Save Draft
-            </button>
-            <button
-              onClick={() => handleSave("published")}
-              disabled={isCreating}
-              className="flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 disabled:opacity-50"
-            >
-              <Upload className="h-4 w-4 mr-2" /> Publish
-            </button>
-          </div>
-        </div>
-
-        {/* Status Messages */}
-        {createError && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md">
-            <div className="flex items-center">
-              <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
-              <span className="text-red-800">
-                Error: {createError.data?.message || "Failed to save blog post"}
-              </span>
-            </div>
-          </div>
-        )}
-
-        <div className="bg-white rounded-lg shadow-md p-6">
-          {/* Basic Information */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div>
-              <label className="block text-sm font-medium mb-2">Title *</label>
-              <input
-                type="text"
-                value={blogData.title}
-                onChange={(e) => {
-                  setBlogData((prev) => ({
-                    ...prev,
-                    title: e.target.value,
-                    slug: generateSlug(e.target.value),
-                  }));
-                }}
-                className="w-full p-3 border rounded-md"
-                placeholder="Enter blog title..."
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Slug</label>
-              <input
-                type="text"
-                value={blogData.slug}
-                onChange={(e) =>
-                  setBlogData((prev) => ({ ...prev, slug: e.target.value }))
-                }
-                className="w-full p-3 border rounded-md"
-                placeholder="url-slug"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Author *</label>
-              <input
-                type="text"
-                value={blogData.author}
-                onChange={(e) =>
-                  setBlogData((prev) => ({ ...prev, author: e.target.value }))
-                }
-                className="w-full p-3 border rounded-md"
-                placeholder="Author name..."
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Author Role
-              </label>
-              <input
-                type="text"
-                value={blogData.authorRole}
-                onChange={(e) =>
-                  setBlogData((prev) => ({
-                    ...prev,
-                    authorRole: e.target.value,
-                  }))
-                }
-                className="w-full p-3 border rounded-md"
-                placeholder="Author role/title..."
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Category *
-              </label>
-              <select
-                value={blogData.category}
-                onChange={(e) =>
-                  setBlogData((prev) => ({ ...prev, category: e.target.value }))
-                }
-                className="w-full p-3 border rounded-md"
-                required
-              >
-                <option value="">Select category...</option>
-                <option value="Compliance">Compliance</option>
-                <option value="Data Analysis">Data Analysis</option>
-                <option value="Cybersecurity">Cybersecurity</option>
-                <option value="Business Analysis">Business Analysis</option>
-                <option value="Technology">Technology</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Date</label>
-              <input
-                type="date"
-                value={new Date().toISOString().split("T")[0]}
-                onChange={(e) => {
-                  const date = new Date(e.target.value);
-                  setBlogData((prev) => ({
-                    ...prev,
-                    date: date.toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    }),
-                  }));
-                }}
-                className="w-full p-3 border rounded-md"
-              />
-            </div>
-          </div>
-
-          {/* Images */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Featured Image URL
-              </label>
-              <input
-                type="url"
-                value={blogData.image}
-                onChange={(e) =>
-                  setBlogData((prev) => ({ ...prev, image: e.target.value }))
-                }
-                className="w-full p-3 border rounded-md"
-                placeholder="https://example.com/image.jpg"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Author Image URL
-              </label>
-              <input
-                type="url"
-                value={blogData.authorImage}
-                onChange={(e) =>
-                  setBlogData((prev) => ({
-                    ...prev,
-                    authorImage: e.target.value,
-                  }))
-                }
-                className="w-full p-3 border rounded-md"
-                placeholder="https://example.com/author.jpg"
-              />
-            </div>
-          </div>
-
-          {/* Excerpt */}
-          <div className="mb-8">
-            <label className="block text-sm font-medium mb-2">Excerpt *</label>
-            <textarea
-              value={blogData.excerpt}
-              onChange={(e) =>
-                setBlogData((prev) => ({ ...prev, excerpt: e.target.value }))
-              }
-              className="w-full p-3 border rounded-md"
-              rows="3"
-              placeholder="Brief description of the blog post..."
+              Title <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              value={blog.title}
+              onChange={handleSlugChange} // Uses special handler for slug generation
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               required
             />
           </div>
-
-          {/* Tags */}
-          <div className="mb-8">
-            <label className="block text-sm font-medium mb-2">Tags</label>
-            <div className="flex items-center mb-2">
+          <div>
+            <label
+              htmlFor="slug"
+              className="block text-sm font-medium text-foreground mb-1"
+            >
+              Slug (auto-generated from title)
+            </label>
+            <input
+              type="text"
+              id="slug"
+              name="slug"
+              value={blog.slug}
+              readOnly // Make slug read-only as it's auto-generated
+              className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600 cursor-not-allowed"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="category"
+              className="block text-sm font-medium text-foreground mb-1"
+            >
+              Category <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="category"
+              name="category"
+              value={blog.category}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              required
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="image"
+              className="block text-sm font-medium text-foreground mb-1"
+            >
+              Featured Image URL <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="url"
+              id="image"
+              name="image"
+              value={blog.image}
+              onChange={handleChange}
+              placeholder="e.g., https://example.com/image.jpg"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              required
+            />
+          </div>
+          <div className="md:col-span-2">
+            <label
+              htmlFor="excerpt"
+              className="block text-sm font-medium text-foreground mb-1"
+            >
+              Excerpt <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              id="excerpt"
+              name="excerpt"
+              value={blog.excerpt}
+              onChange={handleChange}
+              rows="3"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              required
+            ></textarea>
+          </div>
+          <div className="md:col-span-2">
+            <label
+              htmlFor="tags"
+              className="block text-sm font-medium text-foreground mb-1"
+            >
+              Tags (Add and press Enter or click +)
+            </label>
+            <div className="flex items-center gap-2 mb-2">
               <input
                 type="text"
-                value={newTag}
-                onChange={(e) => setNewTag(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && addTag()}
-                className="flex-1 p-3 border rounded-md mr-2"
-                placeholder="Add a tag..."
+                id="tags"
+                value={currentTagInput}
+                onChange={(e) => setCurrentTagInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault(); // Prevent form submission
+                    handleAddTag();
+                  }
+                }}
+                placeholder="Type tag and press Enter"
+                className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
               />
               <button
-                onClick={addTag}
-                className="px-4 py-3 bg-primary text-white rounded-md hover:bg-primary/90"
+                type="button"
+                onClick={handleAddTag}
+                className="p-2 bg-primary text-white rounded-md hover:bg-primary/90"
+                aria-label="Add tag"
               >
-                Add
+                <Plus className="h-5 w-5" />
               </button>
             </div>
             <div className="flex flex-wrap gap-2">
-              {blogData.tags.map((tag, index) => (
+              {blog.tags.map((tag, index) => (
                 <span
                   key={index}
-                  className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm flex items-center"
+                  className="inline-flex items-center px-3 py-1 bg-gray-200 text-foreground rounded-full text-sm"
                 >
                   {tag}
                   <button
-                    onClick={() => removeTag(tag)}
-                    className="ml-2 text-red-600 hover:text-red-800"
+                    type="button"
+                    onClick={() => handleRemoveTag(tag)}
+                    className="ml-2 text-foreground/70 hover:text-red-600"
+                    aria-label={`Remove tag ${tag}`}
                   >
-                    ×
+                    <Trash2 className="h-4 w-4" />
                   </button>
                 </span>
               ))}
             </div>
           </div>
+        </div>
 
-          {/* Main Content - WYSIWYG Editor */}
-          <div className="mb-8">
-            <label className="block text-sm font-medium mb-2">
-              Main Content *
-            </label>
-            <div className="border rounded-md">
-              <Editor
-                value={blogData.content}
-                init={{
-                  height: 400,
-                  menubar: true,
-                  plugins: [
-                    "advlist autolink lists link image charmap print preview anchor",
-                    "searchreplace visualblocks code fullscreen",
-                    "insertdatetime media table paste code help wordcount",
-                  ],
-                  toolbar:
-                    "undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | code",
-                  content_style:
-                    "body { font-family:Helvetica,Arial,sans-serif; font-size:16px }",
-                }}
-                onEditorChange={(content) =>
-                  setBlogData((prev) => ({ ...prev, content }))
-                }
-              />
-            </div>
-            <p className="text-sm text-gray-600 mt-2">
-              Use the toolbar above to format your content. Click the image icon
-              to upload images directly.
-            </p>
-          </div>
+        {/* Content Builder Section */}
+        <h2 className="text-2xl font-semibold text-foreground mb-6">
+          Blog Content Builder
+        </h2>
+        <div className="space-y-6 mb-8 p-4 border border-gray-100 rounded-md bg-gray-50">
+          {/* Render each content block dynamically */}
+          {blog.content.map((block, blockIndex) => (
+            <div
+              key={blockIndex}
+              className="border border-gray-200 p-4 rounded-md relative bg-white shadow-sm"
+            >
+              {/* Remove block button */}
+              <button
+                type="button"
+                onClick={() => removeContentBlock(blockIndex)}
+                className="absolute top-2 right-2 p-1 bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors"
+                aria-label="Remove block"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
 
-          {/* Special Blocks */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Special Blocks</h3>
-              <div className="flex flex-wrap gap-2">
-                {specialBlockTypes.map((type) => (
-                  <button
-                    key={type.value}
-                    onClick={() => addSpecialBlock(type.value)}
-                    className="px-3 py-1 bg-green-100 text-green-700 rounded text-sm hover:bg-green-200"
+              {/* Input fields based on block type */}
+              {block.type === "paragraph" && (
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-foreground mb-1">
+                    Paragraph Content
+                  </label>
+                  <textarea
+                    rows="4"
+                    value={block.value}
+                    onChange={(e) =>
+                      updateContentBlock(blockIndex, "value", e.target.value)
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    placeholder="Enter paragraph text..."
+                  ></textarea>
+                </div>
+              )}
+
+              {block.type === "heading" && (
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-foreground mb-1">
+                    Heading
+                  </label>
+                  <select
+                    value={block.level}
+                    onChange={(e) =>
+                      updateContentBlock(
+                        blockIndex,
+                        "level",
+                        parseInt(e.target.value)
+                      )
+                    }
+                    className="mb-2 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                   >
-                    + {type.label}
+                    <option value={2}>Heading 2 (H2)</option>
+                    <option value={3}>Heading 3 (H3)</option>
+                    <option value={4}>Heading 4 (H4)</option>
+                  </select>
+                  <input
+                    type="text"
+                    value={block.value}
+                    onChange={(e) =>
+                      updateContentBlock(blockIndex, "value", e.target.value)
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    placeholder="Enter heading text..."
+                  />
+                  <small className="text-foreground/70 text-sm mt-1 block">
+                    Auto-generated ID (for Table of Contents): `#{block.id}`
+                  </small>
+                </div>
+              )}
+
+              {/* Styled Boxes (Info, Highlight, Warning) - share similar structure */}
+              {(block.type === "infoBox" ||
+                block.type === "highlightBox" ||
+                block.type === "warningBox") && (
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-foreground mb-1">
+                    {block.type === "infoBox" && "Info Box (Gray)"}
+                    {block.type === "highlightBox" && "Highlight Box (Blue)"}
+                    {block.type === "warningBox" && "Warning Box (Red)"}
+                  </label>
+                  <input
+                    type="text"
+                    value={block.title}
+                    onChange={(e) =>
+                      updateContentBlock(blockIndex, "title", e.target.value)
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary mb-2"
+                    placeholder="Enter title for the box..."
+                  />
+                  <textarea
+                    rows="4"
+                    value={block.value}
+                    onChange={(e) =>
+                      updateContentBlock(blockIndex, "value", e.target.value)
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    placeholder="Enter content for the box..."
+                  ></textarea>
+                </div>
+              )}
+
+              {/* Primary Box (Call to Action) - can have nested paragraphs/links */}
+              {block.type === "primaryBox" && (
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-foreground mb-1">
+                    Call to Action Box (Primary Color)
+                  </label>
+                  <input
+                    type="text"
+                    value={block.title}
+                    onChange={(e) =>
+                      updateContentBlock(blockIndex, "title", e.target.value)
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary mb-2"
+                    placeholder="Enter title (e.g., Start Your AML Career with Titans Careers)..."
+                  />
+                  {/* Nested content items */}
+                  {block.value.map((item, itemIndex) => (
+                    <div
+                      key={itemIndex}
+                      className="flex flex-col gap-2 mb-2 p-3 border border-gray-200 rounded-md bg-gray-50"
+                    >
+                      <label className="block text-sm font-medium text-foreground/80">
+                        Item {itemIndex + 1}
+                      </label>
+                      <select
+                        value={item.type}
+                        onChange={(e) =>
+                          updateNestedContentItem(
+                            blockIndex,
+                            itemIndex,
+                            "type",
+                            e.target.value
+                          )
+                        }
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      >
+                        <option value="paragraph">Paragraph</option>
+                        <option value="link">Link (Button Style)</option>
+                      </select>
+                      {item.type === "paragraph" && (
+                        <textarea
+                          rows="2"
+                          value={item.value}
+                          onChange={(e) =>
+                            updateNestedContentItem(
+                              blockIndex,
+                              itemIndex,
+                              "value",
+                              e.target.value
+                            )
+                          }
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                          placeholder="Enter paragraph text..."
+                        />
+                      )}
+                      {item.type === "link" && (
+                        <>
+                          <input
+                            type="text"
+                            value={item.text}
+                            onChange={(e) =>
+                              updateNestedContentItem(
+                                blockIndex,
+                                itemIndex,
+                                "text",
+                                e.target.value
+                              )
+                            }
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                            placeholder="Link Button Text (e.g., Enroll in Our Training)"
+                          />
+                          <input
+                            type="url"
+                            value={item.href}
+                            onChange={(e) =>
+                              updateNestedContentItem(
+                                blockIndex,
+                                itemIndex,
+                                "href",
+                                e.target.value
+                              )
+                            }
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                            placeholder="Link URL (e.g., /courses)"
+                          />
+                        </>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          removeNestedContentItem(blockIndex, itemIndex)
+                        }
+                        className="self-end px-3 py-1 bg-red-100 text-red-600 rounded-md hover:bg-red-200 text-sm transition-colors"
+                        aria-label="Remove nested item"
+                      >
+                        Remove Item
+                      </button>
+                    </div>
+                  ))}
+                  {/* Buttons to add nested items */}
+                  <div className="flex gap-2 mt-2">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        addNestedContentItem(blockIndex, "paragraph")
+                      }
+                      className="flex-grow px-4 py-2 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200 text-sm transition-colors"
+                    >
+                      Add Paragraph
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => addNestedContentItem(blockIndex, "link")}
+                      className="flex-grow px-4 py-2 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200 text-sm transition-colors"
+                    >
+                      Add Link (Button)
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Alert Box (Yellow Border) - can have nested paragraphs/list items */}
+              {block.type === "alertBox" && (
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-foreground mb-1">
+                    Alert Box (Yellow Border, for stats/cases)
+                  </label>
+                  <input
+                    type="text"
+                    value={block.title}
+                    onChange={(e) =>
+                      updateContentBlock(blockIndex, "title", e.target.value)
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary mb-2"
+                    placeholder="Enter title (e.g., By the Numbers: or Notable Cases:)..."
+                  />
+                  {/* Nested content items */}
+                  {block.value.map((item, itemIndex) => (
+                    <div
+                      key={itemIndex}
+                      className="flex items-center gap-2 mb-2"
+                    >
+                      <select
+                        value={item.type}
+                        onChange={(e) =>
+                          updateNestedContentItem(
+                            blockIndex,
+                            itemIndex,
+                            "type",
+                            e.target.value
+                          )
+                        }
+                        className="w-1/4 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                      >
+                        <option value="paragraph">Paragraph</option>
+                        <option value="listItem">List Item</option>
+                      </select>
+                      <input
+                        type="text"
+                        value={item.value}
+                        onChange={(e) =>
+                          updateNestedContentItem(
+                            blockIndex,
+                            itemIndex,
+                            "value",
+                            e.target.value
+                          )
+                        }
+                        className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                        placeholder="Enter item content..."
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          removeNestedContentItem(blockIndex, itemIndex)
+                        }
+                        className="p-1 bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors"
+                        aria-label="Remove nested item"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => addNestedContentItem(blockIndex, "listItem")} // Default to listItem
+                    className="px-4 py-2 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200 text-sm mt-2 transition-colors"
+                  >
+                    Add Item
                   </button>
-                ))}
-              </div>
-            </div>
+                </div>
+              )}
 
-            <div className="space-y-4">
-              {blogData.specialBlocks.map((block) => renderSpecialBlock(block))}
-            </div>
+              {/* List Block (Unordered) */}
+              {block.type === "list" && (
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-foreground mb-1">
+                    List Items (Unordered)
+                  </label>
+                  {block.value.map((item, itemIndex) => (
+                    <div
+                      key={itemIndex}
+                      className="flex items-center gap-2 mb-2"
+                    >
+                      <input
+                        type="text"
+                        value={item.value}
+                        onChange={(e) =>
+                          updateNestedContentItem(
+                            blockIndex,
+                            itemIndex,
+                            "value",
+                            e.target.value
+                          )
+                        }
+                        className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                        placeholder="Enter list item content..."
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          removeNestedContentItem(blockIndex, itemIndex)
+                        }
+                        className="p-1 bg-red-100 text-red-600 rounded-full hover:bg-red-200 transition-colors"
+                        aria-label="Remove list item"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => addNestedContentItem(blockIndex, "listItem")}
+                    className="px-4 py-2 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200 text-sm mt-2 transition-colors"
+                  >
+                    Add List Item
+                  </button>
+                </div>
+              )}
 
-            {blogData.specialBlocks.length === 0 && (
-              <div className="text-center py-6 text-gray-500 border-2 border-dashed border-gray-200 rounded-lg">
-                No special blocks added yet. Use the buttons above to add
-                call-to-action boxes, callouts, or table of contents.
-              </div>
-            )}
+              {/* Image Block */}
+              {block.type === "image" && (
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-foreground mb-1">
+                    Image
+                  </label>
+                  <input
+                    type="url"
+                    value={block.src}
+                    onChange={(e) =>
+                      updateContentBlock(blockIndex, "src", e.target.value)
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary mb-2"
+                    placeholder="Image URL (e.g., https://example.com/image.jpg)"
+                  />
+                  <input
+                    type="text"
+                    value={block.alt}
+                    onChange={(e) =>
+                      updateContentBlock(blockIndex, "alt", e.target.value)
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary mb-2"
+                    placeholder="Alt text (for accessibility)"
+                  />
+                  <input
+                    type="text"
+                    value={block.caption}
+                    onChange={(e) =>
+                      updateContentBlock(blockIndex, "caption", e.target.value)
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    placeholder="Caption (optional)"
+                  />
+                </div>
+              )}
+            </div>
+          ))}
+
+          {/* Buttons to Add New Content Blocks */}
+          <div className="border border-dashed border-gray-300 p-4 rounded-md text-center bg-gray-100">
+            <h3 className="text-lg font-medium text-foreground mb-4">
+              Add New Content Block
+            </h3>
+            <div className="flex flex-wrap justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => addContentBlock("paragraph")}
+                className="flex items-center gap-1 px-4 py-2 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors shadow-sm"
+              >
+                <FileText className="h-5 w-5" /> Paragraph
+              </button>
+              <button
+                type="button"
+                onClick={() => addContentBlock("heading")}
+                className="flex items-center gap-1 px-4 py-2 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors shadow-sm"
+              >
+                <Heading1 className="h-5 w-5" /> Heading
+              </button>
+              <button
+                type="button"
+                onClick={() => addContentBlock("list")}
+                className="flex items-center gap-1 px-4 py-2 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors shadow-sm"
+              >
+                <List className="h-5 w-5" /> List
+              </button>
+              <button
+                type="button"
+                onClick={() => addContentBlock("image")}
+                className="flex items-center gap-1 px-4 py-2 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors shadow-sm"
+              >
+                <ImageIcon className="h-5 w-5" /> Image
+              </button>
+              <button
+                type="button"
+                onClick={() => addContentBlock("infoBox")}
+                className="flex items-center gap-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors shadow-sm"
+              >
+                <Info className="h-5 w-5" /> Info Box
+              </button>
+              <button
+                type="button"
+                onClick={() => addContentBlock("highlightBox")}
+                className="flex items-center gap-1 px-4 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors shadow-sm"
+              >
+                <Lightbulb className="h-5 w-5" /> Highlight Box
+              </button>
+              <button
+                type="button"
+                onClick={() => addContentBlock("alertBox")}
+                className="flex items-center gap-1 px-4 py-2 bg-yellow-100 text-yellow-700 rounded-md hover:bg-yellow-200 transition-colors shadow-sm"
+              >
+                <AlertTriangle className="h-5 w-5" /> Alert Box
+              </button>
+              <button
+                type="button"
+                onClick={() => addContentBlock("warningBox")}
+                className="flex items-center gap-1 px-4 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors shadow-sm"
+              >
+                <AlertTriangle className="h-5 w-5" /> Warning Box
+              </button>
+              <button
+                type="button"
+                onClick={() => addContentBlock("primaryBox")}
+                className="flex items-center gap-1 px-4 py-2 bg-primary/10 text-primary rounded-md hover:bg-primary/20 transition-colors shadow-sm"
+              >
+                <Star className="h-5 w-5" /> Call to Action
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          className="w-full py-3 bg-primary text-white font-semibold rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={isLoading} // Disable button while uploading
+        >
+          {isLoading ? "Uploading..." : "Upload Blog Post"}
+        </button>
+      </form>
     </div>
   );
-};
+}
 
 export default AdminBlogUpload;

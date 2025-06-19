@@ -472,6 +472,17 @@ export const exportUtils = {
   },
 };
 
+/**
+ * Generate anchor for headings
+ */
+export const generateAnchor = (content) => {
+  return content
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .slice(0, 50);
+};
+
 // Example usage in components:
 
 /*

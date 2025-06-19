@@ -1,47 +1,54 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { toast } from "sonner";
-import { Trash2, ShieldCheck, Award, Clock } from "lucide-react";
+import { Trash2, ShieldCheck, Award, Clock, CreditCard } from "lucide-react";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
 
 // Components
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import CheckoutProtection from "@/components/CheckoutProtection";
+import StripeCheckoutForm from "@/components/StripeCheckoutForm";
+import PayPalCheckoutForm from "@/components/PayPalCheckoutForm";
 
 // Redux
 import {
   selectCartItems,
   selectCartTotal,
-  clearCart,
   removeFromCart,
-  setPaymentStatus,
-  setOrderId,
+  clearCart,
 } from "@/store/slices/cartSlice";
 
 // API
 import {
-  useCreateOrderMutation,
+  useCreateStripePaymentIntentMutation,
   useProcessPayPalPaymentMutation,
 } from "@/services/api";
 
-// Services
+// PayPal Services
 import {
-  formatItemsForPayPal,
-  calculateOrderTotal,
-  formatOrderForBackend,
+  formatSecurePaymentData,
+  validatePaymentData,
+  getCourseFromCart,
 } from "@/services/paypalService";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
+
+// Initialize Stripe outside of the component to avoid re-creating the object on every render
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 const CheckoutPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const cartItems = useSelector(selectCartItems);
   const cartTotal = useSelector(selectCartTotal);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [paypalOrderId, setPaypalOrderId] = useState(null);
+
+  // State for managing payment method and Stripe client secret
+  const [paymentMethod, setPaymentMethod] = useState("paypal"); // 'paypal' or 'stripe'
+  const [clientSecret, setClientSecret] = useState("");
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false); // NEW: Prevent duplicate submissions
   const [billingInfo, setBillingInfo] = useState({
     firstName: "",
     lastName: "",
@@ -53,24 +60,38 @@ const CheckoutPage = () => {
   });
 
   // RTK Query mutations
-  const [createOrder, { isLoading: isCreatingOrder }] =
-    useCreateOrderMutation();
-  const [processPayPalPayment, { isLoading: isProcessingPayment }] =
+  const [createStripePaymentIntent, { isLoading: isCreatingStripeIntent }] =
+    useCreateStripePaymentIntentMutation();
+
+  // NEW: PayPal mutation for secure processing
+  const [processPayPalPayment, { isLoading: isProcessingPayPal }] =
     useProcessPayPalPaymentMutation();
 
-  // PayPal configuration
-  const paypalOptions = {
-    clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID,
-    currency: "GBP",
-    intent: "capture",
-  };
-
+  // Redirect if cart is empty
   useEffect(() => {
     if (cartItems.length === 0) {
       navigate("/courses");
       toast.error("Cart is empty. Please add courses to checkout.");
     }
   }, [cartItems, navigate]);
+
+  // Create PaymentIntent for Stripe when the user selects the card option
+  useEffect(() => {
+    if (paymentMethod === "stripe" && cartTotal > 0) {
+      createStripePaymentIntent({
+        amount: Math.round(cartTotal * 100), // Convert to cents/pence
+        currency: "gbp",
+      })
+        .unwrap()
+        .then((data) => {
+          setClientSecret(data.clientSecret);
+        })
+        .catch((error) => {
+          console.error("Stripe Payment Intent creation error:", error);
+          toast.error("Could not initialize Stripe payment. Please try again.");
+        });
+    }
+  }, [paymentMethod, cartTotal, createStripePaymentIntent]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -82,19 +103,119 @@ const CheckoutPage = () => {
 
   const handleRemoveFromCart = (itemId) => {
     dispatch(removeFromCart(itemId));
-    // console.info("Item removed from cart");
-    navigate("/courses");
+    // If cart becomes empty, navigate away
+    if (cartItems.length === 1) {
+      navigate("/courses");
+    }
   };
+
+  // NEW: Secure PayPal payment handler
+  const handlePayPalPaymentSuccess = async (
+    paypalOrderData,
+    paypalPaymentData
+  ) => {
+    if (isProcessingPayment) {
+      toast.warning("Payment is already being processed...");
+      return;
+    }
+
+    setIsProcessingPayment(true);
+
+    try {
+      // Format secure payment data
+      const securePaymentData = formatSecurePaymentData(
+        cartItems,
+        paypalOrderData,
+        paypalPaymentData,
+        billingInfo
+      );
+
+      // Validate payment data
+      const validation = validatePaymentData(securePaymentData);
+      if (!validation.isValid) {
+        throw new Error(`Validation failed: ${validation.errors.join(", ")}`);
+      }
+
+      // Process payment with backend verification
+      const result = await processPayPalPayment(securePaymentData).unwrap();
+
+      // Success handling
+      toast.success("Payment processed successfully!");
+
+      // Clear cart and redirect
+      dispatch(clearCart());
+      navigate("/courses/success", {
+        state: {
+          orderDetails: result,
+          course: getCourseFromCart(cartItems),
+        },
+      });
+    } catch (error) {
+      console.error("PayPal payment processing error:", error);
+
+      // Enhanced error handling
+      if (error.status === 400) {
+        toast.error(error.message || "Payment validation failed");
+      } else if (error.status === 401) {
+        toast.error("Authentication failed. Please log in again.");
+        navigate("/login");
+      } else if (error.status === 409) {
+        toast.error("Payment already processed or duplicate transaction");
+      } else if (error.error_code === "PAYMENT_VERIFICATION_FAILED") {
+        toast.error("Payment verification failed. Please contact support.");
+      } else {
+        toast.error("Payment processing failed. Please try again.");
+      }
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
+
+  // NEW: PayPal payment error handler
+  const handlePayPalPaymentError = (error) => {
+    console.error("PayPal payment error:", error);
+    toast.error("PayPal payment failed. Please try again.");
+    setIsProcessingPayment(false);
+  };
+
+  // Stripe appearance and options
+  const stripeOptions = {
+    clientSecret,
+    appearance: {
+      theme: "stripe",
+      variables: {
+        colorPrimary: "#0570de",
+        colorBackground: "#ffffff",
+        colorText: "#30313d",
+        colorDanger: "#df1b41",
+        fontFamily: "system-ui, sans-serif",
+        spacingUnit: "4px",
+        borderRadius: "6px",
+      },
+    },
+  };
+
+  const isFormValid = () => {
+    return (
+      billingInfo.firstName.trim() &&
+      billingInfo.lastName.trim() &&
+      billingInfo.email.trim() &&
+      billingInfo.email.includes("@")
+    );
+  };
+
+  // Get current course for display
+  const currentCourse = getCourseFromCart(cartItems);
 
   return (
     <CheckoutProtection>
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8">Checkout</h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Billing Information and Order Summary */}
-          <div className="md:col-span-2">
-            {/* Billing Information - Now First */}
+          <div className="lg:col-span-2">
+            {/* Billing Information */}
             <Card className="p-6 mb-8">
               <h2 className="text-xl font-semibold mb-4">
                 Billing Information
@@ -105,7 +226,7 @@ const CheckoutPage = () => {
                     htmlFor="firstName"
                     className="block text-sm font-medium text-gray-700 mb-1"
                   >
-                    First Name
+                    First Name *
                   </label>
                   <input
                     type="text"
@@ -113,7 +234,8 @@ const CheckoutPage = () => {
                     name="firstName"
                     value={billingInfo.firstName}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    disabled={isProcessingPayment} // NEW: Disable during processing
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
                     required
                   />
                 </div>
@@ -122,7 +244,7 @@ const CheckoutPage = () => {
                     htmlFor="lastName"
                     className="block text-sm font-medium text-gray-700 mb-1"
                   >
-                    Last Name
+                    Last Name *
                   </label>
                   <input
                     type="text"
@@ -130,7 +252,8 @@ const CheckoutPage = () => {
                     name="lastName"
                     value={billingInfo.lastName}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    disabled={isProcessingPayment}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
                     required
                   />
                 </div>
@@ -139,7 +262,7 @@ const CheckoutPage = () => {
                     htmlFor="email"
                     className="block text-sm font-medium text-gray-700 mb-1"
                   >
-                    Email
+                    Email *
                   </label>
                   <input
                     type="email"
@@ -147,7 +270,8 @@ const CheckoutPage = () => {
                     name="email"
                     value={billingInfo.email}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+                    disabled={isProcessingPayment}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
                     required
                   />
                 </div>
@@ -164,8 +288,8 @@ const CheckoutPage = () => {
                     name="address"
                     value={billingInfo.address}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    required
+                    disabled={isProcessingPayment}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
                   />
                 </div>
                 <div>
@@ -181,8 +305,8 @@ const CheckoutPage = () => {
                     name="city"
                     value={billingInfo.city}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    required
+                    disabled={isProcessingPayment}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
                   />
                 </div>
                 <div>
@@ -198,11 +322,11 @@ const CheckoutPage = () => {
                     name="postalCode"
                     value={billingInfo.postalCode}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    required
+                    disabled={isProcessingPayment}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
                   />
                 </div>
-                <div>
+                <div className="md:col-span-2">
                   <label
                     htmlFor="country"
                     className="block text-sm font-medium text-gray-700 mb-1"
@@ -214,62 +338,62 @@ const CheckoutPage = () => {
                     name="country"
                     value={billingInfo.country}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                    required
+                    disabled={isProcessingPayment}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
                   >
                     <option value="United Kingdom">United Kingdom</option>
                     <option value="United States">United States</option>
                     <option value="Canada">Canada</option>
                     <option value="Australia">Australia</option>
-                    <option value="Germany">Germany</option>
-                    <option value="France">France</option>
-                    <option value="Spain">Spain</option>
-                    <option value="Italy">Italy</option>
-                    <option value="Netherlands">Netherlands</option>
-                    <option value="Belgium">Belgium</option>
+                    <option value="Other">Other</option>
                   </select>
                 </div>
               </div>
             </Card>
 
-            {/* Order Summary - Now Second */}
+            {/* Order Summary */}
             <Card className="p-6">
               <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
-              {cartItems.length > 0 ? (
+              {currentCourse ? (
                 <div className="space-y-4">
-                  {cartItems.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex justify-between items-center border-b pb-4"
-                    >
-                      <div className="flex items-center">
-                        <img
-                          src={`${baseUrl}${item.image}`}
-                          alt={item.name}
-                          className="w-16 h-16 object-cover rounded mr-4"
-                        />
-                        <div>
-                          <h3 className="font-medium">{item.name}</h3>
-                          <p className="text-sm text-gray-500">
-                            {item.category}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center">
-                        <p className="font-semibold mr-4">
-                          £{item.price?.toFixed(2)}
+                  <div className="flex justify-between items-center border-b pb-4">
+                    <div className="flex items-center">
+                      <img
+                        src={
+                          currentCourse.image.startsWith("http")
+                            ? currentCourse.image
+                            : `${baseUrl}${currentCourse.image}`
+                        }
+                        alt={currentCourse.name}
+                        className="w-16 h-16 object-cover rounded mr-4"
+                      />
+                      <div>
+                        <h3 className="font-medium">{currentCourse.name}</h3>
+                        <p className="text-sm text-gray-500">
+                          {currentCourse.level &&
+                            `Level: ${currentCourse.level}`}
                         </p>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                          onClick={() => handleRemoveFromCart(item.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
                       </div>
                     </div>
-                  ))}
+                    <div className="flex items-center">
+                      <p className="font-semibold mr-4">
+                        £{currentCourse.price?.toFixed(2)}
+                      </p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                        onClick={() => handleRemoveFromCart(currentCourse.id)}
+                        disabled={isProcessingPayment}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center pt-4 border-t font-semibold text-lg">
+                    <span>Total:</span>
+                    <span>£{cartTotal}</span>
+                  </div>
                 </div>
               ) : (
                 <p>Your cart is empty.</p>
@@ -278,137 +402,124 @@ const CheckoutPage = () => {
           </div>
 
           {/* Right Column - Payment Section */}
-          <div className="md:col-span-1">
-            <Card className="p-6 mb-8">
+          <div className="lg:col-span-1">
+            <Card className="p-6">
               <h2 className="text-xl font-semibold mb-4">Payment</h2>
-              <div className="space-y-4">
-                <div className="flex justify-between border-b pb-2">
-                  <span>Total:</span>
-                  <span>£{cartTotal}</span>
+
+              {/* Processing Indicator */}
+              {isProcessingPayment && (
+                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                  <p className="text-sm text-blue-800 flex items-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-800 mr-2"></div>
+                    Processing your payment securely...
+                  </p>
                 </div>
+              )}
 
-                {/* PayPal Button Section */}
-                <div className="mt-6">
-                  <PayPalScriptProvider options={paypalOptions}>
-                    <PayPalButtons
-                      style={{ layout: "vertical" }}
-                      createOrder={(data, actions) => {
-                        // Simplified order creation
-                        return actions.order.create({
-                          purchase_units: [
-                            {
-                              amount: {
-                                value: cartTotal,
-                                currency_code: "GBP",
-                              },
-                            },
-                          ],
-                        });
-                      }}
-                      onApprove={async (data, actions) => {
-                        try {
-                          setIsProcessing(true);
-                          const order = await actions.order.capture();
+              {/* Total Display */}
+              <div className="flex justify-between items-center text-lg font-semibold border-b pb-4 mb-6">
+                <span>Total:</span>
+                <span>£{cartTotal}</span>
+              </div>
 
-                          // Process the payment with your backend
-                          const response = await processPayPalPayment({
-                            id: data.orderID,
-                            payment_details: order,
-                            items: cartItems,
-                            billing_info: billingInfo,
-                          }).unwrap();
-
-                          // Update Redux state
-                          dispatch(setPaymentStatus("success"));
-                          dispatch(setOrderId(response.order_id));
-                          dispatch(clearCart());
-
-                          toast.success("Payment successful!");
-                          navigate(`/order-confirmation/${response.order_id}`);
-                        } catch (error) {
-                          console.error("Payment processing error:", error);
-                          toast.error("Payment failed. Please try again.");
-                          dispatch(setPaymentStatus("failed"));
-                        } finally {
-                          setIsProcessing(false);
-                        }
-                      }}
-                      onError={(err) => {
-                        console.error("PayPal error:", err);
-                        toast.error("Payment failed. Please try again.");
-                        dispatch(setPaymentStatus("failed"));
-                      }}
-                      onCancel={() => {
-                        toast.info("Payment cancelled");
-                      }}
-                      disabled={isProcessing}
+              {/* Payment Method Selector */}
+              <div className="grid grid-cols-2 gap-2 mb-6">
+                <Button
+                  variant={paymentMethod === "paypal" ? "default" : "outline"}
+                  onClick={() => setPaymentMethod("paypal")}
+                  disabled={isProcessingPayment}
+                  className="w-full"
+                >
+                  <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                    <path
+                      fill="currentColor"
+                      d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a.628.628 0 0 0-.663-.734h-3.021c-.524 0-.968.382-1.05.9L15.24 14.5c-.082.518.285.934.809.934h2.705c4.298 0 7.664-1.747 8.647-6.797.03-.149.054-.294.077-.437.292-1.867-.002-3.137-1.012-4.287-.17-.194-.36-.362-.57-.496z"
                     />
-                  </PayPalScriptProvider>
-                </div>
+                  </svg>
+                  PayPal
+                </Button>
+                <Button
+                  variant={paymentMethod === "stripe" ? "default" : "outline"}
+                  onClick={() => setPaymentMethod("stripe")}
+                  disabled={isProcessingPayment}
+                  className="w-full"
+                >
+                  <CreditCard className="w-5 h-5 mr-2" />
+                  Card
+                </Button>
+              </div>
 
-                {isProcessing && (
-                  <div className="text-center mt-4">
-                    <p className="text-sm text-gray-500">
-                      Processing your payment, please wait...
-                    </p>
-                  </div>
-                )}
+              {/* Payment Form Section */}
+              {!isFormValid() && !isProcessingPayment && (
+                <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                  <p className="text-sm text-yellow-800">
+                    Please fill in required billing information before
+                    proceeding with payment.
+                  </p>
+                </div>
+              )}
+
+              <div className="space-y-4">
+                {/* PayPal Button Section */}
+                {paymentMethod === "paypal" &&
+                  isFormValid() &&
+                  !isProcessingPayment && (
+                    <PayPalCheckoutForm
+                      cartTotal={cartTotal}
+                      cartItems={cartItems}
+                      billingInfo={billingInfo}
+                      onSuccess={handlePayPalPaymentSuccess}
+                      onError={handlePayPalPaymentError}
+                    />
+                  )}
+
+                {/* Stripe Elements Section */}
+                {paymentMethod === "stripe" &&
+                  isFormValid() &&
+                  !isProcessingPayment &&
+                  clientSecret && (
+                    <Elements options={stripeOptions} stripe={stripePromise}>
+                      <StripeCheckoutForm
+                        clientSecret={clientSecret}
+                        cartTotal={cartTotal}
+                        cartItems={cartItems}
+                        billingInfo={billingInfo}
+                      />
+                    </Elements>
+                  )}
+
+                {/* Loading States */}
+                {paymentMethod === "stripe" &&
+                  isFormValid() &&
+                  !isProcessingPayment &&
+                  (isCreatingStripeIntent || !clientSecret) && (
+                    <div className="text-center py-4">
+                      <p className="text-sm text-gray-500">
+                        Initializing secure payment...
+                      </p>
+                    </div>
+                  )}
               </div>
             </Card>
 
-            <Card className="p-6">
-              <h3 className="font-semibold mb-4">Secure Checkout</h3>
-              <ul className="space-y-3">
-                <li className="flex items-start">
-                  <ShieldCheck className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                  <span className="text-sm">
-                    Your payment information is secure and encrypted
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <Award className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                  <span className="text-sm">100% satisfaction guarantee</span>
-                </li>
-                <li className="flex items-start">
-                  <Clock className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                  <span className="text-sm">Instant access after payment</span>
-                </li>
-              </ul>
+            {/* Security Features */}
+            <Card className="p-6 mt-6">
+              <h3 className="text-lg font-semibold mb-4">Secure Checkout</h3>
+              <div className="space-y-3">
+                <div className="flex items-center">
+                  <ShieldCheck className="h-5 w-5 text-green-500 mr-3" />
+                  <span className="text-sm">SSL encrypted payment</span>
+                </div>
+                <div className="flex items-center">
+                  <Award className="h-5 w-5 text-blue-500 mr-3" />
+                  <span className="text-sm">Instant course access</span>
+                </div>
+                {/* <div className="flex items-center">
+                  <Clock className="h-5 w-5 text-purple-500 mr-3" />
+                  <span className="text-sm">12 months access</span>
+                </div> */}
+              </div>
             </Card>
-          </div>
-        </div>
-
-        {/* Trusted By Section */}
-        <div className="mt-16 mb-8">
-          <h2 className="text-xl font-semibold text-center mb-8">
-            Trusted By Industry Leaders
-          </h2>
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16">
-            <img
-              src="/placeholder.svg?height=40&width=120"
-              alt="Company 1"
-              className="h-10 opacity-70 grayscale hover:grayscale-0 hover:opacity-100 transition-all"
-            />
-            <img
-              src="/placeholder.svg?height=40&width=120"
-              alt="Company 2"
-              className="h-10 opacity-70 grayscale hover:grayscale-0 hover:opacity-100 transition-all"
-            />
-            <img
-              src="/placeholder.svg?height=40&width=120"
-              alt="Company 3"
-              className="h-10 opacity-70 grayscale hover:grayscale-0 hover:opacity-100 transition-all"
-            />
-            <img
-              src="/placeholder.svg?height=40&width=120"
-              alt="Company 4"
-              className="h-10 opacity-70 grayscale hover:grayscale-0 hover:opacity-100 transition-all"
-            />
-            <img
-              src="/placeholder.svg?height=40&width=120"
-              alt="Company 5"
-              className="h-10 opacity-70 grayscale hover:grayscale-0 hover:opacity-100 transition-all"
-            />
           </div>
         </div>
       </div>
