@@ -449,6 +449,38 @@ const CheckoutPage = () => {
                 </Button>
               </div>
 
+              {/* Refund/Terms/Privacy Policy Links Section */}
+              <div className="text-xs text-gray-500 text-center my-4">
+                By proceeding, you agree to our{" "}
+                <a
+                  href="/terms-and-conditions"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-blue-600"
+                >
+                  Terms & Conditions
+                </a>
+                ,{" "}
+                <a
+                  href="/privacy-policy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-blue-600"
+                >
+                  Privacy Policy
+                </a>
+                , and{" "}
+                <a
+                  href="/refund-policy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-blue-600"
+                >
+                  Refund Policy
+                </a>
+                .
+              </div>
+
               {/* Payment Form Section */}
               {!isFormValid() && !isProcessingPayment && (
                 <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
