@@ -51,7 +51,9 @@ import LiveClassesSchedule from "./pages/LiveClassesSchedule";
 import NotificationsPage from "./pages/Notifications";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
-// import AdminBlogUpload from "./pages/AdminBlogUpload";
+import AdminBlogUpload from "./pages/AdminBlogUpload";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordConfirmPage from "./pages/ResetPasswordConfirmPage";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -77,6 +79,12 @@ function App() {
             {/* Authentication Pages (outside main layout) */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
+            {/* New: Forgot Password Routes */}
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route
+              path="/password-reset-confirm/:uid/:token"
+              element={<ResetPasswordConfirmPage />}
+            />
 
             {/* Portal Routes - Kept flat as in historical version */}
             <Route
@@ -209,7 +217,7 @@ function App() {
                 </ProtectedRoute>
               }
             /> */}
-            {/* <Route path="/admin/blog/create" element={<AdminBlogUpload />} /> */}
+            <Route path="/admin/blog/create" element={<AdminBlogUpload />} />
 
             {/* Main Layout Routes */}
             <Route path="/" element={<Layout />}>
@@ -229,7 +237,6 @@ function App() {
               <Route path="events" element={<WorkshopEvents />} />
               <Route path="terms" element={<TermsAndConditions />} />
               <Route path="privacy" element={<PrivacyPolicy />} />
-
               {/* Protected Routes that should use main layout */}
               <Route
                 path="checkout"
@@ -239,6 +246,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              // Keep your existing route for the base path
               <Route
                 path="order-confirmation"
                 element={
@@ -247,7 +255,15 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-
+              // ADD this new route for the orderId parameter
+              <Route
+                path="order-confirmation/:orderId"
+                element={
+                  <ProtectedRoute>
+                    <OrderConfirmationPage />
+                  </ProtectedRoute>
+                }
+              />
               {/* 404 catch-all route */}
               <Route path="*" element={<NotFound />} />
             </Route>

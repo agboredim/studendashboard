@@ -1,4 +1,3 @@
-// Updated BlogPostPage.jsx - Handles both static and dynamic blog posts
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Calendar, Tag, ArrowLeft, Share2 } from "lucide-react";

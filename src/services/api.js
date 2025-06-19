@@ -8,8 +8,18 @@ export const api = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl,
     credentials: "include", // Enable sending cookies
-    prepareHeaders: (headers) => {
+    prepareHeaders: (headers, { getState }) => {
+      // Get the access token from Redux state
+      const token = getState().auth.accessToken;
+
+      // Set Content-Type
       headers.set("Content-Type", "application/json");
+
+      // Add Authorization header if token exists
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+
       return headers;
     },
   }),
@@ -22,7 +32,6 @@ export const api = createApi({
         method: "POST",
         body: credentials,
       }),
-      // Invalidate the User tag to refetch user data
       invalidatesTags: ["User"],
     }),
 
@@ -33,7 +42,6 @@ export const api = createApi({
         method: "POST",
         body: userData,
       }),
-      // Invalidate the User tag to refetch user data
       invalidatesTags: ["User"],
     }),
 
@@ -53,13 +61,12 @@ export const api = createApi({
       invalidatesTags: ["User"],
     }),
 
-    // Logout endpoint (if needed on the server)
+    // Logout endpoint
     logout: builder.mutation({
       query: () => ({
         url: "/customuser/logout",
         method: "POST",
       }),
-      // We don't need to invalidate tags here as we'll handle logout state in the reducer
     }),
 
     // Get user profile
@@ -90,14 +97,64 @@ export const api = createApi({
       invalidatesTags: ["Orders"],
     }),
 
-    // Process PayPal payment
+    // UPDATED: Secure PayPal payment processing with backend verification
     processPayPalPayment: builder.mutation({
       query: (paymentData) => ({
-        url: `/courses/payment/initiate/${paymentData.id}/`,
+        url: `/payment/paypal/verify-order/`, // NEW SECURE ENDPOINT
         method: "POST",
-        body: paymentData,
+        body: {
+          payment_id: paymentData.payment_id, // PayPal payment ID
+          order_id: paymentData.order_id, // PayPal order ID
+          expected_amount: paymentData.expected_amount, // Expected payment amount
+          course_id: paymentData.course_id, // Single course ID
+          currency: paymentData.currency || "GBP", // Payment currency
+          payer_email: paymentData.payer_email, // Payer's email
+          billing_info: paymentData.billing_info, // Billing information
+        },
       }),
+      transformResponse: (response) => {
+        return {
+          success: true,
+          order_id: response.order_id,
+          message: response.message || "Payment processed successfully",
+          course_access: response.course_access,
+        };
+      },
+      transformErrorResponse: (response) => {
+        return {
+          status: response.status,
+          message: response.data?.message || "Failed to process PayPal payment",
+          error_code: response.data?.error_code,
+        };
+      },
       invalidatesTags: ["Orders"],
+    }),
+
+    // Stripe Payment Intent
+    createStripePaymentIntent: builder.mutation({
+      query: (paymentData) => ({
+        url: `/payment/create-payment-intent/`,
+        method: "POST",
+        body: {
+          amount: paymentData.amount,
+          currency: paymentData.currency || "gbp",
+          metadata: {
+            integration_check: "accept_a_payment",
+          },
+        },
+      }),
+      transformResponse: (response) => {
+        return {
+          clientSecret: response.client_secret,
+          paymentIntentId: response.id,
+        };
+      },
+      transformErrorResponse: (response) => {
+        return {
+          status: response.status,
+          message: response.data?.error || "Failed to create payment intent",
+        };
+      },
     }),
 
     // Get user orders
@@ -105,11 +162,31 @@ export const api = createApi({
       query: () => "/orders/user/",
       providesTags: ["Orders"],
     }),
+
+    // Send guide
     sendGuide: builder.mutation({
       query: (body) => ({
-        url: "/send-guide/", // Django endpoint
+        url: "/send-guide/",
         method: "POST",
         body,
+      }),
+    }),
+
+    // Request Password Reset Email
+    requestPasswordReset: builder.mutation({
+      query: (email) => ({
+        url: "/customuser/password-reset/",
+        method: "POST",
+        body: email,
+      }),
+    }),
+
+    // Confirm Password Reset with Token
+    confirmPasswordReset: builder.mutation({
+      query: (data) => ({
+        url: "/customuser/password-reset-confirm/",
+        method: "POST",
+        body: data,
       }),
     }),
   }),
@@ -126,6 +203,9 @@ export const {
   useGetCourseByIdQuery,
   useCreateOrderMutation,
   useProcessPayPalPaymentMutation,
+  useCreateStripePaymentIntentMutation,
   useGetUserOrdersQuery,
   useSendGuideMutation,
+  useRequestPasswordResetMutation,
+  useConfirmPasswordResetMutation,
 } = api;
