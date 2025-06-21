@@ -59,11 +59,17 @@ const StripeCheckoutForm = ({
         toast.success("Payment successful!");
         navigate("/courses/success", {
           state: {
+            paymentIntent: paymentIntent,
             orderDetails: {
-              paymentId: paymentIntent.id,
+              id: paymentIntent.id,
               amount: cartTotal,
+              created_at: new Date(
+                paymentIntent.created * 1000
+              ).toLocaleString(),
             },
+            billingInfo: billingInfo,
             course: cartItems[0],
+            paymentMethod: "stripe",
           },
         });
         dispatch(clearCart());
