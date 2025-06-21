@@ -1,18 +1,9 @@
-import { useState } from "react";
-import {
-  useStripe,
-  useElements,
-  PaymentElement,
-} from "@stripe/react-stripe-js";
-import { useDispatch } from "react-redux";
+import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import {
-  setPaymentStatus,
-  setOrderId,
-  clearCart,
-} from "@/store/slices/cartSlice";
+import { useDispatch } from "react-redux";
+import { clearCart } from "@/store/slices/cartSlice";
+import { useState } from "react";
 
 const StripeCheckoutForm = ({
   clientSecret,
@@ -24,98 +15,91 @@ const StripeCheckoutForm = ({
   const elements = useElements();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [message, setMessage] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!stripe || !elements || !clientSecret || isSubmitting) return;
 
-    if (!stripe || !elements) {
-      // Stripe.js has not yet loaded.
+    setIsSubmitting(true);
+
+    const cardElement = elements.getElement(CardElement);
+    if (!cardElement) {
+      toast.error("Card input not found. Please refresh.");
+      setIsSubmitting(false);
       return;
     }
 
-    setIsProcessing(true);
-    setMessage(null);
-
-    const { error, paymentIntent } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/order-confirmation`,
-        payment_method_data: {
-          billing_details: {
-            name: `${billingInfo.firstName} ${billingInfo.lastName}`,
-            email: billingInfo.email,
-            address: {
-              line1: billingInfo.address,
-              city: billingInfo.city,
-              postal_code: billingInfo.postalCode,
-              country: billingInfo.country,
+    try {
+      const { paymentIntent, error } = await stripe.confirmCardPayment(
+        clientSecret,
+        {
+          payment_method: {
+            card: cardElement,
+            billing_details: {
+              name: `${billingInfo.firstName} ${billingInfo.lastName}`,
+              email: billingInfo.email,
+              address: {
+                line1: billingInfo.address,
+                city: billingInfo.city,
+                postal_code: billingInfo.postalCode,
+                country: billingInfo.country,
+              },
             },
           },
-        },
-      },
-      redirect: "if_required", // Prevent automatic redirection
-    });
-
-    if (error) {
-      if (error.type === "card_error" || error.type === "validation_error") {
-        setMessage(error.message);
-      } else {
-        setMessage("An unexpected error occurred.");
-      }
-      toast.error(error.message || "Payment failed. Please try again.");
-      setIsProcessing(false);
-      return;
-    }
-
-    // Payment succeeded
-    if (paymentIntent && paymentIntent.status === "succeeded") {
-      toast.success("Payment successful!");
-      dispatch(setPaymentStatus("success"));
-      dispatch(setOrderId(paymentIntent.id));
-      dispatch(clearCart());
-      navigate(
-        `/order-confirmation?payment_intent=${paymentIntent.id}&redirect_status=succeeded`
+        }
       );
-    } else {
-      setMessage("Payment did not succeed. Please try again.");
-      toast.error("Payment did not succeed. Please try again.");
-    }
 
-    setIsProcessing(false);
+      if (error) {
+        toast.error(error.message || "Payment failed");
+        return;
+      }
+
+      if (paymentIntent.status === "succeeded") {
+        toast.success("Payment successful!");
+        navigate("/courses/success", {
+          state: {
+            orderDetails: {
+              paymentId: paymentIntent.id,
+              amount: cartTotal,
+            },
+            course: cartItems[0],
+          },
+        });
+        dispatch(clearCart());
+      } else {
+        toast.error("Payment was not completed. Please try again.");
+      }
+    } catch (err) {
+      console.error("Unexpected error during payment:", err);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <form
-      id="stripe-payment-form"
-      onSubmit={handleSubmit}
-      className="space-y-4"
-    >
-      <PaymentElement
-        id="payment-element"
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <CardElement
         options={{
-          layout: "tabs",
+          hidePostalCode: true,
+          style: {
+            base: {
+              fontSize: "16px",
+              color: "#32325d",
+              "::placeholder": { color: "#a0aec0" },
+            },
+            invalid: { color: "#e53e3e" },
+          },
         }}
       />
-
-      <Button
-        disabled={isProcessing || !stripe || !elements}
+      <button
         type="submit"
-        className="w-full"
+        className="w-full mt-4 px-4 py-2 bg-primary text-white rounded disabled:opacity-50"
+        disabled={!stripe || isSubmitting}
       >
-        <span id="button-text">
-          {isProcessing ? "Processing..." : `Pay £${cartTotal?.toFixed(2)}`}
-        </span>
-      </Button>
-
-      {/* Show any error or success messages */}
-      {message && (
-        <div id="payment-message" className="text-red-500 text-sm text-center">
-          {message}
-        </div>
-      )}
+        {isSubmitting ? "Processing..." : `Pay £${cartTotal}`}
+      </button>
     </form>
   );
 };

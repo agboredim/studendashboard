@@ -81,9 +81,11 @@ const CheckoutPage = () => {
       createStripePaymentIntent({
         amount: Math.round(cartTotal * 100), // Convert to cents/pence
         currency: "gbp",
+        course_id: cartItems[0]?.id, // Assuming single course in cart
       })
         .unwrap()
         .then((data) => {
+          console.log("Stripe Payment Intent created:", data);
           setClientSecret(data.clientSecret);
         })
         .catch((error) => {
@@ -91,7 +93,7 @@ const CheckoutPage = () => {
           toast.error("Could not initialize Stripe payment. Please try again.");
         });
     }
-  }, [paymentMethod, cartTotal, createStripePaymentIntent]);
+  }, [paymentMethod, cartTotal, createStripePaymentIntent, cartItems]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -146,8 +148,16 @@ const CheckoutPage = () => {
       dispatch(clearCart());
       navigate("/courses/success", {
         state: {
-          orderDetails: result,
+          paymentIntent: result,
+          orderDetails: {
+            id: result.id,
+            amount: cartTotal,
+            created_at: new Date().toISOString(),
+            // include discount/tax if applicable
+          },
           course: getCourseFromCart(cartItems),
+          billingInfo,
+          paymentMethod: paymentMethod,
         },
       });
     } catch (error) {
@@ -203,7 +213,16 @@ const CheckoutPage = () => {
       billingInfo.email.includes("@")
     );
   };
-
+  // console.log(
+  //   "stripe configs:",
+  //   isCreatingStripeIntent,
+  //   clientSecret,
+  //   isProcessingPayment,
+  //   billingInfo,
+  //   paymentMethod,
+  //   cartTotal,
+  //   cartItems
+  // );
   // Get current course for display
   const currentCourse = getCourseFromCart(cartItems);
 
