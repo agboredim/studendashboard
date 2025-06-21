@@ -1,9 +1,25 @@
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useDispatch } from "react-redux";
-import { clearCart } from "@/store/slices/cartSlice";
+// import { useDispatch } from "react-redux";
+// import { clearCart } from "@/store/slices/cartSlice";
 import { useState } from "react";
+
+// Convert country name to ISO 3166-1 alpha-2 code
+const convertCountryToCode = (country) => {
+  const countryCodes = {
+    "United Kingdom": "GB",
+    "United States": "US",
+    Canada: "CA",
+    Australia: "AU",
+    Germany: "DE",
+    France: "FR",
+    Spain: "ES",
+    Italy: "IT",
+    // Add more mappings as needed
+  };
+  return countryCodes[country] || "GB"; // Default to GB if not found
+};
 
 const StripeCheckoutForm = ({
   clientSecret,
@@ -14,7 +30,7 @@ const StripeCheckoutForm = ({
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -43,15 +59,17 @@ const StripeCheckoutForm = ({
                 line1: billingInfo.address,
                 city: billingInfo.city,
                 postal_code: billingInfo.postalCode,
-                country: billingInfo.country,
+                country: convertCountryToCode(billingInfo.country),
               },
             },
           },
         }
       );
+      console.log("Payment Intent:", paymentIntent);
 
       if (error) {
         toast.error(error.message || "Payment failed");
+        console.error("Payment error:", error);
         return;
       }
 
@@ -72,7 +90,7 @@ const StripeCheckoutForm = ({
             paymentMethod: "stripe",
           },
         });
-        dispatch(clearCart());
+        // dispatch(clearCart());
       } else {
         toast.error("Payment was not completed. Please try again.");
       }

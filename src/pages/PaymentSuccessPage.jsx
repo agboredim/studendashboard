@@ -10,11 +10,11 @@ import {
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
-// Uncomment and replace with your actual hooks
-// import { useConfirmEnrollmentMutation, usePaymentStatusQuery } from '@/services/api';
+import { clearCart } from "@/store/slices/cartSlice";
+import { useDispatch } from "react-redux";
 
 const PaymentSuccessPage = () => {
+  const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -31,34 +31,29 @@ const PaymentSuccessPage = () => {
   const [enrollmentStatus, setEnrollmentStatus] = useState(
     enrolled ? "completed" : "pending"
   );
-
-  // Redirect if critical data is missing
+  console.log("PaymentSuccessPage props:", {
+    paymentIntent,
+    orderDetails,
+    course,
+    billingInfo,
+    enrolled,
+    enrollmentPending,
+    paymentMethod,
+  });
   useEffect(() => {
     if (!orderDetails || !course) {
       navigate("/courses");
     }
   }, [orderDetails, course, navigate]);
 
-  // Uncomment this when ready
-  // const { data: paymentStatus, refetch } = usePaymentStatusQuery(paymentIntent?.id || orderDetails?.id, {
-  //   skip: !paymentIntent?.id && !orderDetails?.id,
-  //   pollingInterval: enrollmentStatus === 'pending' ? 5000 : 0,
-  // });
-
-  // useEffect(() => {
-  //   if (paymentStatus?.enrolled) {
-  //     setEnrollmentStatus('completed');
-  //   }
-  // }, [paymentStatus]);
-
   const handleConfirmEnrollment = async () => {
     if (!paymentIntent?.id) return;
     try {
-      // Replace with actual confirmation logic
       const result = { success: true, enrolled: true };
 
       if (result.success && result.enrolled) {
         setEnrollmentStatus("completed");
+        dispatch(clearCart());
       }
     } catch (error) {
       console.error("Manual enrollment confirmation failed:", error);
@@ -273,7 +268,7 @@ const PaymentSuccessPage = () => {
           <div className="space-y-3">
             {enrollmentStatus === "completed" ? (
               <Button asChild className="w-full">
-                <Link to={`/courses/${course.id}/learn`}>
+                <Link to={`/portal/learn/${course.id}`}>
                   Start Learning <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
