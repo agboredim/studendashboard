@@ -16,6 +16,20 @@ const convertCountryToCode = (country) => {
     France: "FR",
     Spain: "ES",
     Italy: "IT",
+    Nigeria: "NG",
+    India: "IN",
+    Brazil: "BR",
+    Japan: "JP",
+    China: "CN",
+    "South Africa": "ZA",
+    "New Zealand": "NZ",
+    "South Korea": "KR",
+    Netherlands: "NL",
+    Sweden: "SE",
+    Switzerland: "CH",
+    Belgium: "BE",
+    Russia: "RU",
+    Mexico: "MX",
     // Add more mappings as needed
   };
   return countryCodes[country] || "GB"; // Default to GB if not found
