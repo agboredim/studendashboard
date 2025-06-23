@@ -54,6 +54,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import AdminBlogUpload from "./pages/AdminBlogUpload";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordConfirmPage from "./pages/ResetPasswordConfirmPage";
+import Index from "./pages/data-analysis-tool/Index";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -218,6 +219,9 @@ function App() {
               }
             /> */}
             <Route path="/admin/blog/create" element={<AdminBlogUpload />} />
+
+            {/* Data Analysis Tool Page */}
+            <Route path="/analysis" element={<Index />} />
 
             {/* Main Layout Routes */}
             <Route path="/" element={<Layout />}>
