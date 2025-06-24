@@ -608,4 +608,191 @@ export const blogPosts = [
       `;
     },
   },
+  {
+    id: 4,
+    title: "Know Your Customer (KYC): Meaning, Requirements & Compliance",
+    slug: "know-your-customer-kyc-meaning-requirements-compliance",
+    author: "Titans Careers Editorial Team",
+    authorRole: "AML/KYC Compliance Experts",
+    authorImage:
+      "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-1.2.1&auto=format&fit=crop&w=300&q=80",
+    date: "April 5, 2025",
+    category: "Compliance",
+    tags: [
+      "KYC",
+      "AML",
+      "Compliance",
+      "Financial Crime",
+      "Banking",
+      "Regulations",
+    ],
+    image:
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80",
+    excerpt:
+      "Discover everything about Know Your Customer (KYC) requirements - from key components and regulations to penalties for non-compliance. Learn how businesses can implement effective KYC procedures to prevent financial crime.",
+    content: function () {
+      return `
+      <div class="article-content mobile-optimized">
+        <div class="article-body px-4 pb-6">
+          <p class="mb-4 text-sm leading-relaxed">Know your customer (KYC) is a mandatory process designed to authenticate a customer's identity in the quest to fight financial crime. This helps businesses to not only know who the customer is, but to also understand their financial behaviour and assess the risk level.</p>
+
+          <div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 mb-4 text-sm flex items-center">
+            <span class="text-2xl font-bold text-yellow-700 mr-3">£100B+</span>
+            <span class="text-gray-800">is laundered annually in the UK, making robust KYC compliance essential for all regulated businesses.</span>
+          </div>
+          
+          <div class="bg-gray-100 p-4 rounded-lg mb-4 text-sm">
+            <h2 class="text-lg font-bold mb-2">Table of Contents</h2>
+            <ol class="list-decimal pl-4 space-y-1">
+              <li><a href="#what-is-kyc" class="text-primary hover:underline">What is Know Your Customer</a></li>
+              <li><a href="#components" class="text-primary hover:underline">Key Components of KYC Compliance</a></li>
+              <li><a href="#challenges" class="text-primary hover:underline">Challenges In KYC Compliance</a></li>
+              <li><a href="#regulations" class="text-primary hover:underline">Key KYC Compliance Laws and Regulations UK</a></li>
+              <li><a href="#penalties" class="text-primary hover:underline">Penalties for KYC Non-compliance</a></li>
+              <li><a href="#consequences" class="text-primary hover:underline">Consequences of KYC Non-compliance by Individuals</a></li>
+              <li><a href="#methods" class="text-primary hover:underline">Traditional and Digital KYC</a></li>
+              <li><a href="#faq" class="text-primary hover:underline">FAQ</a></li>
+            </ol>
+          </div>
+
+          <h2 id="what-is-kyc" class="text-xl font-bold mt-6 mb-3 text-primary">What Is Know Your Customer (KYC)?</h2>
+          <p class="mb-3 text-sm">Businesses in different industries have been compelled to perform KYC protocol on their customers to help prevent and detect money laundering activities which takes a massive toll on the Nation's economy such as the UK where £100 billion+ is laundered annually.</p>
+          
+          <div class="bg-blue-50 p-3 rounded-lg mb-4 text-sm">
+            <p class="font-semibold text-blue-800">Regulated industries include:</p>
+            <ul class="list-disc pl-4 mt-1">
+              <li>Banks and financial institutions</li>
+              <li>Gambling houses</li>
+              <li>Real estate</li>
+              <li>Cryptocurrency exchanges</li>
+              <li>High value dealers</li>
+            </ul>
+          </div>
+
+          <h2 id="components" class="text-xl font-bold mt-6 mb-3 text-primary">Key Components of KYC Compliance</h2>
+          
+          <h3 class="text-lg font-semibold mb-2">1. Customer Identification Program (CIP)</h3>
+          <p class="mb-3 text-sm">Requires businesses to collect and verify information of the customer's identity. Prior to any transaction, businesses must verify:</p>
+          <ul class="list-disc pl-4 mb-3 text-sm space-y-1">
+            <li>Full legal name</li>
+            <li>Date of birth</li>
+            <li>Residential address</li>
+            <li>Government-issued ID</li>
+          </ul>
+          
+          <div class="bg-yellow-50 border-l-4 border-yellow-500 p-3 mb-4 text-sm">
+            <h3 class="text-md font-semibold mb-1">Example:</h3>
+            <p>In the UK, banks can require in-branch ID checks or video verification, while crypto exchanges like Binance require proof of address and source of funds.</p>
+          </div>
+
+          <h3 class="text-lg font-semibold mb-2">2. Customer Due Diligence (CDD)</h3>
+          <p class="mb-2 text-sm">Evaluates a customer's risk profile to ascertain the level of risk they might present.</p>
+          
+          <h4 class="text-md font-semibold mb-1 mt-3">Standard Due Diligence (SDD)</h4>
+          <p class="mb-2 text-sm">For low-risk customers (e.g., salary earners).</p>
+          
+          <h4 class="text-md font-semibold mb-1">Enhanced Due Diligence (EDD)</h4>
+          <p class="mb-3 text-sm">For high-risk customers (crypto traders, foreign PEPs) with potential for money laundering.</p>
+
+          <h3 class="text-lg font-semibold mb-2">3. Risk Assessment</h3>
+          <p class="mb-2 text-sm">Businesses score customers on money laundering likelihood:</p>
+          <ul class="list-disc pl-4 mb-3 text-sm space-y-1">
+            <li>High Risk (Crypto traders, offshore company owners)</li>
+            <li>Medium Risk (Freelancers with irregular income)</li>
+            <li>Low Risk (UK residents with stable employment)</li>
+          </ul>
+
+          <h3 class="text-lg font-semibold mb-2">4. Ongoing Monitoring</h3>
+          <p class="mb-3 text-sm">KYC isn't a one-time process - businesses must constantly monitor customer financial activities to detect unusual transactions.</p>
+
+          <h3 class="text-lg font-semibold mb-2">5. Reporting Suspicious Activity</h3>
+          <p class="mb-4 text-sm">Businesses must report suspicious activity to the UK Financial Intelligence Unit (UKFIU) based on the Proceeds of Crime Act 2002.</p>
+
+          <h2 id="challenges" class="text-xl font-bold mt-6 mb-3 text-primary">Challenges In KYC Compliance</h2>
+          <ul class="list-disc pl-4 mb-4 text-sm space-y-1">
+            <li>Legit customers being flagged for suspicious transactions</li>
+            <li>Slow manual checks delaying customer onboarding</li>
+            <li>Fraudulent tactics (fake IDs, deepfakes)</li>
+          </ul>
+
+          <h2 id="regulations" class="text-xl font-bold mt-6 mb-3 text-primary">Key KYC Compliance Laws & Regulations (UK)</h2>
+          <div class="space-y-3 text-sm">
+            <div class="bg-gray-100 p-3 rounded-lg">
+              <h3 class="font-semibold">Money Laundering Regulations 2017</h3>
+              <p>Governs AML and KYC in the UK with requirements for customer identification and ongoing monitoring.</p>
+            </div>
+            <div class="bg-gray-100 p-3 rounded-lg">
+              <h3 class="font-semibold">Proceeds of Crime Act 2002 (POCA)</h3>
+              <p>Criminalizes money laundering and mandates reporting suspicious activity.</p>
+            </div>
+            <div class="bg-gray-100 p-3 rounded-lg">
+              <h3 class="font-semibold">FCA Rules</h3>
+              <p>Mandates ongoing monitoring and systems to flag risky clients.</p>
+            </div>
+          </div>
+
+          <h2 id="penalties" class="text-xl font-bold mt-6 mb-3 text-primary">Penalties for KYC Non-Compliance</h2>
+          <ul class="list-disc pl-4 mb-4 text-sm space-y-1">
+            <li>Hefty fines (millions of pounds)</li>
+            <li>Criminal charges against directors</li>
+            <li>License revocation</li>
+            <li>Reputational damage</li>
+          </ul>
+
+          <h2 id="consequences" class="text-xl font-bold mt-6 mb-3 text-primary">Consequences for Individuals</h2>
+          <p class="mb-3 text-sm">Customers who don't complete KYC may face:</p>
+          <ul class="list-disc pl-4 mb-4 text-sm space-y-1">
+            <li>Withdrawal/transfer restrictions</li>
+            <li>Frozen accounts</li>
+            <li>Service termination</li>
+          </ul>
+
+          <h2 id="methods" class="text-xl font-bold mt-6 mb-3 text-primary">Traditional vs Digital KYC</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm">
+            <div class="bg-gray-100 p-3 rounded-lg">
+              <h3 class="font-semibold">Traditional</h3>
+              <ul class="list-disc pl-4 mt-1 space-y-1">
+                <li>Manual document submission</li>
+                <li>Physical ID checks</li>
+                <li>In-person interviews</li>
+              </ul>
+            </div>
+            <div class="bg-gray-100 p-3 rounded-lg">
+              <h3 class="font-semibold">Digital</h3>
+              <ul class="list-disc pl-4 mt-1 space-y-1">
+                <li>Online document upload</li>
+                <li>Biometric verification</li>
+                <li>Completed in minutes</li>
+              </ul>
+            </div>
+          </div>
+
+          <h2 id="faq" class="text-xl font-bold mt-6 mb-3 text-primary">FAQ</h2>
+          <div class="space-y-3 text-sm">
+            <div>
+              <h3 class="font-semibold">Q: How long does KYC take?</h3>
+              <p>A: Minutes to weeks depending on risk level.</p>
+            </div>
+            <div>
+              <h3 class="font-semibold">Q: Can I refuse KYC?</h3>
+              <p>A: Yes, but your account will be frozen.</p>
+            </div>
+            <div>
+              <h3 class="font-semibold">Q: What's the biggest KYC mistake?</h3>
+              <p>A: Relying only on manual checks.</p>
+            </div>
+          </div>
+
+          <div class="bg-primary text-white p-6 rounded-lg mt-8">
+            <h3 class="text-xl font-bold mb-3">Master KYC Compliance with Titans Careers</h3>
+            <p class="mb-4 text-sm">Enroll in our comprehensive AML/KYC Training to learn how to spot fraud, verify identities professionally, and land lucrative compliance roles.</p>
+            <a href="/courses" class="inline-block bg-white text-primary px-4 py-2 rounded-md font-semibold text-sm hover:bg-gray-100 transition-colors">
+              Enroll Now
+            </a>
+          </div>
+        </div>
+      </div>
+    `;
+    },
+  },
 ];
