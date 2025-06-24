@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import BlogDetailsForm from "../components/BlogDetailsForm";
 import ContentBlockEditor from "../components/ContentBlockEditor";
+import DraggableContentBlock from "../components/DraggableContentBlock";
 import BlogPreview from "../components/BlogPreview";
 import {
   Plus,
@@ -17,6 +18,7 @@ import {
   List,
   Eye,
   Edit3,
+  GripVertical,
 } from "lucide-react";
 
 // Initial state for a new blog post form
@@ -170,6 +172,14 @@ function AdminBlogUpload() {
     }
   };
 
+  // Move a content block up or down in the list
+  const moveContentBlock = (fromIndex, toIndex) => {
+    const updatedContent = [...blog.content];
+    const [movedBlock] = updatedContent.splice(fromIndex, 1); // Remove the block from the original position
+    updatedContent.splice(toIndex, 0, movedBlock); // Insert it at the new position
+    setBlog((prev) => ({ ...prev, content: updatedContent }));
+  };
+
   // Handle form submission
   const handleSubmit = async (e) => {
     if (e && e.preventDefault) {
@@ -318,11 +328,17 @@ function AdminBlogUpload() {
           <h2 className="text-2xl font-semibold text-foreground mb-6">
             Blog Content Builder
           </h2>
+          {blog.content.length > 0 && (
+            <p className="text-sm text-gray-600 mb-4 flex items-center gap-1">
+              <GripVertical className="h-4 w-4" />
+              Drag the grip handle to reorder content blocks
+            </p>
+          )}
           <div className="space-y-6 mb-8 p-4 border border-gray-100 rounded-md bg-gray-50">
             {/* Render each content block dynamically */}
             {blog.content.map((block, blockIndex) => (
-              <ContentBlockEditor
-                key={blockIndex}
+              <DraggableContentBlock
+                key={`${blockIndex}-${block.type}`}
                 block={block}
                 blockIndex={blockIndex}
                 updateContentBlock={updateContentBlock}
@@ -330,6 +346,7 @@ function AdminBlogUpload() {
                 addNestedContentItem={addNestedContentItem}
                 updateNestedContentItem={updateNestedContentItem}
                 removeNestedContentItem={removeNestedContentItem}
+                moveContentBlock={moveContentBlock}
               />
             ))}
 
