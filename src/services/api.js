@@ -175,7 +175,7 @@ export const api = createApi({
     // Request Password Reset Email
     requestPasswordReset: builder.mutation({
       query: (email) => ({
-        url: "/customuser/password-reset/",
+        url: "/api/password_reset/",
         method: "POST",
         body: email,
       }),
