@@ -54,6 +54,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import AdminBlogUpload from "./pages/AdminBlogUpload";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordConfirmPage from "./pages/ResetPasswordConfirmPage";
+import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 import Index from "./pages/data-analysis-tool/Index";
 
 function ScrollToTop() {
@@ -235,6 +236,7 @@ function App() {
               <Route path="/services" element={<ServicesPage />} />
               <Route path="/community" element={<CommunityPage />} />
               <Route path="courses" element={<CoursesPage />} />
+              <Route path="courses/success" element={<PaymentSuccessPage />} />
               <Route path="courses/:courseId" element={<CourseDetailPage />} />
               <Route path="blog" element={<BlogPage />} />
               <Route path="blog/:slug" element={<BlogPostPage />} />

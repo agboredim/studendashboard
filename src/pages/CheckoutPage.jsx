@@ -84,15 +84,11 @@ const CheckoutPage = () => {
       const paymentData = {
         amount: Math.round(cartTotal * 100),
         currency: "gbp",
-        course_id: cartItems[0]?.id, // Use first course ID or current course ID
-      };
-
-      console.log("Sending to backend:", paymentData);
-
-      createStripePaymentIntent(paymentData)
+        course_id: cartItems[0]?.id, // Assuming single course in cart
+      })
         .unwrap()
         .then((data) => {
-          console.log("Backend response:", data);
+          console.log("Stripe Payment Intent created:", data);
           setClientSecret(data.clientSecret);
         })
         .catch((error) => {
@@ -155,8 +151,16 @@ const CheckoutPage = () => {
       dispatch(clearCart());
       navigate("/courses/success", {
         state: {
-          orderDetails: result,
+          paymentIntent: result,
+          orderDetails: {
+            id: result.id,
+            amount: cartTotal,
+            created_at: new Date().toISOString(),
+            // include discount/tax if applicable
+          },
           course: getCourseFromCart(cartItems),
+          billingInfo,
+          paymentMethod: paymentMethod,
         },
       });
     } catch (error) {
@@ -212,6 +216,18 @@ const CheckoutPage = () => {
       billingInfo.email.includes("@")
     );
   };
+  // console.log(
+  //   "stripe configs:",
+  //   isCreatingStripeIntent,
+  //   clientSecret,
+  //   isProcessingPayment,
+  //   billingInfo,
+  //   paymentMethod,
+  //   cartTotal,
+  //   cartItems
+  // );
+  // Get current course for display
+  const currentCourse = getCourseFromCart(cartItems);
 
   return (
     <CheckoutProtection>
