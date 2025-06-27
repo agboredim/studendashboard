@@ -80,16 +80,11 @@ const CheckoutPage = () => {
 
   // Create PaymentIntent for Stripe when the user selects the card option
   useEffect(() => {
-    if (paymentMethod === "stripe" && cartTotal > 0 && currentCourse?.id) {
-      console.log("=== DEBUG PAYMENT INTENT DATA ===");
-      console.log("currentCourse:", currentCourse);
-      console.log("currentCourse.id:", currentCourse.id);
-      console.log("cartTotal:", cartTotal);
-
+    if (paymentMethod === "stripe" && cartTotal > 0 && cartItems.length > 0) {
       const paymentData = {
         amount: Math.round(cartTotal * 100),
         currency: "gbp",
-        course_id: currentCourse.id,
+        course_id: cartItems[0]?.id, // Use first course ID or current course ID
       };
 
       console.log("Sending to backend:", paymentData);
@@ -105,7 +100,7 @@ const CheckoutPage = () => {
           toast.error("Could not initialize Stripe payment. Please try again.");
         });
     }
-  }, [paymentMethod, cartTotal, createStripePaymentIntent, currentCourse]);
+  }, [paymentMethod, cartTotal, createStripePaymentIntent, cartItems]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
