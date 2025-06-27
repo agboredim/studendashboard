@@ -4,6 +4,7 @@ import { Star, Clock, BarChart, Filter } from "lucide-react";
 import { useGetAllCoursesQuery } from "../services/coursesApi";
 import Spinner from "../components/Spinner";
 import ErrorMessage from "@/components/ErrorMessage";
+import { useSelector } from "react-redux";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -43,6 +44,9 @@ function CoursesPage() {
   const handleFilterChange = (e) => {
     setFilter(e.target.value);
   };
+
+  const user = useSelector((state) => state.auth.user);
+  const enrolledCourseIds = user?.course?.map((c) => c.id || c) || [];
 
   if (isLoading) {
     return <Spinner />;
@@ -127,123 +131,133 @@ function CoursesPage() {
       {/* Course Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {filteredCourses.length > 0 ? (
-          filteredCourses.map((course) => (
-            <div
-              key={course.id}
-              className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300"
-            >
-              <div className="relative h-48 overflow-hidden">
-                <img
-                  // src={`${baseUrl}${course.course_image}`}
-                  src={course.course_image}
-                  alt={course.name}
-                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                />
-                <div className="absolute top-0 right-0 bg-primary text-white px-3 py-1 m-2 rounded-full text-sm font-semibold">
-                  {course.level}
-                </div>
-              </div>
-
-              <div className="p-6">
-                <h3 className="text-base font-bold text-foreground mb-2 line-clamp-2 min-h-[2.5rem]">
-                  {course.name}
-                </h3>
-                <p className="text-foreground/80 text-sm mb-4 line-clamp-3 min-h-[3.75rem]">
-                  {course.description}
-                </p>
-
-                <div className="flex items-center mb-4">
-                  <div className="flex items-center mr-4">
-                    <Clock className="h-4 w-4 text-foreground/60 mr-1" />
-                    <span className="text-sm text-foreground/70">
-                      {course.estimated_time}
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <BarChart className="h-4 w-4 text-foreground/60 mr-1" />
-                    <span className="text-sm text-foreground/70">
-                      {course?.curriculum.length} modules
-                    </span>
+          filteredCourses.map((course) => {
+            const isEnrolled = enrolledCourseIds.includes(course.id);
+            return (
+              <div
+                key={course.id}
+                className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300"
+              >
+                <div className="relative h-48 overflow-hidden">
+                  <img
+                    // src={`${baseUrl}${course.course_image}`}
+                    src={course.course_image}
+                    alt={course.name}
+                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                  />
+                  <div className="absolute top-0 right-0 bg-primary text-white px-3 py-1 m-2 rounded-full text-sm font-semibold">
+                    {course.level}
                   </div>
                 </div>
 
-                <div className="flex items-center mb-4">
-                  {course.instructor ? (
-                    <>
-                      <img
-                        src={`${baseUrl}${course.instructor.profile_picture}`}
-                        alt={
-                          course.instructor.first_name
+                <div className="p-6">
+                  <h3 className="text-base font-bold text-foreground mb-2 line-clamp-2 min-h-[2.5rem]">
+                    {course.name}
+                  </h3>
+                  <p className="text-foreground/80 text-sm mb-4 line-clamp-3 min-h-[3.75rem]">
+                    {course.description}
+                  </p>
+
+                  <div className="flex items-center mb-4">
+                    <div className="flex items-center mr-4">
+                      <Clock className="h-4 w-4 text-foreground/60 mr-1" />
+                      <span className="text-sm text-foreground/70">
+                        {course.estimated_time}
+                      </span>
+                    </div>
+                    <div className="flex items-center">
+                      <BarChart className="h-4 w-4 text-foreground/60 mr-1" />
+                      <span className="text-sm text-foreground/70">
+                        {course?.curriculum.length} modules
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center mb-4">
+                    {course.instructor ? (
+                      <>
+                        <img
+                          src={`${baseUrl}${course.instructor.profile_picture}`}
+                          alt={
+                            course.instructor.first_name
+                              ? `${course.instructor.first_name} ${course.instructor.last_name}`
+                              : "Instructor"
+                          }
+                          className="w-8 h-8 rounded-full mr-2 object-cover"
+                        />
+                        <span className="text-sm text-foreground">
+                          {course.instructor.first_name &&
+                          course.instructor.last_name
                             ? `${course.instructor.first_name} ${course.instructor.last_name}`
-                            : "Instructor"
-                        }
-                        className="w-8 h-8 rounded-full mr-2 object-cover"
-                      />
-                      <span className="text-sm text-foreground">
-                        {course.instructor.first_name &&
-                        course.instructor.last_name
-                          ? `${course.instructor.first_name} ${course.instructor.last_name}`
-                          : "Instructor"}
+                            : "Instructor"}
+                        </span>
+                      </>
+                    ) : (
+                      <span className="text-sm text-foreground/60 italic">
+                        No instructor assigned
                       </span>
-                    </>
-                  ) : (
-                    <span className="text-sm text-foreground/60 italic">
-                      No instructor assigned
+                    )}
+                  </div>
+
+                  <div className="flex items-center mb-4">
+                    <div className="flex items-center">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`h-4 w-4 ${
+                            i < Math.floor(course.rating)
+                              ? "text-secondary fill-current"
+                              : "text-foreground/30"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-sm text-foreground/70 ml-2">
+                      ({course.reviews} reviews)
                     </span>
-                  )}
-                </div>
-
-                <div className="flex items-center mb-4">
-                  <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-4 w-4 ${
-                          i < Math.floor(course.rating)
-                            ? "text-secondary fill-current"
-                            : "text-foreground/30"
-                        }`}
-                      />
-                    ))}
                   </div>
-                  <span className="text-sm text-foreground/70 ml-2">
-                    ({course.reviews} reviews)
-                  </span>
-                </div>
 
-                <div className="mt-auto space-y-3">
-                  <div className="flex flex-col">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-red-500 line-through text-sm">
-                        £1,500
-                      </span>
-                      <span className="text-green-600 text-xs font-medium">
-                        Save £1,000!
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-lg font-bold text-primary">
-                        £{course.price}
-                      </span>
-                      <Link
-                        to={`/courses/${course.id}`}
-                        className="text-sm text-primary hover:text-primary/80 font-medium"
-                      >
-                        View Course
-                      </Link>
+                  <div className="mt-auto space-y-3">
+                    <div className="flex flex-col">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-red-500 line-through text-sm">
+                          £1,500
+                        </span>
+                        <span className="text-green-600 text-xs font-medium">
+                          Save £1,000!
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-lg font-bold text-primary">
+                          £{course.price}
+                        </span>
+                        <Link
+                          to={`/courses/${course.id}`}
+                          className="text-sm text-primary hover:text-primary/80 font-medium"
+                        >
+                          View Course
+                        </Link>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <Link
-                  to={`/courses/${course.id}`}
-                  className="block w-full text-center bg-primary hover:bg-primary/90 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-300 mt-4"
-                >
-                  Enroll Now
-                </Link>
+                  <Link
+                    to={isEnrolled ? undefined : `/courses/${course.id}`}
+                    className={`block w-full text-center font-semibold py-2 px-4 rounded-md transition-colors duration-300 mt-4 ${
+                      isEnrolled
+                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        : "bg-primary hover:bg-primary/90 text-white"
+                    }`}
+                    style={isEnrolled ? { pointerEvents: "none" } : {}}
+                    tabIndex={isEnrolled ? -1 : 0}
+                    aria-disabled={isEnrolled}
+                  >
+                    {isEnrolled ? "Already Enrolled" : "Enroll Now"}
+                  </Link>
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <div className="col-span-full text-center py-12">
             <p className="text-lg text-foreground/80">
