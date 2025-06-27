@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams, useLocation, Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { CheckCircle, BookOpen, User, ArrowRight, Download } from "lucide-react";
+import {
+  CheckCircle,
+  BookOpen,
+  User,
+  ArrowRight,
+  Download,
+} from "lucide-react";
 
 // Components
 import { Card } from "@/components/ui/card";
@@ -35,11 +41,25 @@ const OrderConfirmationPage = () => {
       setCourse(location.state.course);
     }
 
+    // Guard: Redirect if no valid orderId
+    if (!orderId && !storeOrderId && !orderDetails?.order_id) {
+      // Optionally, show a toast here if you use a toast library
+      // toast.error("No valid order found. Redirecting to courses.");
+      navigate("/courses");
+    }
+
     // Redirect to courses if no payment success data
     if (!location.state && !storeOrderId && paymentStatus !== "success") {
       setTimeout(() => navigate("/courses"), 3000);
     }
-  }, [location.state, storeOrderId, paymentStatus, navigate]);
+  }, [
+    location.state,
+    storeOrderId,
+    paymentStatus,
+    navigate,
+    orderId,
+    orderDetails,
+  ]);
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -51,7 +71,8 @@ const OrderConfirmationPage = () => {
             Payment Successful!
           </h1>
           <p className="text-lg text-gray-600">
-            Thank you {user?.first_name && `, ${user.first_name}`}! Your course enrollment is confirmed.
+            Thank you {user?.first_name && `, ${user.first_name}`}! Your course
+            enrollment is confirmed.
           </p>
         </div>
 
@@ -60,11 +81,17 @@ const OrderConfirmationPage = () => {
           <div className="bg-gray-50 p-6 rounded-lg mb-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <p className="text-sm font-medium text-gray-500">Order Reference</p>
-                <p className="font-mono text-lg font-semibold">{displayOrderId}</p>
+                <p className="text-sm font-medium text-gray-500">
+                  Order Reference
+                </p>
+                <p className="font-mono text-lg font-semibold">
+                  {displayOrderId}
+                </p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500">Payment Method</p>
+                <p className="text-sm font-medium text-gray-500">
+                  Payment Method
+                </p>
                 <p className="text-lg font-semibold">
                   {orderDetails?.payment_method || "PayPal"}
                 </p>
@@ -146,7 +173,10 @@ const OrderConfirmationPage = () => {
           </Button>
 
           <Button asChild variant="outline" size="lg" className="w-full">
-            <Link to="/portal/courses" className="flex items-center justify-center">
+            <Link
+              to="/portal/courses"
+              className="flex items-center justify-center"
+            >
               <BookOpen className="w-5 h-5 mr-2" />
               My Courses
               <ArrowRight className="w-4 h-4 ml-2" />

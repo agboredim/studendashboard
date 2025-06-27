@@ -8,6 +8,7 @@ import {
   setOrderId,
   clearCart,
 } from "@/store/slices/cartSlice";
+import { addCourseToUser } from "@/store/slices/authSlice"; // NEW IMPORT
 import { useProcessPayPalPaymentMutation } from "@/services/api";
 import {
   formatSecurePaymentData,
@@ -119,6 +120,12 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
         return;
       }
 
+      // Get the course before payment processing
+      const course = getCourseFromCart(cartItems);
+      if (!course) {
+        throw new Error("No course found in cart");
+      }
+
       // Capture the payment
       const orderData = await actions.order.capture();
 
@@ -167,13 +174,31 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
       dispatch(setOrderId(response.order_id));
       dispatch(clearCart());
 
+      // 🆕 UPDATE USER'S COURSE ARRAY IN REDUX
+      dispatch(
+        addCourseToUser({
+          id: course.id,
+          name: course.name,
+          // Add any other course properties your backend returns
+          // You can extract these from the response if your backend sends them
+        })
+      );
+
       toast.success("Payment successful! Course access granted.");
+
+      // 🆕 GUARD: Check for valid order_id before navigating
+      if (!response.order_id) {
+        toast.error("Order processing failed. Please contact support.");
+        console.error("❌ No order_id in backend response:", response);
+        setIsProcessing(false);
+        return;
+      }
 
       // Navigate to success page
       navigate(`/order-confirmation/${response.order_id}`, {
         state: {
           orderDetails: response,
-          course: getCourseFromCart(cartItems),
+          course: course,
         },
       });
     } catch (error) {

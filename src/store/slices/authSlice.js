@@ -77,6 +77,22 @@ const authSlice = createSlice({
       localStorage.setItem("access_token", access);
       if (refresh) localStorage.setItem("refresh_token", refresh);
     },
+
+    // NEW: Add course to user's enrolled courses
+    addCourseToUser: (state, action) => {
+      if (state.user) {
+        // Initialize course array if it doesn't exist
+        if (!state.user.course) {
+          state.user.course = [];
+        }
+
+        // Add the new course to the array
+        state.user.course.push(action.payload);
+
+        // Update localStorage
+        localStorage.setItem("user", JSON.stringify(state.user));
+      }
+    },
   },
 
   extraReducers: (builder) => {
@@ -147,7 +163,8 @@ const authSlice = createSlice({
   },
 });
 
-export const { login, logout, setUser, updateTokens } = authSlice.actions;
+export const { login, logout, setUser, updateTokens, addCourseToUser } =
+  authSlice.actions;
 
 // Selectors
 export const selectCurrentUser = (state) => state.auth.user;
