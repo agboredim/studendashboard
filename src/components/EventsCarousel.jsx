@@ -6,18 +6,28 @@ import {
   MapPin,
   Clock,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useInView } from "../hooks/useInView";
 import { useGetAllCoursesQuery } from "@/services/coursesApi";
 import AddToCartButton from "./AddToCartButton";
+import { useSelector } from "react-redux";
+import { CheckCircle } from "lucide-react";
+import {
+  selectCurrentUser,
+  selectIsAuthenticated,
+} from "../store/slices/authSlice";
+import { Button } from "@/components/ui/button";
 
 export function EventsCarousel() {
   const sliderRef = useRef(null);
   const [sectionRef] = useInView({ threshold: 0.3 });
   const [currentSlide, setCurrentSlide] = useState(0);
+  const user = useSelector(selectCurrentUser);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const navigate = useNavigate();
 
   // Events data from WorkshopEvents page
   const events = [
@@ -181,64 +191,90 @@ export function EventsCarousel() {
           {/* Slider content area */}
           <div className="mx-6">
             <Slider ref={sliderRef} {...sliderSettings}>
-              {eventsWithCourse.map((event) => (
-                <div key={event.id} className="px-3 h-full">
-                  <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group h-full">
-                    <div className="relative h-48 bg-gray-50">
-                      <img
-                        src={event.image}
-                        alt={event.title}
-                        className="w-full h-full object-contain p-4"
-                      />
-                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        {event.course ? (
-                          <AddToCartButton course={event.course} />
-                        ) : (
-                          <AddToCartButton disabled />
-                        )}
+              {eventsWithCourse.map((event) => {
+                // Check if user is enrolled in this event's course
+                const isEnrolled =
+                  isAuthenticated &&
+                  event.course &&
+                  user?.course?.some(
+                    (enrolledCourse) =>
+                      String(enrolledCourse?.id ?? enrolledCourse) ===
+                      String(event.course.id)
+                  );
+                return (
+                  <div key={event.id} className="px-3 h-full">
+                    <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group h-full">
+                      <div className="relative h-48 bg-gray-50">
+                        <img
+                          src={event.image}
+                          alt={event.title}
+                          className="w-full h-full object-contain p-4"
+                        />
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          {event.course ? (
+                            isEnrolled ? (
+                              <div className="text-center w-full px-4">
+                                <div className="bg-green-100 border border-green-400 text-green-700 p-2 rounded-lg mb-2 text-xs flex items-center justify-center">
+                                  <CheckCircle className="h-4 w-4 inline mr-1" />
+                                  Already enrolled
+                                </div>
+                                <Button
+                                  className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs py-1 px-2"
+                                  onClick={() => navigate("/portal")}
+                                >
+                                  Go to Dashboard &rarr;
+                                </Button>
+                              </div>
+                            ) : (
+                              <AddToCartButton course={event.course} />
+                            )
+                          ) : (
+                            <AddToCartButton disabled />
+                          )}
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="p-6">
-                      <h3 className="text-lg h-14 font-bold text-foreground mb-3">
-                        {event.title}
-                      </h3>
-                      <p className="text-foreground/70 text-base mb-4 line-clamp-2">
-                        {event.description}
-                      </p>
-                      <div className="mb-2">
-                        <span className="text-xs font-semibold text-primary">
-                          INSTRUCTOR:{" "}
-                        </span>
-                        <span className="text-xs text-foreground font-bold">
-                          {instructorMap[event.title]}
-                        </span>
-                      </div>
-
-                      <div className="space-y-2">
-                        <div className="flex items-center text-xs text-foreground/70">
-                          <Calendar className="h-4 w-4 mr-2" />
-                          <span>
-                            {new Date(event.date).toLocaleDateString("en-GB", {
-                              day: "numeric",
-                              month: "long",
-                              year: "numeric",
-                            })}
+                      <div className="p-6">
+                        <h3 className="text-lg h-14 font-bold text-foreground mb-3">
+                          {event.title}
+                        </h3>
+                        <p className="text-foreground/70 text-base mb-4 line-clamp-2">
+                          {event.description}
+                        </p>
+                        <div className="mb-2">
+                          <span className="text-xs font-semibold text-primary">
+                            INSTRUCTOR:{" "}
+                          </span>
+                          <span className="text-xs text-foreground font-bold">
+                            {instructorMap[event.title]}
                           </span>
                         </div>
-                        <div className="flex items-center text-xs text-foreground/70">
-                          <Clock className="h-4 w-4 mr-2" />
-                          <span>{event.time}</span>
-                        </div>
-                        <div className="flex items-center text-xs text-foreground/70">
-                          <MapPin className="h-4 w-4 mr-2" />
-                          <span>{event.location}</span>
+
+                        <div className="space-y-2">
+                          <div className="flex items-center text-xs text-foreground/70">
+                            <Calendar className="h-4 w-4 mr-2" />
+                            <span>
+                              {new Date(event.date).toLocaleDateString("en-GB", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                              })}
+                            </span>
+                          </div>
+                          <div className="flex items-center text-xs text-foreground/70">
+                            <Clock className="h-4 w-4 mr-2" />
+                            <span>{event.time}</span>
+                          </div>
+                          <div className="flex items-center text-xs text-foreground/70">
+                            <MapPin className="h-4 w-4 mr-2" />
+                            <span>{event.location}</span>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </Slider>
           </div>
 

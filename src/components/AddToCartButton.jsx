@@ -25,8 +25,11 @@ function AddToCartButton({ course }) {
   // Check if user is already enrolled
   const isAlreadyEnrolled =
     isAuthenticated &&
-    user?.course?.some(
+    user &&
+    Array.isArray(user.course) &&
+    user.course.some(
       (enrolledCourse) =>
+        enrolledCourse &&
         String(enrolledCourse?.id ?? enrolledCourse) === String(course.id)
     );
 

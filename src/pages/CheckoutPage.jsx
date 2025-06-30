@@ -76,13 +76,13 @@ const CheckoutPage = () => {
   }, [cartItems, navigate]);
 
   // Get current course for display
-  const currentCourse = getCourseFromCart(cartItems);
+  // const currentCourse = getCourseFromCart(cartItems);
 
   // Create PaymentIntent for Stripe when the user selects the card option
   useEffect(() => {
-    if (paymentMethod === "stripe" && cartTotal > 0 && cartItems.length > 0) {
-      const paymentData = {
-        amount: Math.round(cartTotal * 100),
+    if (paymentMethod === "stripe" && cartTotal > 0) {
+      createStripePaymentIntent({
+        amount: Math.round(cartTotal * 100), // Convert to cents/pence
         currency: "gbp",
         course_id: cartItems[0]?.id, // Assuming single course in cart
       })
@@ -92,7 +92,7 @@ const CheckoutPage = () => {
           setClientSecret(data.clientSecret);
         })
         .catch((error) => {
-          console.error("Backend error:", error);
+          console.error("Stripe Payment Intent creation error:", error);
           toast.error("Could not initialize Stripe payment. Please try again.");
         });
     }
