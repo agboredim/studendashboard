@@ -23,7 +23,7 @@ import {
 import { Button } from "@/components/ui/button";
 import Spinner from "../components/Spinner";
 import AddToCartButton from "../components/AddToCartButton";
-import WistiaVideo from "../components/WistiaVideo";
+import AwsVideoPlayer from "../components/AwsVideoPlayer";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -219,11 +219,19 @@ function CourseDetailPage() {
           </div>
 
           <div className="md:w-1/3 bg-gray-50 p-6 md:p-8">
-            {" "}
-            {/* Consider changing bg-gray-50 if needed */}
             <div className="relative h-48 rounded-lg overflow-hidden mb-6">
               <div className="mx-auto max-w-4xl">
-                <WistiaVideo videoId={`${course.preview_id}`} />
+                {course.preview_id ? (
+                  <AwsVideoPlayer
+                    videoUrl={course.preview_id}
+                    title={`${course.name} Preview`}
+                    className="h-48"
+                  />
+                ) : (
+                  <div className="h-48 bg-gray-200 rounded-lg flex items-center justify-center">
+                    <p className="text-gray-500">No preview available</p>
+                  </div>
+                )}
               </div>
             </div>
             <div className="hidden md:block">
