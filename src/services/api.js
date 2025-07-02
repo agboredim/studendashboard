@@ -167,7 +167,7 @@ export const api = createApi({
     // Send guide
     sendGuide: builder.mutation({
       query: (body) => ({
-        url: "/send-guide/",
+        url: "customuser/send-template-1/",
         method: "POST",
         body,
       }),
