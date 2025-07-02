@@ -9,7 +9,10 @@ import {
   clearCart,
 } from "@/store/slices/cartSlice";
 import { addCourseToUser } from "@/store/slices/authSlice";
-import { useProcessPayPalPaymentMutation } from "@/services/api";
+import {
+  useProcessPayPalPaymentMutation,
+  useCreatePayPalOrderMutation,
+} from "@/services/api";
 import {
   formatSecurePaymentData,
   validatePaymentData,
@@ -22,6 +25,7 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
   const [processPayPalPayment] = useProcessPayPalPaymentMutation();
+  const [createPayPalOrder] = useCreatePayPalOrderMutation();
 
   // Get user from Redux
   const { user, isAuthenticated } = useSelector((state) => state.auth);
@@ -35,7 +39,7 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
     "disable-funding": "credit,card",
   };
 
-  const createOrder = (data, actions) => {
+  const createOrder = async (data, actions) => {
     try {
       // Authentication check
       if (!isAuthenticated || !user?.id) {
@@ -50,37 +54,21 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
         throw new Error("No course in cart");
       }
 
-      // Format items for PayPal
-      const items = formatItemsForPayPal(cartItems);
+      console.log("🔍 PayPal Order Creation Debug:");
+      console.log("  User ID:", user.id, "Type:", typeof user.id);
+      console.log("  Course ID:", course.id, "Type:", typeof course.id);
+      console.log("  Cart Total:", cartTotal);
 
-      // Create custom ID in backend-expected format
-      const customId = `${user.id}|${course.id}`;
+      // Validate ObjectId formats if using MongoDB
+      const isValidObjectId = (id) => /^[0-9a-fA-F]{24}$/.test(id);
+      console.log("  User ID valid ObjectId:", isValidObjectId(user.id));
+      console.log("  Course ID valid ObjectId:", isValidObjectId(course.id));
 
-      return actions.order.create({
-        purchase_units: [
-          {
-            amount: {
-              value: cartTotal.toString(),
-              currency_code: "GBP",
-              breakdown: {
-                item_total: {
-                  currency_code: "GBP",
-                  value: cartTotal.toString(),
-                },
-              },
-            },
-            items: items,
-            description: `Course: ${course.name}`,
-            custom_id: customId,
-          },
-        ],
-        application_context: {
-          shipping_preference: "NO_SHIPPING", // Digital goods
-          user_action: "PAY_NOW",
-          brand_name: "Titans Careers",
-          landing_page: "BILLING",
-        },
-      });
+      // Create PayPal Order via backend
+      const result = await createPayPalOrder({ courseId: course.id }).unwrap();
+
+      console.log("✅ Backend created PayPal order:", result);
+      return result.orderId;
     } catch (error) {
       console.error("PayPal createOrder error:", error);
       toast.error("Failed to create PayPal order");
@@ -113,6 +101,10 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
 
       // Capture the payment
       const orderData = await actions.order.capture();
+
+      console.log("✅ PayPal Payment Captured:", orderData);
+      console.log("📦 Order ID:", data.orderID);
+      console.log("💳 Payment ID:", orderData.id);
 
       // Format secure payment data using our service
       const securePaymentData = formatSecurePaymentData(
@@ -155,25 +147,39 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
       if (!response.order_id) {
         toast.error("Order processing failed. Please contact support.");
         console.error("❌ No order_id in backend response:", response);
-        setIsProcessing(false);
+        setIsProcessingPayment(false);
         return;
       }
 
-      console.log(
-        "🚀 About to navigate to:",
-        `/order-confirmation/${response.order_id}`
-      );
+      console.log("🚀 About to navigate to:", `/courses/success`);
       console.log("🎁 Navigation state:", {
+        paymentIntent: { id: response.order_id },
         orderDetails: {
-          order_id: response.order_id,
-          payment_method: "PayPal",
+          id: response.order_id,
+          amount: cartTotal,
+          created_at: new Date().toISOString(),
         },
         course: course,
+        billingInfo: billingInfo,
+        paymentMethod: "paypal",
+        enrolled: true,
       });
 
-      // Use window.location for reliable navigation
-      console.log("🔄 Using window.location navigation...");
-      window.location.href = `/order-confirmation/${response.order_id}`;
+      // Navigate to success page using same route as Stripe
+      navigate("/courses/success", {
+        state: {
+          paymentIntent: { id: response.order_id },
+          orderDetails: {
+            id: response.order_id,
+            amount: cartTotal,
+            created_at: new Date().toISOString(),
+          },
+          course: course,
+          billingInfo: billingInfo,
+          paymentMethod: "paypal",
+          enrolled: true,
+        },
+      });
 
       console.log("✅ Navigation called successfully!");
     } catch (error) {
@@ -277,14 +283,30 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
           <p>Course: {currentCourse.name}</p>
           <p>Price: £{cartTotal}</p>
           <p>User ID: {user?.id}</p>
-          <p>
-            Custom ID Format: {user?.id}|{currentCourse.id}
-          </p>
+          <p>Course ID: {currentCourse.id}</p>
           <p>
             PayPal:{" "}
             {paypalOptions.clientId ? "Configured" : "❌ Missing Client ID"}
           </p>
           <p>Auth: {isAuthenticated ? "✅ Logged in" : "❌ Not logged in"}</p>
+
+          {/* TEST NAVIGATION BUTTON */}
+          <button
+            onClick={() => {
+              console.log("🧪 Testing navigation...");
+              navigate("/courses/success", {
+                state: {
+                  paymentIntent: { id: "TEST123" },
+                  orderDetails: { id: "TEST123", amount: cartTotal },
+                  course: currentCourse,
+                  paymentMethod: "paypal",
+                },
+              });
+            }}
+            className="mt-2 px-2 py-1 bg-red-200 text-red-800 rounded text-xs"
+          >
+            TEST NAVIGATION
+          </button>
         </div>
       )}
 
