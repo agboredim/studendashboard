@@ -8,7 +8,7 @@ import {
   setOrderId,
   clearCart,
 } from "@/store/slices/cartSlice";
-import { addCourseToUser } from "@/store/slices/authSlice"; // NEW IMPORT
+import { addCourseToUser } from "@/store/slices/authSlice";
 import { useProcessPayPalPaymentMutation } from "@/services/api";
 import {
   formatSecurePaymentData,
@@ -23,7 +23,7 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [processPayPalPayment] = useProcessPayPalPaymentMutation();
 
-  // 🆕 GET USER FROM REDUX - This is the key addition!
+  // Get user from Redux
   const { user, isAuthenticated } = useSelector((state) => state.auth);
 
   // PayPal options
@@ -37,7 +37,7 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
 
   const createOrder = (data, actions) => {
     try {
-      // 🆕 AUTHENTICATION CHECK
+      // Authentication check
       if (!isAuthenticated || !user?.id) {
         toast.error("Please log in to make a purchase");
         navigate("/login");
@@ -53,22 +53,8 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
       // Format items for PayPal
       const items = formatItemsForPayPal(cartItems);
 
-      // 🆕 CREATE CUSTOM_ID IN BACKEND-EXPECTED FORMAT
+      // Create custom ID in backend-expected format
       const customId = `${user.id}|${course.id}`;
-
-      // 🆕 ENHANCED DEBUG LOGGING FOR MONGODB
-      console.log("🔍 PayPal Order Creation Debug (MongoDB):");
-      console.log("  User ID:", user.id, "Type:", typeof user.id);
-      console.log("  Course ID:", course.id, "Type:", typeof course.id);
-      console.log("  Custom ID:", customId);
-      console.log("  Custom ID Length:", customId.length);
-      console.log("  Split Test:", customId.split("|"));
-      console.log("  Cart Total:", cartTotal);
-
-      // 🆕 VALIDATE OBJECTID FORMATS
-      const isValidObjectId = (id) => /^[0-9a-fA-F]{24}$/.test(id);
-      console.log("  User ID valid ObjectId:", isValidObjectId(user.id));
-      console.log("  Course ID valid ObjectId:", isValidObjectId(course.id));
 
       return actions.order.create({
         purchase_units: [
@@ -85,7 +71,6 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
             },
             items: items,
             description: `Course: ${course.name}`,
-            // 🆕 FIXED: Use backend expected format user_id|course_id
             custom_id: customId,
           },
         ],
@@ -113,7 +98,7 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
     setIsProcessing(true);
 
     try {
-      // 🆕 ADDITIONAL AUTH CHECK BEFORE PAYMENT
+      // Additional auth check before payment
       if (!isAuthenticated || !user?.id) {
         toast.error("Authentication lost. Please log in again.");
         navigate("/login");
@@ -128,14 +113,6 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
 
       // Capture the payment
       const orderData = await actions.order.capture();
-
-      console.log("✅ PayPal Payment Captured:", orderData);
-      console.log("📦 Order ID:", data.orderID);
-      console.log("💳 Payment ID:", orderData.id);
-      console.log(
-        "🔍 Custom ID from PayPal:",
-        orderData.purchase_units[0]?.custom_id
-      );
 
       // Format secure payment data using our service
       const securePaymentData = formatSecurePaymentData(
@@ -153,40 +130,28 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
         throw new Error(`Validation failed: ${validation.errors.join(", ")}`);
       }
 
-      // 🆕 DETAILED LOGGING BEFORE SENDING
-      console.log("🔍 DEBUGGING PAYMENT DATA:");
-      console.log("Raw cartItems:", cartItems);
-      console.log("Raw orderData:", { id: data.orderID });
-      console.log("Raw paymentData:", orderData);
-      console.log("Raw billingInfo:", billingInfo);
-      console.log(
-        "Formatted securePaymentData:",
-        JSON.stringify(securePaymentData, null, 2)
-      );
-
       // Send to secure backend endpoint
       const response = await processPayPalPayment(securePaymentData).unwrap();
 
       console.log("✅ Backend response:", response);
 
       // Success handling
+      console.log("🎯 Starting success handling...");
       dispatch(setPaymentStatus("success"));
       dispatch(setOrderId(response.order_id));
       dispatch(clearCart());
 
-      // 🆕 UPDATE USER'S COURSE ARRAY IN REDUX
+      // Update user's course array in Redux
       dispatch(
         addCourseToUser({
           id: course.id,
           name: course.name,
-          // Add any other course properties your backend returns
-          // You can extract these from the response if your backend sends them
         })
       );
 
       toast.success("Payment successful! Course access granted.");
 
-      // 🆕 GUARD: Check for valid order_id before navigating
+      // Guard: Check for valid order_id before navigating
       if (!response.order_id) {
         toast.error("Order processing failed. Please contact support.");
         console.error("❌ No order_id in backend response:", response);
@@ -194,13 +159,23 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
         return;
       }
 
-      // Navigate to success page
-      navigate(`/order-confirmation/${response.order_id}`, {
-        state: {
-          orderDetails: response,
-          course: course,
+      console.log(
+        "🚀 About to navigate to:",
+        `/order-confirmation/${response.order_id}`
+      );
+      console.log("🎁 Navigation state:", {
+        orderDetails: {
+          order_id: response.order_id,
+          payment_method: "PayPal",
         },
+        course: course,
       });
+
+      // Use window.location for reliable navigation
+      console.log("🔄 Using window.location navigation...");
+      window.location.href = `/order-confirmation/${response.order_id}`;
+
+      console.log("✅ Navigation called successfully!");
     } catch (error) {
       console.error("❌ Payment processing error:", error);
 
@@ -250,7 +225,7 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
   // Get current course for display
   const currentCourse = getCourseFromCart(cartItems);
 
-  // 🆕 SHOW WARNING IF NOT AUTHENTICATED
+  // Show warning if not authenticated
   if (!isAuthenticated || !user?.id) {
     return (
       <div className="paypal-checkout-form">

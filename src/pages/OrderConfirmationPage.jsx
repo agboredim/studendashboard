@@ -14,52 +14,63 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 // Redux
-import { selectOrderId, selectPaymentStatus } from "@/store/slices/cartSlice";
+import { selectOrderId } from "@/store/slices/cartSlice";
 
 const OrderConfirmationPage = () => {
   const { orderId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const paymentStatus = useSelector(selectPaymentStatus);
   const storeOrderId = useSelector(selectOrderId);
   const { user } = useSelector((state) => state.auth);
 
   // Get order details from navigation state or Redux
   const [orderDetails, setOrderDetails] = useState(null);
   const [course, setCourse] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Use either the URL param or the stored order ID
   const displayOrderId = orderId || storeOrderId || orderDetails?.order_id;
 
   useEffect(() => {
-    // Scroll to top on page load
+    console.log("🏁 OrderConfirmationPage mounted!");
+    console.log("🔍 orderId from URL:", orderId);
+    console.log("🔍 location.state:", location.state);
+    console.log("🔍 storeOrderId:", storeOrderId);
+
     window.scrollTo(0, 0);
 
-    // Get data from navigation state (PayPal/Stripe success)
-    if (location.state) {
+    // 1. Check for direct access with order ID
+    if (orderId) {
+      setIsLoading(false);
+      return;
+    }
+
+    // 2. Check for navigation state (from PayPal/Stripe)
+    if (location.state?.orderDetails) {
       setOrderDetails(location.state.orderDetails);
       setCourse(location.state.course);
+      setIsLoading(false);
+      return;
     }
 
-    // Guard: Redirect if no valid orderId
-    if (!orderId && !storeOrderId && !orderDetails?.order_id) {
-      // Optionally, show a toast here if you use a toast library
-      // toast.error("No valid order found. Redirecting to courses.");
+    // 3. Check for Redux store data
+    if (storeOrderId) {
+      setIsLoading(false);
+      return;
+    }
+
+    // 4. Only redirect if no data found
+    const timer = setTimeout(() => {
+      setIsLoading(false);
       navigate("/courses");
-    }
+    }, 3000);
 
-    // Redirect to courses if no payment success data
-    if (!location.state && !storeOrderId && paymentStatus !== "success") {
-      setTimeout(() => navigate("/courses"), 3000);
-    }
-  }, [
-    location.state,
-    storeOrderId,
-    paymentStatus,
-    navigate,
-    orderId,
-    orderDetails,
-  ]);
+    return () => clearTimeout(timer);
+  }, [orderId, location.state, storeOrderId, navigate]);
+
+  if (isLoading) {
+    return <div>Loading order confirmation...</div>;
+  }
 
   return (
     <div className="container mx-auto px-4 py-12">

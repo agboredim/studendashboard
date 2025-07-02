@@ -55,7 +55,7 @@ import AdminBlogUpload from "./pages/AdminBlogUpload";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordConfirmPage from "./pages/ResetPasswordConfirmPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
-import Index from "./pages/data-analysis-tool/Index";
+// import Index from "./pages/data-analysis-tool/Index";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -87,7 +87,6 @@ function App() {
               path="/password-reset-confirm/:uid/:token"
               element={<ResetPasswordConfirmPage />}
             />
-
             {/* Portal Routes - Kept flat as in historical version */}
             <Route
               path="/portal"
@@ -209,7 +208,6 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
             {/* Admin Routes - Add after Portal Routes */}
             {/* <Route
               path="/admin/blog/create"
@@ -220,10 +218,17 @@ function App() {
               }
             /> */}
             <Route path="/admin/blog/create" element={<AdminBlogUpload />} />
-
             {/* Data Analysis Tool Page */}
-            <Route path="/analysis" element={<Index />} />
-
+            {/* <Route path="/analysis" element={<Index />} /> */}
+            // Move this OUTSIDE Layout, with the portal routes
+            <Route
+              path="/order-confirmation/:orderId"
+              element={
+                <ProtectedRoute>
+                  <OrderConfirmationPage />
+                </ProtectedRoute>
+              }
+            />
             {/* Main Layout Routes */}
             <Route path="/" element={<Layout />}>
               {/* Public Routes */}
@@ -262,14 +267,14 @@ function App() {
                 }
               />
               // ADD this new route for the orderId parameter
-              <Route
+              {/* <Route
                 path="order-confirmation/:orderId"
                 element={
                   <ProtectedRoute>
                     <OrderConfirmationPage />
                   </ProtectedRoute>
                 }
-              />
+              /> */}
               {/* 404 catch-all route */}
               <Route path="*" element={<NotFound />} />
             </Route>
