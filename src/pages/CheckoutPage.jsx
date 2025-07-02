@@ -18,21 +18,13 @@ import {
   selectCartItems,
   selectCartTotal,
   removeFromCart,
-  clearCart,
 } from "@/store/slices/cartSlice";
 
 // API
-import {
-  useCreateStripePaymentIntentMutation,
-  useProcessPayPalPaymentMutation,
-} from "@/services/api";
+import { useCreateStripePaymentIntentMutation } from "@/services/api";
 
 // PayPal Services
-import {
-  formatSecurePaymentData,
-  validatePaymentData,
-  getCourseFromCart,
-} from "@/services/paypalService";
+import { getCourseFromCart } from "@/services/paypalService";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
@@ -48,7 +40,7 @@ const CheckoutPage = () => {
   // State for managing payment method and Stripe client secret
   const [paymentMethod, setPaymentMethod] = useState("paypal"); // 'paypal' or 'stripe'
   const [clientSecret, setClientSecret] = useState("");
-  const [isProcessingPayment, setIsProcessingPayment] = useState(false); // NEW: Prevent duplicate submissions
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [billingInfo, setBillingInfo] = useState({
     firstName: "",
     lastName: "",
@@ -63,17 +55,18 @@ const CheckoutPage = () => {
   const [createStripePaymentIntent, { isLoading: isCreatingStripeIntent }] =
     useCreateStripePaymentIntentMutation();
 
-  // NEW: PayPal mutation for secure processing
-  const [processPayPalPayment, { isLoading: isProcessingPayPal }] =
-    useProcessPayPalPaymentMutation();
-
-  // Redirect if cart is empty
+  // Redirect if cart is empty and still on checkout page
   useEffect(() => {
-    if (cartItems.length === 0) {
+    // Only redirect if cart is empty AND we're still on checkout page AND not processing payment
+    if (
+      cartItems.length === 0 &&
+      window.location.pathname === "/checkout" &&
+      !isProcessingPayment
+    ) {
       navigate("/courses");
       toast.error("Cart is empty. Please add courses to checkout.");
     }
-  }, [cartItems, navigate]);
+  }, [cartItems, navigate, isProcessingPayment]);
 
   // Create PaymentIntent for Stripe when the user selects the card option
   useEffect(() => {
@@ -81,9 +74,11 @@ const CheckoutPage = () => {
       createStripePaymentIntent({
         amount: Math.round(cartTotal * 100), // Convert to cents/pence
         currency: "gbp",
+        course_id: cartItems[0]?.id, // Assuming single course in cart
       })
         .unwrap()
         .then((data) => {
+          console.log("Stripe Payment Intent created:", data);
           setClientSecret(data.clientSecret);
         })
         .catch((error) => {
@@ -91,7 +86,7 @@ const CheckoutPage = () => {
           toast.error("Could not initialize Stripe payment. Please try again.");
         });
     }
-  }, [paymentMethod, cartTotal, createStripePaymentIntent]);
+  }, [paymentMethod, cartTotal, createStripePaymentIntent, cartItems]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -109,7 +104,7 @@ const CheckoutPage = () => {
     }
   };
 
-  // NEW: Secure PayPal payment handler
+  // Secure PayPal payment handler
   const handlePayPalPaymentSuccess = async (
     paypalOrderData,
     paypalPaymentData
@@ -142,14 +137,25 @@ const CheckoutPage = () => {
       // Success handling
       toast.success("Payment processed successfully!");
 
-      // Clear cart and redirect
-      dispatch(clearCart());
-      navigate("/courses/success", {
+      // Add debug logs for navigation
+      console.log("About to navigate to order confirmation");
+      console.log("Result:", result);
+
+      // Navigate to order confirmation
+      navigate(`/order-confirmation/${result.order_id}`, {
         state: {
-          orderDetails: result,
+          orderDetails: {
+            order_id: result.order_id,
+            payment_method: "PayPal",
+          },
           course: getCourseFromCart(cartItems),
         },
       });
+
+      console.log("Navigation called");
+
+      // Clear cart after successful payment and navigation
+      dispatch(clearCart());
     } catch (error) {
       console.error("PayPal payment processing error:", error);
 
@@ -171,7 +177,7 @@ const CheckoutPage = () => {
     }
   };
 
-  // NEW: PayPal payment error handler
+  // PayPal payment error handler
   const handlePayPalPaymentError = (error) => {
     console.error("PayPal payment error:", error);
     toast.error("PayPal payment failed. Please try again.");
@@ -234,7 +240,7 @@ const CheckoutPage = () => {
                     name="firstName"
                     value={billingInfo.firstName}
                     onChange={handleInputChange}
-                    disabled={isProcessingPayment} // NEW: Disable during processing
+                    disabled={isProcessingPayment}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
                     required
                   />
@@ -409,10 +415,10 @@ const CheckoutPage = () => {
               {/* Processing Indicator */}
               {isProcessingPayment && (
                 <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
-                  <p className="text-sm text-blue-800 flex items-center">
+                  <div className="text-sm text-blue-800 flex items-center">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-800 mr-2"></div>
                     Processing your payment securely...
-                  </p>
+                  </div>
                 </div>
               )}
 
@@ -500,8 +506,6 @@ const CheckoutPage = () => {
                       cartTotal={cartTotal}
                       cartItems={cartItems}
                       billingInfo={billingInfo}
-                      onSuccess={handlePayPalPaymentSuccess}
-                      onError={handlePayPalPaymentError}
                     />
                   )}
 
@@ -546,10 +550,6 @@ const CheckoutPage = () => {
                   <Award className="h-5 w-5 text-blue-500 mr-3" />
                   <span className="text-sm">Instant course access</span>
                 </div>
-                {/* <div className="flex items-center">
-                  <Clock className="h-5 w-5 text-purple-500 mr-3" />
-                  <span className="text-sm">12 months access</span>
-                </div> */}
               </div>
             </Card>
           </div>

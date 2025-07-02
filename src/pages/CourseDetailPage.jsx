@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import {
   Star,
   Clock,
@@ -15,18 +16,27 @@ import {
   useGetCourseByIdQuery,
   useGetAllCoursesQuery,
 } from "../services/coursesApi";
+import {
+  selectCurrentUser,
+  selectIsAuthenticated,
+} from "../store/slices/authSlice";
 import { Button } from "@/components/ui/button";
 import Spinner from "../components/Spinner";
 import AddToCartButton from "../components/AddToCartButton";
-import WistiaVideo from "../components/WistiaVideo";
+import AwsVideoPlayer from "../components/AwsVideoPlayer";
 
 const baseUrl = import.meta.env.VITE_BASE_URL;
 
 function CourseDetailPage() {
   const { courseId } = useParams();
+  const navigate = useNavigate();
   // const [expandedModule, setExpandedModule] = useState(null);
   const [relatedCourses, setRelatedCourses] = useState([]);
   // const [videoStarted, setVideoStarted] = useState(false);
+
+  // Auth state
+  const user = useSelector(selectCurrentUser);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
 
   const {
     data: course,
@@ -36,6 +46,14 @@ function CourseDetailPage() {
 
   const { data: allCourses = [], isLoading: isAllCoursesLoading } =
     useGetAllCoursesQuery();
+
+  // Check if user is enrolled in this course
+  const isEnrolled =
+    isAuthenticated &&
+    user?.course?.some(
+      (enrolledCourse) =>
+        String(enrolledCourse?.id ?? enrolledCourse) === String(courseId)
+    );
 
   useEffect(() => {
     if (course && allCourses.length > 0) {
@@ -181,16 +199,39 @@ function CourseDetailPage() {
                   </span>
                 </div>
               </div>
-              <AddToCartButton course={course} />
+              {isEnrolled ? (
+                <div className="text-center">
+                  <div className="bg-green-100 border border-green-400 text-green-700 p-4 rounded-lg mb-4">
+                    <CheckCircle className="h-5 w-5 inline mr-2" />
+                    You're already enrolled in this course
+                  </div>
+                  <Button
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    onClick={() => navigate("/portal")}
+                  >
+                    Continue Learning →
+                  </Button>
+                </div>
+              ) : (
+                <AddToCartButton course={course} />
+              )}
             </div>
           </div>
 
           <div className="md:w-1/3 bg-gray-50 p-6 md:p-8">
-            {" "}
-            {/* Consider changing bg-gray-50 if needed */}
             <div className="relative h-48 rounded-lg overflow-hidden mb-6">
               <div className="mx-auto max-w-4xl">
-                <WistiaVideo videoId={`${course.preview_id}`} />
+                {course.preview_id ? (
+                  <AwsVideoPlayer
+                    videoUrl={course.preview_id}
+                    title={`${course.name} Preview`}
+                    className="h-48"
+                  />
+                ) : (
+                  <div className="h-48 bg-gray-200 rounded-lg flex items-center justify-center">
+                    <p className="text-gray-500">No preview available</p>
+                  </div>
+                )}
               </div>
             </div>
             <div className="hidden md:block">
@@ -204,7 +245,22 @@ function CourseDetailPage() {
                   </span>
                 </div>
               </div>
-              <AddToCartButton course={course} />
+              {isEnrolled ? (
+                <div className="text-center">
+                  <div className="bg-green-100 border border-green-400 text-green-700 p-4 rounded-lg mb-4">
+                    <CheckCircle className="h-5 w-5 inline mr-2" />
+                    You're already enrolled in this course
+                  </div>
+                  <Button
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    onClick={() => navigate("/portal")}
+                  >
+                    Continue Learning →
+                  </Button>
+                </div>
+              ) : (
+                <AddToCartButton course={course} />
+              )}
             </div>
             <div className="border-t border-gray-200 pt-4 mt-4">
               <h3 className="font-bold text-foreground/90 mb-3">

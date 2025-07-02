@@ -1,45 +1,76 @@
 import { useEffect, useState } from "react";
 import { useParams, useLocation, Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { CheckCircle, BookOpen, User, ArrowRight, Download } from "lucide-react";
+import {
+  CheckCircle,
+  BookOpen,
+  User,
+  ArrowRight,
+  Download,
+} from "lucide-react";
 
 // Components
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 // Redux
-import { selectOrderId, selectPaymentStatus } from "@/store/slices/cartSlice";
+import { selectOrderId } from "@/store/slices/cartSlice";
 
 const OrderConfirmationPage = () => {
   const { orderId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const paymentStatus = useSelector(selectPaymentStatus);
   const storeOrderId = useSelector(selectOrderId);
   const { user } = useSelector((state) => state.auth);
 
   // Get order details from navigation state or Redux
   const [orderDetails, setOrderDetails] = useState(null);
   const [course, setCourse] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Use either the URL param or the stored order ID
   const displayOrderId = orderId || storeOrderId || orderDetails?.order_id;
 
   useEffect(() => {
-    // Scroll to top on page load
+    console.log("🏁 OrderConfirmationPage mounted!");
+    console.log("🔍 orderId from URL:", orderId);
+    console.log("🔍 location.state:", location.state);
+    console.log("🔍 storeOrderId:", storeOrderId);
+
     window.scrollTo(0, 0);
 
-    // Get data from navigation state (PayPal/Stripe success)
-    if (location.state) {
-      setOrderDetails(location.state.orderDetails);
-      setCourse(location.state.course);
+    // 1. Check for direct access with order ID
+    if (orderId) {
+      setIsLoading(false);
+      return;
     }
 
-    // Redirect to courses if no payment success data
-    if (!location.state && !storeOrderId && paymentStatus !== "success") {
-      setTimeout(() => navigate("/courses"), 3000);
+    // 2. Check for navigation state (from PayPal/Stripe)
+    if (location.state?.orderDetails) {
+      setOrderDetails(location.state.orderDetails);
+      setCourse(location.state.course);
+      setIsLoading(false);
+      return;
     }
-  }, [location.state, storeOrderId, paymentStatus, navigate]);
+
+    // 3. Check for Redux store data
+    if (storeOrderId) {
+      setIsLoading(false);
+      return;
+    }
+
+    // 4. Only redirect if no data found
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+      navigate("/courses");
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [orderId, location.state, storeOrderId, navigate]);
+
+  if (isLoading) {
+    return <div>Loading order confirmation...</div>;
+  }
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -51,7 +82,8 @@ const OrderConfirmationPage = () => {
             Payment Successful!
           </h1>
           <p className="text-lg text-gray-600">
-            Thank you {user?.first_name && `, ${user.first_name}`}! Your course enrollment is confirmed.
+            Thank you {user?.first_name && `, ${user.first_name}`}! Your course
+            enrollment is confirmed.
           </p>
         </div>
 
@@ -60,11 +92,17 @@ const OrderConfirmationPage = () => {
           <div className="bg-gray-50 p-6 rounded-lg mb-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <p className="text-sm font-medium text-gray-500">Order Reference</p>
-                <p className="font-mono text-lg font-semibold">{displayOrderId}</p>
+                <p className="text-sm font-medium text-gray-500">
+                  Order Reference
+                </p>
+                <p className="font-mono text-lg font-semibold">
+                  {displayOrderId}
+                </p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500">Payment Method</p>
+                <p className="text-sm font-medium text-gray-500">
+                  Payment Method
+                </p>
                 <p className="text-lg font-semibold">
                   {orderDetails?.payment_method || "PayPal"}
                 </p>
@@ -146,7 +184,10 @@ const OrderConfirmationPage = () => {
           </Button>
 
           <Button asChild variant="outline" size="lg" className="w-full">
-            <Link to="/portal/courses" className="flex items-center justify-center">
+            <Link
+              to="/portal/courses"
+              className="flex items-center justify-center"
+            >
               <BookOpen className="w-5 h-5 mr-2" />
               My Courses
               <ArrowRight className="w-4 h-4 ml-2" />

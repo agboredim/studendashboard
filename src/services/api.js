@@ -138,6 +138,7 @@ export const api = createApi({
         body: {
           amount: paymentData.amount,
           currency: paymentData.currency || "gbp",
+          course_id: paymentData.course_id, // Single course ID
           metadata: {
             integration_check: "accept_a_payment",
           },
@@ -145,8 +146,8 @@ export const api = createApi({
       }),
       transformResponse: (response) => {
         return {
-          clientSecret: response.client_secret,
-          paymentIntentId: response.id,
+          clientSecret: response.clientSecret,
+          paymentIntentId: response.payment_intent_id,
         };
       },
       transformErrorResponse: (response) => {
@@ -166,7 +167,7 @@ export const api = createApi({
     // Send guide
     sendGuide: builder.mutation({
       query: (body) => ({
-        url: "/send-guide/",
+        url: "customuser/send-template-1/",
         method: "POST",
         body,
       }),

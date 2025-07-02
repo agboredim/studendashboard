@@ -5,21 +5,34 @@ import {
   ChevronRight,
   MapPin,
   Clock,
+  CheckCircle,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useInView } from "../hooks/useInView";
 import { useGetAllCoursesQuery } from "@/services/coursesApi";
 import AddToCartButton from "./AddToCartButton";
+import { useSelector } from "react-redux";
+import {
+  selectCurrentUser,
+  selectIsAuthenticated,
+} from "../store/slices/authSlice";
+import { Button } from "@/components/ui/button";
 
 export function EventsCarousel() {
   const sliderRef = useRef(null);
   const [sectionRef] = useInView({ threshold: 0.3 });
   const [currentSlide, setCurrentSlide] = useState(0);
+  const user = useSelector(selectCurrentUser);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const navigate = useNavigate();
 
-  // Events data from WorkshopEvents page
+  // Fetch all courses from backend
+  const { data: allCourses = [] } = useGetAllCoursesQuery();
+
+  // Events data - these are the static event descriptions
   const events = [
     {
       id: 1,
@@ -63,7 +76,7 @@ export function EventsCarousel() {
     },
   ];
 
-  // Mapping from event title to backend course name
+  // Mapping from event title to backend course name (exact match with backend)
   const eventToCourseName = {
     "AML/KYC Compliance Workshop": "AML/KYC Compliance",
     "Cybersecurity Workshop": "Cybersecurity",
@@ -72,6 +85,7 @@ export function EventsCarousel() {
     "Data Analytics Workshop": "Data Analysis",
   };
 
+  // Instructor mapping
   const instructorMap = {
     "AML/KYC Compliance Workshop": "LUMI OTOLORIN",
     "Data Analytics Workshop": "TOBI OLADIPUPO",
@@ -79,17 +93,31 @@ export function EventsCarousel() {
     "Cybersecurity Workshop": "DR. JAMES BROWN",
   };
 
-  const { data: allCourses = [] } = useGetAllCoursesQuery();
-
-  // For each event, find the matching course
+  // Map each event to its corresponding backend course
   const eventsWithCourse = events.map((event) => {
-    const backendName = eventToCourseName[event.title];
+    const backendCourseName = eventToCourseName[event.title];
     const matchedCourse = allCourses.find(
       (course) =>
-        course.name.trim().toLowerCase() === backendName.trim().toLowerCase()
+        course.name?.trim().toLowerCase() ===
+        backendCourseName?.trim().toLowerCase()
     );
-    return { ...event, course: matchedCourse };
+
+    return {
+      ...event,
+      course: matchedCourse,
+      instructor: instructorMap[event.title],
+    };
   });
+
+  // Check if user is enrolled in a specific course
+  const isUserEnrolled = (course) => {
+    if (!isAuthenticated || !user || !course) return false;
+
+    return user.course?.some(
+      (enrolledCourse) =>
+        String(enrolledCourse?.id ?? enrolledCourse) === String(course.id)
+    );
+  };
 
   const handleBeforeChange = useCallback(() => {
     // Additional logic before slide change if needed
@@ -140,7 +168,7 @@ export function EventsCarousel() {
 
   const isPrevArrowDisabled = currentSlide === 0;
   const isNextArrowDisabled =
-    currentSlide >= events.length - sliderSettings.slidesToShow;
+    currentSlide >= eventsWithCourse.length - sliderSettings.slidesToShow;
 
   return (
     <section ref={sectionRef} className="py-16 bg-gray-100">
@@ -181,64 +209,126 @@ export function EventsCarousel() {
           {/* Slider content area */}
           <div className="mx-6">
             <Slider ref={sliderRef} {...sliderSettings}>
-              {eventsWithCourse.map((event) => (
-                <div key={event.id} className="px-3 h-full">
-                  <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group h-full">
-                    <div className="relative h-48 bg-gray-50">
-                      <img
-                        src={event.image}
-                        alt={event.title}
-                        className="w-full h-full object-contain p-4"
-                      />
-                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        {event.course ? (
-                          <AddToCartButton course={event.course} />
-                        ) : (
-                          <AddToCartButton disabled />
+              {eventsWithCourse.map((event) => {
+                // Check if user is enrolled in this event's course
+                const isEnrolled = isUserEnrolled(event.course);
+
+                return (
+                  <div key={event.id} className="px-3 h-full">
+                    <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group h-full">
+                      <div className="relative h-48 bg-gray-50">
+                        <img
+                          src={event.image}
+                          alt={event.title}
+                          className="w-full h-full object-contain p-4"
+                          onError={(e) => {
+                            e.target.src = "/placeholder.svg";
+                          }}
+                        />
+
+                        {/* Hover overlay with enrollment status and cart button */}
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          {event.course ? (
+                            isEnrolled ? (
+                              <div className="text-center w-full px-4">
+                                <div className="bg-green-100 border border-green-400 text-green-700 p-2 rounded-lg mb-2 text-xs flex items-center justify-center">
+                                  <CheckCircle className="h-4 w-4 inline mr-1" />
+                                  Already enrolled in {event.course.name}
+                                </div>
+                                <Button
+                                  className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs py-1 px-2"
+                                  onClick={() => navigate("/portal")}
+                                >
+                                  Go to Dashboard →
+                                </Button>
+                              </div>
+                            ) : (
+                              <AddToCartButton course={event.course} />
+                            )
+                          ) : (
+                            <div className="text-center w-full px-4">
+                              <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 p-2 rounded-lg text-xs">
+                                Course not available
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="p-6">
+                        <h3 className="text-lg h-14 font-bold text-foreground mb-3">
+                          {event.title}
+                        </h3>
+                        <p className="text-foreground/70 text-base mb-4 line-clamp-2">
+                          {event.description}
+                        </p>
+
+                        {/* Instructor Info */}
+                        {event.instructor && (
+                          <div className="mb-2">
+                            <span className="text-xs font-semibold text-primary">
+                              INSTRUCTOR:{" "}
+                            </span>
+                            <span className="text-xs text-foreground font-bold">
+                              {event.instructor}
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Event Details */}
+                        <div className="space-y-2">
+                          <div className="flex items-center text-xs text-foreground/70">
+                            <Calendar className="h-4 w-4 mr-2" />
+                            <span>
+                              {new Date(event.date).toLocaleDateString(
+                                "en-GB",
+                                {
+                                  day: "numeric",
+                                  month: "long",
+                                  year: "numeric",
+                                }
+                              )}
+                            </span>
+                          </div>
+                          <div className="flex items-center text-xs text-foreground/70">
+                            <Clock className="h-4 w-4 mr-2" />
+                            <span>{event.time}</span>
+                          </div>
+                          <div className="flex items-center text-xs text-foreground/70">
+                            <MapPin className="h-4 w-4 mr-2" />
+                            <span>{event.location}</span>
+                          </div>
+                        </div>
+
+                        {/* Course Info */}
+                        {event.course && (
+                          <div className="mt-4 pt-4 border-t border-gray-100">
+                            <div className="flex items-center justify-between">
+                              <div className="text-xs text-foreground/60">
+                                Includes access to:
+                              </div>
+                              <Link
+                                to={`/courses/${event.course.id}`}
+                                className="text-xs text-primary hover:text-primary/80 font-medium"
+                              >
+                                View Course
+                              </Link>
+                            </div>
+                            <div className="text-sm font-medium text-foreground mt-1">
+                              {event.course.name}
+                            </div>
+                            {event.course.level && (
+                              <div className="text-xs text-foreground/60 mt-1">
+                                Level: {event.course.level}
+                              </div>
+                            )}
+                          </div>
                         )}
                       </div>
                     </div>
-
-                    <div className="p-6">
-                      <h3 className="text-lg h-14 font-bold text-foreground mb-3">
-                        {event.title}
-                      </h3>
-                      <p className="text-foreground/70 text-base mb-4 line-clamp-2">
-                        {event.description}
-                      </p>
-                      <div className="mb-2">
-                        <span className="text-xs font-semibold text-primary">
-                          INSTRUCTOR:{" "}
-                        </span>
-                        <span className="text-xs text-foreground font-bold">
-                          {instructorMap[event.title]}
-                        </span>
-                      </div>
-
-                      <div className="space-y-2">
-                        <div className="flex items-center text-xs text-foreground/70">
-                          <Calendar className="h-4 w-4 mr-2" />
-                          <span>
-                            {new Date(event.date).toLocaleDateString("en-GB", {
-                              day: "numeric",
-                              month: "long",
-                              year: "numeric",
-                            })}
-                          </span>
-                        </div>
-                        <div className="flex items-center text-xs text-foreground/70">
-                          <Clock className="h-4 w-4 mr-2" />
-                          <span>{event.time}</span>
-                        </div>
-                        <div className="flex items-center text-xs text-foreground/70">
-                          <MapPin className="h-4 w-4 mr-2" />
-                          <span>{event.location}</span>
-                        </div>
-                      </div>
-                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </Slider>
           </div>
 

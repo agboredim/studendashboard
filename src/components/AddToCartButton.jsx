@@ -4,6 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { ShoppingCart, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { addToCart } from "../store/slices/cartSlice";
+import {
+  selectCurrentUser,
+  selectIsAuthenticated,
+} from "../store/slices/authSlice";
 
 function AddToCartButton({ course }) {
   const [isAdded, setIsAdded] = useState(false);
@@ -11,10 +15,34 @@ function AddToCartButton({ course }) {
   const navigate = useNavigate();
   const cartItems = useSelector((state) => state.cart.items);
 
+  // Auth state
+  const user = useSelector(selectCurrentUser);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+
   // Check if the course is already in the cart
   const isInCart = cartItems.some((item) => item.id === course.id);
 
+  // Check if user is already enrolled
+  const isAlreadyEnrolled =
+    isAuthenticated &&
+    user &&
+    Array.isArray(user.course) &&
+    user.course.some(
+      (enrolledCourse) =>
+        enrolledCourse &&
+        String(enrolledCourse?.id ?? enrolledCourse) === String(course.id)
+    );
+
   const handleAddToCart = () => {
+    // Cart-level protection: prevent enrolled users from adding to cart
+    if (isAlreadyEnrolled) {
+      alert(
+        "You're already enrolled in this course! Redirecting to your portal..."
+      );
+      navigate("/portal");
+      return;
+    }
+
     if (isInCart) {
       navigate("/checkout");
       return;
@@ -43,20 +71,25 @@ function AddToCartButton({ course }) {
       onClick={handleAddToCart}
       className={`flex items-center gap-2 ${
         isInCart
-          ? "bg-green-600 text-white hover:bg-green-700" // Keeping green for clarity when item is in cart
-          : // Using primary color for 'Add to Cart' state
-            "bg-primary text-white hover:bg-primary/90"
+          ? "bg-green-600 text-white hover:bg-green-700"
+          : "bg-primary text-white hover:bg-primary/90"
       }`}
+      disabled={isAlreadyEnrolled}
+      aria-disabled={isAlreadyEnrolled}
+      tabIndex={isAlreadyEnrolled ? -1 : 0}
     >
-      {isAdded || isInCart ? (
+      {isAlreadyEnrolled ? (
         <>
-          {/* Icons will inherit text color */}
+          <Check className="h-5 w-5" />
+          Already Enrolled
+        </>
+      ) : isAdded || isInCart ? (
+        <>
           <Check className="h-5 w-5" />
           {isInCart ? "Go to Checkout" : "Added to Cart"}
         </>
       ) : (
         <>
-          {/* Icons will inherit text color */}
           <ShoppingCart className="h-5 w-5" />
           Add to Cart
         </>
