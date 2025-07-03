@@ -1,9 +1,15 @@
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-// import { useDispatch } from "react-redux";
-// import { clearCart } from "@/store/slices/cartSlice";
+import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
+import { useNotifyStripePaymentSuccessMutation } from "@/services/api";
+import {
+  setPaymentStatus,
+  setOrderId,
+  clearCart,
+} from "@/store/slices/cartSlice";
+import { addCourseToUser } from "@/store/slices/authSlice";
 
 // Convert country name to ISO 3166-1 alpha-2 code
 const convertCountryToCode = (country) => {
@@ -44,12 +50,25 @@ const StripeCheckoutForm = ({
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Get user from Redux for course enrollment
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
+
+  // Stripe payment notify API
+  const [notifyPaymentSuccess] = useNotifyStripePaymentSuccessMutation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!stripe || !elements || !clientSecret || isSubmitting) return;
+
+    // Authentication check
+    if (!isAuthenticated || !user?.id) {
+      toast.error("Please log in to complete your purchase");
+      navigate("/login");
+      return;
+    }
 
     setIsSubmitting(true);
 
@@ -61,6 +80,8 @@ const StripeCheckoutForm = ({
     }
 
     try {
+      console.log("🔄 Processing Stripe payment...");
+
       const { paymentIntent, error } = await stripe.confirmCardPayment(
         clientSecret,
         {
@@ -79,7 +100,8 @@ const StripeCheckoutForm = ({
           },
         }
       );
-      console.log("Payment Intent:", paymentIntent);
+
+      console.log("💳 Payment Intent:", paymentIntent);
 
       if (error) {
         toast.error(error.message || "Payment failed");
@@ -88,23 +110,75 @@ const StripeCheckoutForm = ({
       }
 
       if (paymentIntent.status === "succeeded") {
-        toast.success("Payment successful!");
-        navigate("/courses/success", {
-          state: {
-            paymentIntent: paymentIntent,
-            orderDetails: {
-              id: paymentIntent.id,
-              amount: cartTotal,
-              created_at: new Date(
-                paymentIntent.created * 1000
-              ).toLocaleString(),
+        console.log("✅ Stripe payment succeeded, notifying backend...");
+
+        try {
+          // Notify backend of successful payment for enrollment
+          const response = await notifyPaymentSuccess({
+            paymentIntentId: paymentIntent.id,
+          }).unwrap();
+
+          console.log("✅ Backend notification successful:", response);
+
+          // Update Redux state
+          dispatch(setPaymentStatus("success"));
+          dispatch(setOrderId(paymentIntent.id));
+          dispatch(clearCart());
+
+          // Add course to user in Redux
+          if (cartItems[0]) {
+            dispatch(
+              addCourseToUser({
+                id: cartItems[0].id,
+                name: cartItems[0].name,
+              })
+            );
+          }
+
+          toast.success("Payment successful! Course access granted.");
+
+          console.log("🚀 Navigating to order confirmation...");
+
+          // Navigate to order confirmation page (same as PayPal)
+          navigate(`/order-confirmation/${paymentIntent.id}`, {
+            state: {
+              orderDetails: {
+                order_id: paymentIntent.id,
+                payment_method: "Stripe",
+                amount: cartTotal,
+                created_at: new Date(
+                  paymentIntent.created * 1000
+                ).toISOString(),
+              },
+              course: cartItems[0],
+              billingInfo: billingInfo,
             },
-            billingInfo: billingInfo,
-            course: cartItems[0],
-            paymentMethod: "stripe",
-          },
-        });
-        // dispatch(clearCart());
+          });
+        } catch (backendError) {
+          console.error("❌ Backend notification failed:", backendError);
+
+          // Still navigate to success page but show warning
+          toast.warning(
+            backendError.message ||
+              "Payment succeeded but enrollment may be delayed. Please contact support if needed."
+          );
+
+          navigate(`/order-confirmation/${paymentIntent.id}`, {
+            state: {
+              orderDetails: {
+                order_id: paymentIntent.id,
+                payment_method: "Stripe",
+                amount: cartTotal,
+                created_at: new Date(
+                  paymentIntent.created * 1000
+                ).toISOString(),
+              },
+              course: cartItems[0],
+              billingInfo: billingInfo,
+              enrollmentPending: true, // Mark as potentially not enrolled
+            },
+          });
+        }
       } else {
         toast.error("Payment was not completed. Please try again.");
       }

@@ -97,10 +97,34 @@ export const api = createApi({
       invalidatesTags: ["Orders"],
     }),
 
-    // UPDATED: Secure PayPal payment processing with backend verification
+    // PayPal: Create Order (Backend-First Approach)
+    createPayPalOrder: builder.mutation({
+      query: (paymentData) => ({
+        url: `/payment/paypal/create-order/`,
+        method: "POST",
+        body: {
+          course_id: paymentData.courseId, // Single course ID
+        },
+      }),
+      transformResponse: (response) => {
+        return {
+          orderId: response.orderID,
+          success: true,
+        };
+      },
+      transformErrorResponse: (response) => {
+        return {
+          status: response.status,
+          message: response.data?.message || "Failed to create PayPal order",
+          error_code: response.data?.error_code,
+        };
+      },
+    }),
+
+    // PayPal: Verify and Process Payment
     processPayPalPayment: builder.mutation({
       query: (paymentData) => ({
-        url: `/payment/paypal/verify-order/`, // NEW SECURE ENDPOINT
+        url: `/payment/paypal/verify-order/`,
         method: "POST",
         body: {
           payment_id: paymentData.payment_id, // PayPal payment ID
@@ -130,7 +154,7 @@ export const api = createApi({
       invalidatesTags: ["Orders"],
     }),
 
-    // Stripe Payment Intent
+    // Stripe: Create Payment Intent
     createStripePaymentIntent: builder.mutation({
       query: (paymentData) => ({
         url: `/payment/create-payment-intent/`,
@@ -158,6 +182,32 @@ export const api = createApi({
       },
     }),
 
+    // Stripe: Notify Payment Success (Backend Processing)
+    notifyStripePaymentSuccess: builder.mutation({
+      query: (data) => ({
+        url: `/payment/payment-success/`,
+        method: "POST",
+        body: {
+          payment_intent_id: data.paymentIntentId, // Stripe Payment Intent ID
+        },
+      }),
+      transformResponse: (response) => {
+        return {
+          success: true,
+          userMessage: response.user_message,
+          courseId: response.course_id,
+          message: response.message || "Enrollment processed successfully",
+        };
+      },
+      transformErrorResponse: (response) => {
+        return {
+          status: response.status,
+          message: response.data?.error || "Failed to notify payment success",
+        };
+      },
+      invalidatesTags: ["Orders"],
+    }),
+
     // Get user orders
     getUserOrders: builder.query({
       query: () => "/orders/user/",
@@ -167,7 +217,7 @@ export const api = createApi({
     // Send guide
     sendGuide: builder.mutation({
       query: (body) => ({
-        url: "customuser/send-template-1/",
+        url: "/customuser/send-template-1/",
         method: "POST",
         body,
       }),
@@ -203,8 +253,13 @@ export const {
   useGetCoursesQuery,
   useGetCourseByIdQuery,
   useCreateOrderMutation,
+  // PayPal Hooks
+  useCreatePayPalOrderMutation,
   useProcessPayPalPaymentMutation,
+  // Stripe Hooks
   useCreateStripePaymentIntentMutation,
+  useNotifyStripePaymentSuccessMutation,
+  // Other Hooks
   useGetUserOrdersQuery,
   useSendGuideMutation,
   useRequestPasswordResetMutation,

@@ -151,35 +151,21 @@ const PayPalCheckoutForm = ({ cartTotal, cartItems, billingInfo }) => {
         return;
       }
 
-      console.log("🚀 About to navigate to:", `/courses/success`);
+      console.log(
+        "🚀 About to navigate to:",
+        `/order-confirmation/${response.order_id}`
+      );
       console.log("🎁 Navigation state:", {
-        paymentIntent: { id: response.order_id },
         orderDetails: {
-          id: response.order_id,
-          amount: cartTotal,
-          created_at: new Date().toISOString(),
+          order_id: response.order_id,
+          payment_method: "PayPal",
         },
         course: course,
-        billingInfo: billingInfo,
-        paymentMethod: "paypal",
-        enrolled: true,
       });
 
-      // Navigate to success page using same route as Stripe
-      navigate("/courses/success", {
-        state: {
-          paymentIntent: { id: response.order_id },
-          orderDetails: {
-            id: response.order_id,
-            amount: cartTotal,
-            created_at: new Date().toISOString(),
-          },
-          course: course,
-          billingInfo: billingInfo,
-          paymentMethod: "paypal",
-          enrolled: true,
-        },
-      });
+      // Use window.location for reliable navigation (this worked before)
+      console.log("🔄 Using window.location navigation...");
+      window.location.href = `/order-confirmation/${response.order_id}`;
 
       console.log("✅ Navigation called successfully!");
     } catch (error) {
