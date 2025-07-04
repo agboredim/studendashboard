@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useLocation, Link, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
   CheckCircle,
   BookOpen,
@@ -14,12 +14,13 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 // Redux
-import { selectOrderId } from "@/store/slices/cartSlice";
+import { selectOrderId, clearCart } from "@/store/slices/cartSlice";
 
 const OrderConfirmationPage = () => {
   const { orderId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const storeOrderId = useSelector(selectOrderId);
   const { user } = useSelector((state) => state.auth);
 
@@ -35,6 +36,11 @@ const OrderConfirmationPage = () => {
     console.log("🏁 OrderConfirmationPage mounted!");
     console.log("🔍 orderId from URL:", orderId);
     console.log("🔍 location.state:", location.state);
+    console.log("🔍 orderDetails:", location.state?.orderDetails);
+    console.log(
+      "🔍 payment_method:",
+      location.state?.orderDetails?.payment_method
+    );
     console.log("🔍 storeOrderId:", storeOrderId);
 
     window.scrollTo(0, 0);
@@ -50,6 +56,11 @@ const OrderConfirmationPage = () => {
       setOrderDetails(location.state.orderDetails);
       setCourse(location.state.course);
       setIsLoading(false);
+
+      // Clear cart after successful payment confirmation page load
+      console.log("🧹 Clearing cart after successful payment");
+      dispatch(clearCart());
+
       return;
     }
 
@@ -66,7 +77,7 @@ const OrderConfirmationPage = () => {
     }, 3000);
 
     return () => clearTimeout(timer);
-  }, [orderId, location.state, storeOrderId, navigate]);
+  }, [orderId, location.state, storeOrderId, navigate, dispatch]);
 
   if (isLoading) {
     return <div>Loading order confirmation...</div>;
@@ -90,21 +101,13 @@ const OrderConfirmationPage = () => {
         {/* Order Details */}
         {displayOrderId && (
           <div className="bg-gray-50 p-6 rounded-lg mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <div>
                 <p className="text-sm font-medium text-gray-500">
                   Order Reference
                 </p>
                 <p className="font-mono text-lg font-semibold">
                   {displayOrderId}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-500">
-                  Payment Method
-                </p>
-                <p className="text-lg font-semibold">
-                  {orderDetails?.payment_method || "PayPal"}
                 </p>
               </div>
             </div>
