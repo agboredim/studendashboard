@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 import { Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Spinner from "../components/Spinner";
@@ -30,16 +30,22 @@ function ForgotPasswordPage() {
     }
 
     if (isError) {
-      // Assuming backend sends error.data.detail or error.data.email
-      const errorMessage =
-        error?.data?.email ||
-        error?.data?.detail ||
-        "Failed to send reset email. Please try again.";
+      let errorMessage;
+      if (error?.data?.email && Array.isArray(error.data.email)) {
+        errorMessage = error.data.email.join(" ");
+      } else if (error?.data?.email) {
+        errorMessage = error.data.email;
+      } else if (error?.data?.detail) {
+        errorMessage = error.data.detail;
+      } else {
+        errorMessage = "Failed to send reset email. Please try again.";
+      }
       toast.error(errorMessage);
     }
   }, [isSuccess, isError, error, data]);
 
   const onSubmit = (formData) => {
+    console.log("Forgot password request body:", formData);
     requestPasswordReset(formData);
   };
 
