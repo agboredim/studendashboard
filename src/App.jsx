@@ -10,6 +10,7 @@ import { useLocation } from "react-router-dom";
 import store from "./store";
 
 import Layout from "./components/Layout";
+import AdminLayout from "./components/admin/AdminLayout";
 
 // Components
 import { WhatsAppButton } from "./components/WhatsAppButton";
@@ -55,7 +56,11 @@ import AdminBlogUpload from "./pages/AdminBlogUpload";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordConfirmPage from "./pages/ResetPasswordConfirmPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
-// import Index from "./pages/data-analysis-tool/Index";
+
+// Admin Pages
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminBlogList from "./pages/admin/AdminBlogList";
+import AdminBlogEdit from "./pages/admin/AdminBlogEdit";
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -66,11 +71,9 @@ function ScrollToTop() {
 }
 
 function App() {
-  // Get Google Client ID from environment variables using Vite's import.meta.env
-  // const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "";
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
     ? import.meta.env.VITE_GOOGLE_CLIENT_ID
-    : "your-google-client-id"; // Replace with your actual client ID
+    : "your-google-client-id";
 
   return (
     <Provider store={store}>
@@ -81,12 +84,12 @@ function App() {
             {/* Authentication Pages (outside main layout) */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
-            {/* New: Forgot Password Routes */}
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route
               path="/password-reset-confirm/:uid/:token"
               element={<ResetPasswordConfirmPage />}
             />
+
             {/* Portal Routes - Kept flat as in historical version */}
             <Route
               path="/portal"
@@ -208,19 +211,23 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            {/* Admin Routes - Add after Portal Routes */}
-            {/* <Route
-              path="/admin/blog/create"
+
+            {/* Admin Routes - New admin section with its own layout */}
+            <Route
+              path="/admin"
               element={
                 <ProtectedRoute>
-                  <AdminBlogUpload />
+                  <AdminLayout />
                 </ProtectedRoute>
               }
-            /> */}
-            <Route path="/admin/blog/create" element={<AdminBlogUpload />} />
-            {/* Data Analysis Tool Page */}
-            {/* <Route path="/analysis" element={<Index />} /> */}
-            // Move this OUTSIDE Layout, with the portal routes
+            >
+              <Route index element={<AdminDashboard />} />
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="blog/list" element={<AdminBlogList />} />
+              <Route path="blog/create" element={<AdminBlogUpload />} />
+              <Route path="blog/edit/:id" element={<AdminBlogEdit />} />
+            </Route>
+
             <Route
               path="/order-confirmation/:orderId"
               element={
@@ -229,6 +236,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
             {/* Main Layout Routes */}
             <Route path="/" element={<Layout />}>
               {/* Public Routes */}
@@ -248,6 +256,7 @@ function App() {
               <Route path="events" element={<WorkshopEvents />} />
               <Route path="terms" element={<TermsAndConditions />} />
               <Route path="privacy" element={<PrivacyPolicy />} />
+
               {/* Protected Routes that should use main layout */}
               <Route
                 path="checkout"
@@ -257,7 +266,6 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              // Keep your existing route for the base path
               <Route
                 path="order-confirmation"
                 element={
@@ -266,15 +274,7 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              // ADD this new route for the orderId parameter
-              {/* <Route
-                path="order-confirmation/:orderId"
-                element={
-                  <ProtectedRoute>
-                    <OrderConfirmationPage />
-                  </ProtectedRoute>
-                }
-              /> */}
+
               {/* 404 catch-all route */}
               <Route path="*" element={<NotFound />} />
             </Route>
