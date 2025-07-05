@@ -67,7 +67,7 @@ function ContentBlockEditor({
             placeholder="Enter heading text..."
           />
           <small className="text-foreground/70 text-sm mt-1 block">
-            Auto-generated ID (for Table of Contents): #{block.id}
+            Auto-generated ID (for Table of Contents): #{block.headingId}
           </small>
         </div>
       )}
