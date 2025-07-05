@@ -40,7 +40,6 @@ const CheckoutPage = () => {
   // State for managing payment method and Stripe client secret
   const [paymentMethod, setPaymentMethod] = useState("paypal"); // 'paypal' or 'stripe'
   const [clientSecret, setClientSecret] = useState("");
-  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [billingInfo, setBillingInfo] = useState({
     firstName: "",
     lastName: "",
@@ -55,18 +54,13 @@ const CheckoutPage = () => {
   const [createStripePaymentIntent, { isLoading: isCreatingStripeIntent }] =
     useCreateStripePaymentIntentMutation();
 
-  // Redirect if cart is empty and still on checkout page
+  // Redirect if cart is empty
   useEffect(() => {
-    // Only redirect if cart is empty AND we're still on checkout page AND not processing payment
-    if (
-      cartItems.length === 0 &&
-      window.location.pathname === "/checkout" &&
-      !isProcessingPayment
-    ) {
+    if (cartItems.length === 0) {
       navigate("/courses");
       toast.error("Cart is empty. Please add courses to checkout.");
     }
-  }, [cartItems, navigate, isProcessingPayment]);
+  }, [cartItems, navigate]);
 
   // Create PaymentIntent for Stripe when the user selects the card option
   useEffect(() => {
@@ -102,86 +96,6 @@ const CheckoutPage = () => {
     if (cartItems.length === 1) {
       navigate("/courses");
     }
-  };
-
-  // Secure PayPal payment handler
-  const handlePayPalPaymentSuccess = async (
-    paypalOrderData,
-    paypalPaymentData
-  ) => {
-    if (isProcessingPayment) {
-      toast.warning("Payment is already being processed...");
-      return;
-    }
-
-    setIsProcessingPayment(true);
-
-    try {
-      // Format secure payment data
-      const securePaymentData = formatSecurePaymentData(
-        cartItems,
-        paypalOrderData,
-        paypalPaymentData,
-        billingInfo
-      );
-
-      // Validate payment data
-      const validation = validatePaymentData(securePaymentData);
-      if (!validation.isValid) {
-        throw new Error(`Validation failed: ${validation.errors.join(", ")}`);
-      }
-
-      // Process payment with backend verification
-      const result = await processPayPalPayment(securePaymentData).unwrap();
-
-      // Success handling
-      toast.success("Payment processed successfully!");
-
-      // Add debug logs for navigation
-      console.log("About to navigate to order confirmation");
-      console.log("Result:", result);
-
-      // Navigate to order confirmation
-      navigate(`/order-confirmation/${result.order_id}`, {
-        state: {
-          orderDetails: {
-            order_id: result.order_id,
-            payment_method: "PayPal",
-          },
-          course: getCourseFromCart(cartItems),
-        },
-      });
-
-      console.log("Navigation called");
-
-      // Clear cart after successful payment and navigation
-      dispatch(clearCart());
-    } catch (error) {
-      console.error("PayPal payment processing error:", error);
-
-      // Enhanced error handling
-      if (error.status === 400) {
-        toast.error(error.message || "Payment validation failed");
-      } else if (error.status === 401) {
-        toast.error("Authentication failed. Please log in again.");
-        navigate("/login");
-      } else if (error.status === 409) {
-        toast.error("Payment already processed or duplicate transaction");
-      } else if (error.error_code === "PAYMENT_VERIFICATION_FAILED") {
-        toast.error("Payment verification failed. Please contact support.");
-      } else {
-        toast.error("Payment processing failed. Please try again.");
-      }
-    } finally {
-      setIsProcessingPayment(false);
-    }
-  };
-
-  // PayPal payment error handler
-  const handlePayPalPaymentError = (error) => {
-    console.error("PayPal payment error:", error);
-    toast.error("PayPal payment failed. Please try again.");
-    setIsProcessingPayment(false);
   };
 
   // Stripe appearance and options
@@ -240,8 +154,7 @@ const CheckoutPage = () => {
                     name="firstName"
                     value={billingInfo.firstName}
                     onChange={handleInputChange}
-                    disabled={isProcessingPayment}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                     required
                   />
                 </div>
@@ -258,8 +171,7 @@ const CheckoutPage = () => {
                     name="lastName"
                     value={billingInfo.lastName}
                     onChange={handleInputChange}
-                    disabled={isProcessingPayment}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                     required
                   />
                 </div>
@@ -276,8 +188,7 @@ const CheckoutPage = () => {
                     name="email"
                     value={billingInfo.email}
                     onChange={handleInputChange}
-                    disabled={isProcessingPayment}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                     required
                   />
                 </div>
@@ -294,8 +205,7 @@ const CheckoutPage = () => {
                     name="address"
                     value={billingInfo.address}
                     onChange={handleInputChange}
-                    disabled={isProcessingPayment}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
                 <div>
@@ -311,8 +221,7 @@ const CheckoutPage = () => {
                     name="city"
                     value={billingInfo.city}
                     onChange={handleInputChange}
-                    disabled={isProcessingPayment}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
                 <div>
@@ -328,8 +237,7 @@ const CheckoutPage = () => {
                     name="postalCode"
                     value={billingInfo.postalCode}
                     onChange={handleInputChange}
-                    disabled={isProcessingPayment}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
                 <div className="md:col-span-2">
@@ -344,8 +252,7 @@ const CheckoutPage = () => {
                     name="country"
                     value={billingInfo.country}
                     onChange={handleInputChange}
-                    disabled={isProcessingPayment}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                   >
                     <option value="United Kingdom">United Kingdom</option>
                     <option value="United States">United States</option>
@@ -390,7 +297,6 @@ const CheckoutPage = () => {
                         size="sm"
                         className="text-red-500 hover:text-red-700 hover:bg-red-50"
                         onClick={() => handleRemoveFromCart(currentCourse.id)}
-                        disabled={isProcessingPayment}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -412,16 +318,6 @@ const CheckoutPage = () => {
             <Card className="p-6">
               <h2 className="text-xl font-semibold mb-4">Payment</h2>
 
-              {/* Processing Indicator */}
-              {isProcessingPayment && (
-                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
-                  <div className="text-sm text-blue-800 flex items-center">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-800 mr-2"></div>
-                    Processing your payment securely...
-                  </div>
-                </div>
-              )}
-
               {/* Total Display */}
               <div className="flex justify-between items-center text-lg font-semibold border-b pb-4 mb-6">
                 <span>Total:</span>
@@ -433,7 +329,6 @@ const CheckoutPage = () => {
                 <Button
                   variant={paymentMethod === "paypal" ? "default" : "outline"}
                   onClick={() => setPaymentMethod("paypal")}
-                  disabled={isProcessingPayment}
                   className="w-full"
                 >
                   <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -447,7 +342,6 @@ const CheckoutPage = () => {
                 <Button
                   variant={paymentMethod === "stripe" ? "default" : "outline"}
                   onClick={() => setPaymentMethod("stripe")}
-                  disabled={isProcessingPayment}
                   className="w-full"
                 >
                   <CreditCard className="w-5 h-5 mr-2" />
@@ -488,7 +382,7 @@ const CheckoutPage = () => {
               </div>
 
               {/* Payment Form Section */}
-              {!isFormValid() && !isProcessingPayment && (
+              {!isFormValid() && (
                 <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
                   <p className="text-sm text-yellow-800">
                     Please fill in required billing information before
@@ -499,20 +393,17 @@ const CheckoutPage = () => {
 
               <div className="space-y-4">
                 {/* PayPal Button Section */}
-                {paymentMethod === "paypal" &&
-                  isFormValid() &&
-                  !isProcessingPayment && (
-                    <PayPalCheckoutForm
-                      cartTotal={cartTotal}
-                      cartItems={cartItems}
-                      billingInfo={billingInfo}
-                    />
-                  )}
+                {paymentMethod === "paypal" && isFormValid() && (
+                  <PayPalCheckoutForm
+                    cartTotal={cartTotal}
+                    cartItems={cartItems}
+                    billingInfo={billingInfo}
+                  />
+                )}
 
                 {/* Stripe Elements Section */}
                 {paymentMethod === "stripe" &&
                   isFormValid() &&
-                  !isProcessingPayment &&
                   clientSecret && (
                     <Elements options={stripeOptions} stripe={stripePromise}>
                       <StripeCheckoutForm
@@ -527,7 +418,6 @@ const CheckoutPage = () => {
                 {/* Loading States */}
                 {paymentMethod === "stripe" &&
                   isFormValid() &&
-                  !isProcessingPayment &&
                   (isCreatingStripeIntent || !clientSecret) && (
                     <div className="text-center py-4">
                       <p className="text-sm text-gray-500">
