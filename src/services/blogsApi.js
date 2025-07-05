@@ -35,7 +35,7 @@ export const blogsApi = createApi({
         if (params.category) searchParams.append("category", params.category);
         if (params.tag) searchParams.append("tag", params.tag);
         if (params.search) searchParams.append("search", params.search);
-        return `/blogs/?${searchParams.toString()}`;
+        return `/blog/blogs/?${searchParams.toString()}`;
       },
       providesTags: (result) =>
         result?.blogs
