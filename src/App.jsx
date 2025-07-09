@@ -56,6 +56,7 @@ import AdminBlogUpload from "./pages/AdminBlogUpload";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordConfirmPage from "./pages/ResetPasswordConfirmPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
+import Index from './pages/data-analysis-tool/Index'
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -227,6 +228,8 @@ function App() {
               <Route path="blog/create" element={<AdminBlogUpload />} />
               <Route path="blog/edit/:id" element={<AdminBlogEdit />} />
             </Route>
+
+            <Route path="analysis" element={<Index/>}/>
 
             <Route
               path="/order-confirmation/:orderId"

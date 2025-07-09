@@ -7,6 +7,7 @@ import {
   Edit,
   Calendar,
   Tag,
+  AlertCircle,
 } from "lucide-react";
 import {
   useGetBlogStatsQuery,
@@ -14,11 +15,27 @@ import {
 } from "../../services/blogsApi";
 
 function AdminDashboard() {
-  const { data: stats, isLoading: statsLoading } = useGetBlogStatsQuery();
+  const {
+    data: stats,
+    isLoading: statsLoading,
+    error: statsError,
+  } = useGetBlogStatsQuery();
   const { data: recentBlogs, isLoading: blogsLoading } = useGetAdminBlogsQuery({
     page: 1,
     limit: 5,
   });
+
+  // Calculate percentage changes (mock data for now since we don't have historical data)
+  const getChangePercentage = (current, type) => {
+    // This would ideally come from historical data
+    const mockChanges = {
+      totalBlogs: "+12%",
+      publishedBlogs: "+8%",
+      draftBlogs: "+3%",
+      totalViews: "+23%",
+    };
+    return mockChanges[type] || "+0%";
+  };
 
   const statsCards = [
     {
@@ -26,28 +43,28 @@ function AdminDashboard() {
       value: stats?.totalBlogs || 0,
       icon: FileText,
       color: "bg-blue-500",
-      change: "+12%",
+      change: getChangePercentage(stats?.totalBlogs, "totalBlogs"),
     },
     {
       title: "Published",
       value: stats?.publishedBlogs || 0,
       icon: Eye,
       color: "bg-green-500",
-      change: "+8%",
+      change: getChangePercentage(stats?.publishedBlogs, "publishedBlogs"),
     },
     {
       title: "Draft",
       value: stats?.draftBlogs || 0,
       icon: Edit,
       color: "bg-yellow-500",
-      change: "+3%",
+      change: getChangePercentage(stats?.draftBlogs, "draftBlogs"),
     },
     {
       title: "Total Views",
       value: stats?.totalViews || 0,
       icon: TrendingUp,
       color: "bg-purple-500",
-      change: "+23%",
+      change: getChangePercentage(stats?.totalViews, "totalViews"),
     },
   ];
 
@@ -67,6 +84,19 @@ function AdminDashboard() {
     );
   }
 
+  if (statsError) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
+        <div className="flex items-center">
+          <AlertCircle className="h-5 w-5 text-red-600 mr-2" />
+          <span className="text-red-800">
+            Failed to load dashboard data. Please try refreshing the page.
+          </span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       {/* Header */}
@@ -80,13 +110,18 @@ function AdminDashboard() {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {statsCards.map((stat, index) => (
-          <div key={index} className="bg-white rounded-lg shadow-sm p-6">
+          <div
+            key={index}
+            className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow"
+          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
                   {stat.title}
                 </p>
-                <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
+                <p className="text-3xl font-bold text-gray-900">
+                  {stat.value.toLocaleString()}
+                </p>
                 <p className="text-sm text-green-600 mt-1">
                   {stat.change} from last month
                 </p>
@@ -103,10 +138,10 @@ function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <Link
           to="/admin/blog/create"
-          className="bg-primary text-white p-6 rounded-lg shadow-sm hover:bg-primary/90 transition-colors"
+          className="bg-primary text-white p-6 rounded-lg shadow-sm hover:bg-primary/90 transition-colors group"
         >
           <div className="flex items-center">
-            <Plus className="h-8 w-8 mr-4" />
+            <Plus className="h-8 w-8 mr-4 group-hover:scale-110 transition-transform" />
             <div>
               <h3 className="text-lg font-semibold">Create New Blog</h3>
               <p className="text-primary-100">Start writing a new blog post</p>
@@ -116,10 +151,10 @@ function AdminDashboard() {
 
         <Link
           to="/admin/blog/list"
-          className="bg-white border-2 border-gray-200 p-6 rounded-lg shadow-sm hover:border-primary transition-colors"
+          className="bg-white border-2 border-gray-200 p-6 rounded-lg shadow-sm hover:border-primary transition-colors group"
         >
           <div className="flex items-center">
-            <FileText className="h-8 w-8 mr-4 text-gray-600" />
+            <FileText className="h-8 w-8 mr-4 text-gray-600 group-hover:text-primary transition-colors" />
             <div>
               <h3 className="text-lg font-semibold text-gray-900">
                 Manage Blogs
@@ -135,6 +170,7 @@ function AdminDashboard() {
             <div>
               <h3 className="text-lg font-semibold text-gray-900">Analytics</h3>
               <p className="text-gray-600">View blog performance</p>
+              <p className="text-xs text-gray-500 mt-1">Coming soon</p>
             </div>
           </div>
         </div>
@@ -171,31 +207,41 @@ function AdminDashboard() {
             ))
           ) : recentBlogs?.blogs?.length > 0 ? (
             recentBlogs.blogs.map((blog) => (
-              <div key={blog.id} className="px-6 py-4 hover:bg-gray-50">
+              <div
+                key={blog.id}
+                className="px-6 py-4 hover:bg-gray-50 transition-colors"
+              >
                 <div className="flex items-center space-x-4">
                   <img
-                    src={blog.image || "/placeholder.svg"}
+                    src={blog.image || "/placeholder.svg?height=64&width=64"}
                     alt={blog.title}
                     className="w-16 h-16 object-cover rounded"
+                    onError={(e) => {
+                      e.target.src = "/placeholder.svg?height=64&width=64";
+                    }}
                   />
                   <div className="flex-1 min-w-0">
                     <Link
                       to={`/admin/blog/edit/${blog.id}`}
-                      className="text-lg font-medium text-gray-900 hover:text-primary"
+                      className="text-lg font-medium text-gray-900 hover:text-primary transition-colors"
                     >
                       {blog.title}
                     </Link>
                     <div className="flex items-center space-x-4 mt-1 text-sm text-gray-500">
                       <span className="flex items-center">
                         <Calendar className="h-4 w-4 mr-1" />
-                        {blog.date}
+                        {new Date(
+                          blog.date || blog.createdAt
+                        ).toLocaleDateString()}
                       </span>
-                      <span className="flex items-center">
-                        <Tag className="h-4 w-4 mr-1" />
-                        {blog.category}
-                      </span>
+                      {blog.category && (
+                        <span className="flex items-center">
+                          <Tag className="h-4 w-4 mr-1" />
+                          {blog.category}
+                        </span>
+                      )}
                       <span
-                        className={`px-2 py-1 rounded-full text-xs ${
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
                           blog.status === "published"
                             ? "bg-green-100 text-green-800"
                             : "bg-yellow-100 text-yellow-800"
@@ -207,7 +253,7 @@ function AdminDashboard() {
                   </div>
                   <Link
                     to={`/admin/blog/edit/${blog.id}`}
-                    className="text-primary hover:text-primary/80"
+                    className="text-primary hover:text-primary/80 transition-colors"
                   >
                     <Edit className="h-5 w-5" />
                   </Link>
@@ -215,14 +261,14 @@ function AdminDashboard() {
               </div>
             ))
           ) : (
-            <div className="px-6 py-8 text-center">
+            <div className="px-6 py-12 text-center">
               <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">
+              <p className="text-gray-500 mb-4">
                 No blogs yet. Create your first blog post!
               </p>
               <Link
                 to="/admin/blog/create"
-                className="mt-4 inline-flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
+                className="inline-flex items-center px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Create Blog

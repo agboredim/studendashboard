@@ -146,13 +146,7 @@ function AdminBlogEdit() {
       e.preventDefault();
     }
 
-    if (
-      !blog.title ||
-      !blog.slug ||
-      !blog.category ||
-      !blog.excerpt ||
-      !blog.image
-    ) {
+    if (!blog.title || !blog.slug || !blog.category || !blog.excerpt) {
       toast.error("Please fill in all required fields.");
       return;
     }
@@ -167,10 +161,30 @@ function AdminBlogEdit() {
       toast.success("Blog updated successfully!");
       navigate("/admin/blog/list");
     } catch (err) {
-      toast.error("Failed to update blog");
       console.error("Blog update failed:", err);
+      toast.error(err?.data?.message || "Failed to update blog");
     }
   };
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <h2 className="text-2xl font-bold text-red-600 mb-4">
+          Error Loading Blog
+        </h2>
+        <p className="text-gray-600 mb-6">
+          {error?.data?.message ||
+            "The blog you're trying to edit doesn't exist or couldn't be loaded."}
+        </p>
+        <button
+          onClick={() => navigate("/admin/blog/list")}
+          className="px-6 py-3 bg-primary text-white rounded-md hover:bg-primary/90"
+        >
+          Back to Blog List
+        </button>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -186,23 +200,6 @@ function AdminBlogEdit() {
             ))}
           </div>
         </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-center py-12">
-        <h2 className="text-2xl font-bold text-red-600 mb-4">Blog Not Found</h2>
-        <p className="text-gray-600 mb-6">
-          The blog you're trying to edit doesn't exist or has been removed.
-        </p>
-        <button
-          onClick={() => navigate("/admin/blog/list")}
-          className="px-6 py-3 bg-primary text-white rounded-md hover:bg-primary/90"
-        >
-          Back to Blog List
-        </button>
       </div>
     );
   }

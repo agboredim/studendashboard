@@ -65,12 +65,17 @@ function AdminBlogList() {
   };
 
   const handleDeleteBlog = async (blogId) => {
-    if (window.confirm("Are you sure you want to delete this blog?")) {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this blog? This action cannot be undone."
+      )
+    ) {
       try {
         await deleteBlog(blogId).unwrap();
         toast.success("Blog deleted successfully");
       } catch (error) {
-        toast.error("Failed to delete blog");
+        console.error("Delete error:", error);
+        toast.error(error?.data?.message || "Failed to delete blog");
       }
     }
   };
@@ -78,7 +83,7 @@ function AdminBlogList() {
   const handleBulkDelete = async () => {
     if (
       window.confirm(
-        `Are you sure you want to delete ${selectedBlogs.length} selected blogs?`
+        `Are you sure you want to delete ${selectedBlogs.length} selected blogs? This action cannot be undone.`
       )
     ) {
       try {
@@ -87,7 +92,8 @@ function AdminBlogList() {
         setSelectedBlogs([]);
         setShowBulkActions(false);
       } catch (error) {
-        toast.error("Failed to delete blogs");
+        console.error("Bulk delete error:", error);
+        toast.error(error?.data?.message || "Failed to delete blogs");
       }
     }
   };
@@ -97,7 +103,8 @@ function AdminBlogList() {
       await updateBlogStatus({ id: blogId, status: newStatus }).unwrap();
       toast.success(`Blog ${newStatus} successfully`);
     } catch (error) {
-      toast.error(`Failed to ${newStatus} blog`);
+      console.error("Status update error:", error);
+      toast.error(error?.data?.message || `Failed to ${newStatus} blog`);
     }
   };
 
@@ -246,9 +253,14 @@ function AdminBlogList() {
                     {/* Blog Post */}
                     <div className="col-span-5 flex items-center space-x-3">
                       <img
-                        src={blog.image || "/placeholder.svg"}
+                        src={
+                          blog.image || "/placeholder.svg?height=48&width=48"
+                        }
                         alt={blog.title}
                         className="w-12 h-12 object-cover rounded"
+                        onError={(e) => {
+                          e.target.src = "/placeholder.svg?height=48&width=48";
+                        }}
                       />
                       <div className="min-w-0 flex-1">
                         <Link

@@ -225,11 +225,16 @@ function CoursesPage() {
                             £{course.original_price.toFixed(2)}
                           </span>
                         )}
-                        {course.original_price && course.original_price > course.price && (
-                          <span className="text-green-600 text-xs font-medium">
-                            Save £{(course.original_price - course.price).toFixed(2)}!
-                          </span>
-                        )}
+                        {course.original_price &&
+                          course.original_price > course.price && (
+                            <span className="text-green-600 text-xs font-medium">
+                              Save £
+                              {(course.original_price - course.price).toFixed(
+                                2
+                              )}
+                              !
+                            </span>
+                          )}
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="text-lg font-bold text-primary">
