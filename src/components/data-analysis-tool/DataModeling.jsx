@@ -1,4 +1,19 @@
-import { useState } from "react";
+"use client";
+
+import { useState, useCallback, useEffect, useMemo } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Plus, Download, Upload } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import {
   Card,
   CardContent,
@@ -6,9 +21,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
@@ -18,101 +31,393 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Database, Link, Plus, Settings, Filter, Search } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { DialogFooter } from "@/components/ui/dialog";
+import {
+  Database,
+  Link,
+  Settings,
+  Filter,
+  Search,
+  Trash2,
+  Edit,
+  Play,
+} from "lucide-react";
 
-const tables = [
-  {
-    name: "Applications",
-    records: 12543,
-    columns: 15,
-    lastUpdated: "2 hours ago",
-    relationships: 3,
-  },
-  {
-    name: "Candidates",
-    records: 8291,
-    columns: 22,
-    lastUpdated: "1 hour ago",
-    relationships: 5,
-  },
-  {
-    name: "Positions",
-    records: 847,
-    columns: 18,
-    lastUpdated: "30 minutes ago",
-    relationships: 4,
-  },
-  {
-    name: "Interviews",
-    records: 3429,
-    columns: 12,
-    lastUpdated: "45 minutes ago",
-    relationships: 2,
-  },
-  {
-    name: "Departments",
-    records: 24,
-    columns: 8,
-    lastUpdated: "1 day ago",
-    relationships: 6,
-  },
-];
+// Enhanced data modeling hook
+const useDataModel = () => {
+  const [dataModel, setDataModel] = useState({
+    tables: [],
+    relationships: [],
+    transformations: [],
+  });
 
-const relationships = [
-  {
-    from: "Applications",
-    to: "Candidates",
-    type: "Many-to-One",
-    field: "candidate_id",
-  },
-  {
-    from: "Applications",
-    to: "Positions",
-    type: "Many-to-One",
-    field: "position_id",
-  },
-  {
-    from: "Interviews",
-    to: "Applications",
-    type: "Many-to-One",
-    field: "application_id",
-  },
-  {
-    from: "Positions",
-    to: "Departments",
-    type: "Many-to-One",
-    field: "department_id",
-  },
-];
+  const addTable = useCallback((table) => {
+    const newTable = {
+      ...table,
+      id: `table_${Date.now()}`,
+      columns: table.columns || [],
+      data: table.data || [],
+      relationships: [],
+    };
 
-const sampleColumns = [
-  { name: "id", type: "Integer", nullable: false, primaryKey: true },
-  {
-    name: "candidate_id",
-    type: "Integer",
-    nullable: false,
-    foreignKey: "candidates.id",
-  },
-  {
-    name: "position_id",
-    type: "Integer",
-    nullable: false,
-    foreignKey: "positions.id",
-  },
-  { name: "application_date", type: "Date", nullable: false },
-  { name: "status", type: "String", nullable: false },
-  { name: "resume_url", type: "String", nullable: true },
-  { name: "cover_letter", type: "Text", nullable: true },
-  { name: "rating", type: "Decimal", nullable: true },
-];
+    setDataModel((prev) => ({
+      ...prev,
+      tables: [...prev.tables, newTable],
+    }));
 
-export const DataModeling = () => {
-  const [selectedTable, setSelectedTable] = useState("Applications");
-  const [searchTerm, setSearchTerm] = useState("");
+    return newTable.id;
+  }, []);
 
-  const filteredColumns = sampleColumns.filter((col) =>
-    col.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const updateTable = useCallback((tableId, updates) => {
+    setDataModel((prev) => ({
+      ...prev,
+      tables: prev.tables.map((table) =>
+        table.id === tableId ? { ...table, ...updates } : table
+      ),
+    }));
+  }, []);
+
+  const deleteTable = useCallback((tableId) => {
+    setDataModel((prev) => ({
+      ...prev,
+      tables: prev.tables.filter((table) => table.id !== tableId),
+      relationships: prev.relationships.filter(
+        (rel) => rel.fromTable !== tableId && rel.toTable !== tableId
+      ),
+    }));
+  }, []);
+
+  const addColumn = useCallback((tableId, column) => {
+    const newColumn = {
+      ...column,
+      id: `col_${Date.now()}`,
+    };
+
+    setDataModel((prev) => ({
+      ...prev,
+      tables: prev.tables.map((table) =>
+        table.id === tableId
+          ? { ...table, columns: [...table.columns, newColumn] }
+          : table
+      ),
+    }));
+  }, []);
+
+  const deleteColumn = useCallback((tableId, columnId) => {
+    setDataModel((prev) => ({
+      ...prev,
+      tables: prev.tables.map((table) =>
+        table.id === tableId
+          ? {
+              ...table,
+              columns: table.columns.filter((col) => col.id !== columnId),
+            }
+          : table
+      ),
+    }));
+  }, []);
+
+  const addRelationship = useCallback((relationship) => {
+    const newRelationship = {
+      ...relationship,
+      id: `rel_${Date.now()}`,
+    };
+
+    setDataModel((prev) => ({
+      ...prev,
+      relationships: [...prev.relationships, newRelationship],
+    }));
+  }, []);
+
+  const deleteRelationship = useCallback((relationshipId) => {
+    setDataModel((prev) => ({
+      ...prev,
+      relationships: prev.relationships.filter(
+        (rel) => rel.id !== relationshipId
+      ),
+    }));
+  }, []);
+
+  // Enhanced import function with better type detection
+  const importFromData = useCallback(
+    (importedData) => {
+      console.log("Processing imported data:", importedData);
+
+      // Detect column types based on data
+      const detectColumnType = (values) => {
+        const nonEmptyValues = values.filter(
+          (v) => v !== null && v !== undefined && v !== ""
+        );
+        if (nonEmptyValues.length === 0) return "string";
+
+        // Check if all values are numbers
+        const numericValues = nonEmptyValues.filter(
+          (v) => !isNaN(Number(v)) && v !== ""
+        );
+        if (numericValues.length === nonEmptyValues.length) return "number";
+
+        // Check if all values are dates
+        const dateValues = nonEmptyValues.filter((v) => !isNaN(Date.parse(v)));
+        if (
+          dateValues.length === nonEmptyValues.length &&
+          dateValues.length > 0
+        )
+          return "date";
+
+        // Check if all values are boolean-like
+        const boolValues = nonEmptyValues.filter((v) =>
+          ["true", "false", "yes", "no", "1", "0"].includes(
+            v.toString().toLowerCase()
+          )
+        );
+        if (boolValues.length === nonEmptyValues.length) return "boolean";
+
+        return "string";
+      };
+
+      const columns = importedData.headers.map((header, index) => {
+        // Get sample values for this column
+        const columnValues = importedData.data
+          .map((row) => row[header])
+          .slice(0, 100); // Sample first 100 rows
+        const detectedType = detectColumnType(columnValues);
+
+        return {
+          id: `col_${Date.now()}_${index}`,
+          name: header,
+          type: detectedType,
+          nullable: true,
+          primaryKey: false,
+        };
+      });
+
+      const tableId = addTable({
+        name: importedData.tableName,
+        columns,
+        data: importedData.data,
+        source: "csv_import",
+        importedAt: new Date().toISOString(),
+        originalFileName: importedData.fileName,
+      });
+
+      console.log("Created table with ID:", tableId);
+      return tableId;
+    },
+    [addTable]
   );
+
+  const exportToSQL = useCallback(() => {
+    let sql = "";
+
+    dataModel.tables.forEach((table) => {
+      sql += `CREATE TABLE ${table.name} (\n`;
+      sql += table.columns
+        .map((col) => {
+          let colDef = `  ${col.name} ${col.type.toUpperCase()}`;
+          if (!col.nullable) colDef += " NOT NULL";
+          if (col.primaryKey) colDef += " PRIMARY KEY";
+          return colDef;
+        })
+        .join(",\n");
+      sql += "\n);\n\n";
+    });
+
+    dataModel.relationships.forEach((rel) => {
+      const fromTable = dataModel.tables.find((t) => t.id === rel.fromTable);
+      const toTable = dataModel.tables.find((t) => t.id === rel.toTable);
+      if (fromTable && toTable) {
+        sql += `ALTER TABLE ${fromTable.name} ADD CONSTRAINT FK_${rel.id} `;
+        sql += `FOREIGN KEY (${rel.fromColumn}) REFERENCES ${toTable.name}(${rel.toColumn});\n`;
+      }
+    });
+
+    return sql;
+  }, [dataModel]);
+
+  const getVisualizationData = useCallback(() => {
+    return dataModel.tables.map((table) => ({
+      tableName: table.name,
+      data: table.data,
+      columns: table.columns,
+    }));
+  }, [dataModel]);
+
+  return {
+    dataModel,
+    addTable,
+    updateTable,
+    deleteTable,
+    addColumn,
+    deleteColumn,
+    addRelationship,
+    deleteRelationship,
+    importFromData,
+    exportToSQL,
+    getVisualizationData,
+  };
+};
+
+export const DataModeling = ({
+  onDataModelChange,
+  pendingImport,
+  onImportProcessed,
+}) => {
+  const {
+    dataModel,
+    addTable,
+    updateTable,
+    deleteTable,
+    addColumn,
+    deleteColumn,
+    addRelationship,
+    deleteRelationship,
+    importFromData,
+    exportToSQL,
+    getVisualizationData,
+  } = useDataModel();
+
+  const { toast } = useToast();
+  const [selectedTable, setSelectedTable] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showAddTableDialog, setShowAddTableDialog] = useState(false);
+  const [showAddColumnDialog, setShowAddColumnDialog] = useState(false);
+  const [showAddRelationshipDialog, setShowAddRelationshipDialog] =
+    useState(false);
+
+  // Form states
+  const [newTableName, setNewTableName] = useState("");
+  const [newColumn, setNewColumn] = useState({
+    name: "",
+    type: "string",
+    nullable: true,
+    primaryKey: false,
+  });
+  const [newRelationship, setNewRelationship] = useState({
+    fromTable: "",
+    fromColumn: "",
+    toTable: "",
+    toColumn: "",
+    type: "one-to-many",
+  });
+
+  /**
+   * Memoise visualisation payload so the parent only receives a
+   * new reference when the underlying dataModel actually mutates.
+   */
+  const visualizationData = useMemo(
+    () => getVisualizationData(),
+    [getVisualizationData]
+  );
+
+  useEffect(() => {
+    onDataModelChange?.(visualizationData);
+  }, [visualizationData, onDataModelChange]);
+
+  // Process pending imports
+  useEffect(() => {
+    if (pendingImport) {
+      console.log("Processing pending import:", pendingImport);
+
+      const tableId = importFromData(pendingImport);
+      setSelectedTable(tableId);
+
+      toast({
+        title: "Data imported successfully",
+        description: `Table "${pendingImport.tableName}" created with ${pendingImport.rowCount} rows and ${pendingImport.columnCount} columns.`,
+      });
+
+      // Clear the pending import
+      onImportProcessed?.();
+    }
+  }, [pendingImport, importFromData, onImportProcessed, toast]);
+
+  const handleAddTable = () => {
+    if (!newTableName.trim()) return;
+
+    const tableId = addTable({
+      name: newTableName,
+      columns: [],
+      data: [],
+    });
+
+    setSelectedTable(tableId);
+    setNewTableName("");
+    setShowAddTableDialog(false);
+
+    toast({
+      title: "Table created",
+      description: `Table "${newTableName}" has been created successfully.`,
+    });
+  };
+
+  const handleAddColumn = () => {
+    if (!selectedTable || !newColumn.name?.trim()) return;
+
+    addColumn(selectedTable, newColumn);
+    setNewColumn({
+      name: "",
+      type: "string",
+      nullable: true,
+      primaryKey: false,
+    });
+    setShowAddColumnDialog(false);
+
+    toast({
+      title: "Column added",
+      description: `Column "${newColumn.name}" has been added successfully.`,
+    });
+  };
+
+  const handleAddRelationship = () => {
+    if (!newRelationship.fromTable || !newRelationship.toTable) return;
+
+    addRelationship(newRelationship);
+    setNewRelationship({
+      fromTable: "",
+      fromColumn: "",
+      toTable: "",
+      toColumn: "",
+      type: "one-to-many",
+    });
+    setShowAddRelationshipDialog(false);
+
+    toast({
+      title: "Relationship created",
+      description: "Table relationship has been created successfully.",
+    });
+  };
+
+  const handleExportSQL = () => {
+    const sql = exportToSQL();
+    const blob = new Blob([sql], { type: "text/sql" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "schema.sql";
+    a.click();
+    URL.revokeObjectURL(url);
+
+    toast({
+      title: "Schema exported",
+      description: "SQL schema has been exported successfully.",
+    });
+  };
+
+  const selectedTableData = dataModel.tables.find(
+    (t) => t.id === selectedTable
+  );
+  const filteredColumns =
+    selectedTableData?.columns.filter((col) =>
+      col.name.toLowerCase().includes(searchTerm.toLowerCase())
+    ) || [];
 
   return (
     <div className="space-y-6">
@@ -124,21 +429,91 @@ export const DataModeling = () => {
           </p>
         </div>
         <div className="flex space-x-2">
-          <Button variant="outline">
-            <Database className="w-4 h-4 mr-2" />
-            Schema Diagram
+          {pendingImport && (
+            <Badge variant="default" className="bg-yellow-100 text-yellow-800">
+              <Upload className="w-3 h-3 mr-1" />
+              Processing Import...
+            </Badge>
+          )}
+          <Button
+            variant="outline"
+            onClick={handleExportSQL}
+            disabled={dataModel.tables.length === 0}
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Export SQL
           </Button>
-          <Button>
-            <Plus className="w-4 h-4 mr-2" />
-            New Table
-          </Button>
+          <Dialog
+            open={showAddTableDialog}
+            onOpenChange={setShowAddTableDialog}
+          >
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="w-4 h-4 mr-2" />
+                New Table
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Create New Table</DialogTitle>
+                <DialogDescription>
+                  Enter a name for your new table.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="table-name" className="text-right">
+                    Name
+                  </Label>
+                  <Input
+                    id="table-name"
+                    value={newTableName}
+                    onChange={(e) => setNewTableName(e.target.value)}
+                    className="col-span-3"
+                    placeholder="Enter table name"
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button onClick={handleAddTable}>Create Table</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
+
+      {/* Import Status Card */}
+      {dataModel.tables.length > 0 && (
+        <Card className="border-l-4 border-l-emerald-500">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold text-lg">Data Model Status</h3>
+                <p className="text-sm text-slate-600">
+                  {dataModel.tables.length} table(s) with{" "}
+                  {dataModel.tables.reduce(
+                    (sum, table) => sum + table.data.length,
+                    0
+                  )}{" "}
+                  total records
+                </p>
+              </div>
+              <Badge
+                variant="default"
+                className="bg-emerald-100 text-emerald-800"
+              >
+                {dataModel.tables.length} Tables Active
+              </Badge>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Tabs defaultValue="tables" className="space-y-6">
         <TabsList>
           <TabsTrigger value="tables">Tables</TabsTrigger>
           <TabsTrigger value="relationships">Relationships</TabsTrigger>
+          <TabsTrigger value="transformations">Transformations</TabsTrigger>
           <TabsTrigger value="schema">Schema Designer</TabsTrigger>
         </TabsList>
 
@@ -151,31 +526,57 @@ export const DataModeling = () => {
                 <CardDescription>Manage your data tables</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                {tables.map((table, index) => (
+                {dataModel.tables.map((table) => (
                   <div
-                    key={index}
+                    key={table.id}
                     className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                      selectedTable === table.name
+                      selectedTable === table.id
                         ? "bg-blue-50 border-blue-200"
                         : "hover:bg-slate-50"
                     }`}
-                    onClick={() => setSelectedTable(table.name)}
+                    onClick={() => setSelectedTable(table.id)}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-2">
                         <Database className="w-4 h-4 text-slate-600" />
                         <span className="font-medium">{table.name}</span>
                       </div>
-                      <Badge variant="secondary">
-                        {table.records.toLocaleString()}
-                      </Badge>
+                      <div className="flex items-center space-x-1">
+                        <Badge variant="secondary">{table.data.length}</Badge>
+                        {table.source === "csv_import" && (
+                          <Badge variant="outline" className="text-xs">
+                            CSV
+                          </Badge>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteTable(table.id);
+                          }}
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
                     </div>
                     <div className="mt-2 text-xs text-slate-600">
-                      {table.columns} columns • {table.relationships}{" "}
-                      relationships
+                      {table.columns.length} columns •{" "}
+                      {table.relationships?.length || 0} relationships
+                      {table.originalFileName && (
+                        <div className="text-xs text-slate-500 mt-1">
+                          From: {table.originalFileName}
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
+                {dataModel.tables.length === 0 && (
+                  <div className="text-center py-8 text-slate-500">
+                    No tables yet. Upload a CSV file or create your first table
+                    manually.
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -184,78 +585,208 @@ export const DataModeling = () => {
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <div>
-                    <CardTitle>{selectedTable} Table</CardTitle>
+                    <CardTitle>
+                      {selectedTableData?.name || "Select a Table"}
+                    </CardTitle>
                     <CardDescription>
-                      Column structure and properties
+                      {selectedTableData
+                        ? `${selectedTableData.data.length} rows • ${selectedTableData.columns.length} columns`
+                        : "Column structure and properties"}
                     </CardDescription>
                   </div>
-                  <div className="flex space-x-2">
-                    <Button variant="outline" size="sm">
-                      <Settings className="w-4 h-4" />
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      <Plus className="w-4 h-4" />
-                    </Button>
-                  </div>
+                  {selectedTable && (
+                    <Dialog
+                      open={showAddColumnDialog}
+                      onOpenChange={setShowAddColumnDialog}
+                    >
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          <Plus className="w-4 h-4 mr-2" />
+                          Add Column
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Add New Column</DialogTitle>
+                          <DialogDescription>
+                            Define the properties for your new column.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-4 py-4">
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="column-name" className="text-right">
+                              Name
+                            </Label>
+                            <Input
+                              id="column-name"
+                              value={newColumn.name || ""}
+                              onChange={(e) =>
+                                setNewColumn((prev) => ({
+                                  ...prev,
+                                  name: e.target.value,
+                                }))
+                              }
+                              className="col-span-3"
+                            />
+                          </div>
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="column-type" className="text-right">
+                              Type
+                            </Label>
+                            <Select
+                              value={newColumn.type}
+                              onValueChange={(value) =>
+                                setNewColumn((prev) => ({
+                                  ...prev,
+                                  type: value,
+                                }))
+                              }
+                            >
+                              <SelectTrigger className="col-span-3">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="string">String</SelectItem>
+                                <SelectItem value="number">Number</SelectItem>
+                                <SelectItem value="date">Date</SelectItem>
+                                <SelectItem value="boolean">Boolean</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label className="text-right">Options</Label>
+                            <div className="col-span-3 space-y-2">
+                              <div className="flex items-center space-x-2">
+                                <Checkbox
+                                  id="nullable"
+                                  checked={newColumn.nullable}
+                                  onCheckedChange={(checked) =>
+                                    setNewColumn((prev) => ({
+                                      ...prev,
+                                      nullable: !!checked,
+                                    }))
+                                  }
+                                />
+                                <Label htmlFor="nullable">Nullable</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <Checkbox
+                                  id="primary-key"
+                                  checked={newColumn.primaryKey}
+                                  onCheckedChange={(checked) =>
+                                    setNewColumn((prev) => ({
+                                      ...prev,
+                                      primaryKey: !!checked,
+                                    }))
+                                  }
+                                />
+                                <Label htmlFor="primary-key">Primary Key</Label>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button onClick={handleAddColumn}>Add Column</Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  )}
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center space-x-2 mb-4">
-                  <Search className="w-4 h-4 text-slate-400" />
-                  <Input
-                    placeholder="Search columns..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="max-w-sm"
-                  />
-                  <Button variant="outline" size="sm">
-                    <Filter className="w-4 h-4" />
-                  </Button>
-                </div>
+                {selectedTable ? (
+                  <>
+                    <div className="flex items-center space-x-2 mb-4">
+                      <Search className="w-4 h-4 text-slate-400" />
+                      <Input
+                        placeholder="Search columns..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="max-w-sm"
+                      />
+                    </div>
 
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Column Name</TableHead>
-                      <TableHead>Data Type</TableHead>
-                      <TableHead>Nullable</TableHead>
-                      <TableHead>Constraints</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredColumns.map((column, index) => (
-                      <TableRow key={index}>
-                        <TableCell className="font-medium">
-                          {column.name}
-                        </TableCell>
-                        <TableCell>{column.type}</TableCell>
-                        <TableCell>
-                          <Badge
-                            variant={
-                              column.nullable ? "secondary" : "destructive"
-                            }
-                          >
-                            {column.nullable ? "Yes" : "No"}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-1">
-                            {column.primaryKey && (
-                              <Badge variant="default" className="text-xs">
-                                PK
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Column Name</TableHead>
+                          <TableHead>Data Type</TableHead>
+                          <TableHead>Nullable</TableHead>
+                          <TableHead>Constraints</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredColumns.map((column) => (
+                          <TableRow key={column.id}>
+                            <TableCell className="font-medium">
+                              {column.name}
+                            </TableCell>
+                            <TableCell>
+                              <Badge
+                                variant="outline"
+                                className={
+                                  column.type === "number"
+                                    ? "border-blue-200 text-blue-800"
+                                    : column.type === "date"
+                                    ? "border-green-200 text-green-800"
+                                    : column.type === "boolean"
+                                    ? "border-purple-200 text-purple-800"
+                                    : "border-gray-200 text-gray-800"
+                                }
+                              >
+                                {column.type}
                               </Badge>
-                            )}
-                            {column.foreignKey && (
-                              <Badge variant="outline" className="text-xs">
-                                FK
+                            </TableCell>
+                            <TableCell>
+                              <Badge
+                                variant={
+                                  column.nullable ? "secondary" : "destructive"
+                                }
+                              >
+                                {column.nullable ? "Yes" : "No"}
                               </Badge>
-                            )}
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex flex-wrap gap-1">
+                                {column.primaryKey && (
+                                  <Badge variant="default" className="text-xs">
+                                    PK
+                                  </Badge>
+                                )}
+                                {column.foreignKey && (
+                                  <Badge variant="outline" className="text-xs">
+                                    FK
+                                  </Badge>
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex space-x-1">
+                                <Button variant="ghost" size="sm">
+                                  <Edit className="w-3 h-3" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    deleteColumn(selectedTable, column.id)
+                                  }
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </>
+                ) : (
+                  <div className="text-center py-8 text-slate-500">
+                    Select a table to view its columns
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -271,10 +802,107 @@ export const DataModeling = () => {
                     Manage foreign key relationships between tables
                   </CardDescription>
                 </div>
-                <Button>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Relationship
-                </Button>
+                <Dialog
+                  open={showAddRelationshipDialog}
+                  onOpenChange={setShowAddRelationshipDialog}
+                >
+                  <DialogTrigger asChild>
+                    <Button>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Relationship
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Create Relationship</DialogTitle>
+                      <DialogDescription>
+                        Define a relationship between two tables.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label>From Table</Label>
+                          <Select
+                            value={newRelationship.fromTable}
+                            onValueChange={(value) =>
+                              setNewRelationship((prev) => ({
+                                ...prev,
+                                fromTable: value,
+                              }))
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select table" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {dataModel.tables.map((table) => (
+                                <SelectItem key={table.id} value={table.id}>
+                                  {table.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label>To Table</Label>
+                          <Select
+                            value={newRelationship.toTable}
+                            onValueChange={(value) =>
+                              setNewRelationship((prev) => ({
+                                ...prev,
+                                toTable: value,
+                              }))
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select table" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {dataModel.tables.map((table) => (
+                                <SelectItem key={table.id} value={table.id}>
+                                  {table.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      <div>
+                        <Label>Relationship Type</Label>
+                        <Select
+                          value={newRelationship.type}
+                          onValueChange={(value) =>
+                            setNewRelationship((prev) => ({
+                              ...prev,
+                              type: value,
+                            }))
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="one-to-one">
+                              One to One
+                            </SelectItem>
+                            <SelectItem value="one-to-many">
+                              One to Many
+                            </SelectItem>
+                            <SelectItem value="many-to-many">
+                              Many to Many
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button onClick={handleAddRelationship}>
+                        Create Relationship
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </div>
             </CardHeader>
             <CardContent>
@@ -284,55 +912,93 @@ export const DataModeling = () => {
                     <TableHead>From Table</TableHead>
                     <TableHead>To Table</TableHead>
                     <TableHead>Relationship Type</TableHead>
-                    <TableHead>Foreign Key</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {relationships.map((rel, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="font-medium">{rel.from}</TableCell>
-                      <TableCell>{rel.to}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{rel.type}</Badge>
-                      </TableCell>
-                      <TableCell>{rel.field}</TableCell>
-                      <TableCell>
-                        <div className="flex space-x-2">
-                          <Button variant="outline" size="sm">
-                            <Settings className="w-3 h-3" />
+                  {dataModel.relationships.map((rel) => {
+                    const fromTable = dataModel.tables.find(
+                      (t) => t.id === rel.fromTable
+                    );
+                    const toTable = dataModel.tables.find(
+                      (t) => t.id === rel.toTable
+                    );
+
+                    return (
+                      <TableRow key={rel.id}>
+                        <TableCell className="font-medium">
+                          {fromTable?.name || "Unknown"}
+                        </TableCell>
+                        <TableCell>{toTable?.name || "Unknown"}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline">{rel.type}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => deleteRelationship(rel.id)}
+                          >
+                            <Trash2 className="w-3 h-3" />
                           </Button>
-                          <Button variant="outline" size="sm">
-                            <Link className="w-3 h-3" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
+              {dataModel.relationships.length === 0 && (
+                <div className="text-center py-8 text-slate-500">
+                  No relationships defined yet. Create relationships between
+                  your tables.
+                </div>
+              )}
             </CardContent>
           </Card>
+        </TabsContent>
 
-          {/* Relationship Diagram */}
+        <TabsContent value="transformations" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Schema Diagram</CardTitle>
+              <CardTitle>Data Transformations</CardTitle>
               <CardDescription>
-                Visual representation of table relationships
+                Apply transformations to clean and prepare your data
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-center h-64 bg-slate-50 rounded-lg border-2 border-dashed border-slate-300">
-                <div className="text-center">
-                  <Database className="w-12 h-12 mx-auto text-slate-400 mb-4" />
-                  <p className="text-slate-600">
-                    Interactive schema diagram will appear here
-                  </p>
-                  <Button variant="outline" className="mt-2">
-                    Generate Diagram
-                  </Button>
-                </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <Button
+                  variant="outline"
+                  className="h-20 flex flex-col items-center justify-center space-y-2 bg-transparent"
+                >
+                  <Filter className="h-6 w-6" />
+                  <span>Filter Data</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-20 flex flex-col items-center justify-center space-y-2 bg-transparent"
+                >
+                  <Database className="h-6 w-6" />
+                  <span>Sort Columns</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-20 flex flex-col items-center justify-center space-y-2 bg-transparent"
+                >
+                  <Settings className="h-6 w-6" />
+                  <span>Group By</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-20 flex flex-col items-center justify-center space-y-2 bg-transparent"
+                >
+                  <Play className="h-6 w-6" />
+                  <span>Calculate Fields</span>
+                </Button>
+              </div>
+              <div className="text-center py-8 text-slate-500">
+                Select a transformation type above to begin cleaning and
+                preparing your data.
               </div>
             </CardContent>
           </Card>
@@ -349,13 +1015,13 @@ export const DataModeling = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center p-4 bg-blue-50 rounded-lg">
                     <div className="text-2xl font-bold text-blue-600">
-                      {tables.length}
+                      {dataModel.tables.length}
                     </div>
                     <div className="text-sm text-blue-600">Tables</div>
                   </div>
                   <div className="text-center p-4 bg-emerald-50 rounded-lg">
                     <div className="text-2xl font-bold text-emerald-600">
-                      {relationships.length}
+                      {dataModel.relationships.length}
                     </div>
                     <div className="text-sm text-emerald-600">
                       Relationships
@@ -363,15 +1029,19 @@ export const DataModeling = () => {
                   </div>
                   <div className="text-center p-4 bg-orange-50 rounded-lg">
                     <div className="text-2xl font-bold text-orange-600">
-                      {tables.reduce((sum, table) => sum + table.columns, 0)}
+                      {dataModel.tables.reduce(
+                        (sum, table) => sum + table.columns.length,
+                        0
+                      )}
                     </div>
                     <div className="text-sm text-orange-600">Total Columns</div>
                   </div>
                   <div className="text-center p-4 bg-purple-50 rounded-lg">
                     <div className="text-2xl font-bold text-purple-600">
-                      {tables
-                        .reduce((sum, table) => sum + table.records, 0)
-                        .toLocaleString()}
+                      {dataModel.tables.reduce(
+                        (sum, table) => sum + table.data.length,
+                        0
+                      )}
                     </div>
                     <div className="text-sm text-purple-600">Total Records</div>
                   </div>
@@ -381,36 +1051,37 @@ export const DataModeling = () => {
 
             <Card>
               <CardHeader>
-                <CardTitle>Data Quality</CardTitle>
-                <CardDescription>
-                  Health check of your data model
-                </CardDescription>
+                <CardTitle>Quick Actions</CardTitle>
+                <CardDescription>Common data modeling tasks</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Schema Integrity</span>
-                    <Badge className="bg-emerald-100 text-emerald-800">
-                      98%
-                    </Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Relationship Consistency</span>
-                    <Badge className="bg-emerald-100 text-emerald-800">
-                      95%
-                    </Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Data Completeness</span>
-                    <Badge className="bg-yellow-100 text-yellow-800">87%</Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm">Index Optimization</span>
-                    <Badge className="bg-blue-100 text-blue-800">92%</Badge>
-                  </div>
-                </div>
-                <Button variant="outline" className="w-full">
-                  Run Full Analysis
+              <CardContent className="space-y-3">
+                <Button
+                  variant="outline"
+                  className="w-full justify-start bg-transparent"
+                >
+                  <Database className="w-4 h-4 mr-2" />
+                  Generate Sample Data
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start bg-transparent"
+                >
+                  <Link className="w-4 h-4 mr-2" />
+                  Auto-detect Relationships
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start bg-transparent"
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  Optimize Schema
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start bg-transparent"
+                >
+                  <Filter className="w-4 h-4 mr-2" />
+                  Validate Data Model
                 </Button>
               </CardContent>
             </Card>
