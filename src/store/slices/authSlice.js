@@ -15,6 +15,7 @@ const loadTokensFromStorage = () => {
       isAuthenticated: !!accessToken,
     };
   } catch (error) {
+    console.log(error);
     return {
       accessToken: null,
       refreshToken: null,
