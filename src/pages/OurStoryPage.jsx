@@ -61,7 +61,7 @@ export function OurStoryPage() {
                   </h3>
                   <p className="text-muted-foreground">
                     Titans Careers ignited from countless conversations with
-                    talented professionals who felt stuck—individuals with
+                    talented professionals who felt stuck, individuals with
                     immense potential but struggling to navigate today's complex
                     job market without proper guidance.
                   </p>
@@ -101,8 +101,8 @@ export function OurStoryPage() {
                   </h3>
                   <p className="text-muted-foreground">
                     We’ve helped professionals around the world transform their
-                    career paths—overcoming barriers, securing meaningful roles,
-                    and building careers that reflect their strengths and
+                    career paths, overcoming barriers, securing meaningful
+                    roles, and building careers that reflect their strengths and
                     aspirations.
                   </p>
                 </div>
