@@ -45,10 +45,10 @@ function DraggableContentBlock({
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragOver(false);
-
+    
     const draggedIndex = parseInt(e.dataTransfer.getData("text/plain"));
     const targetIndex = blockIndex;
-
+    
     if (draggedIndex !== targetIndex) {
       moveContentBlock(draggedIndex, targetIndex);
     }
@@ -58,7 +58,9 @@ function DraggableContentBlock({
     <div
       className={`relative transition-all duration-200 ${
         isDragging ? "opacity-50 scale-95" : "opacity-100 scale-100"
-      } ${isDragOver && !isDragging ? "transform translate-y-1" : ""}`}
+      } ${
+        isDragOver && !isDragging ? "transform translate-y-1" : ""
+      }`}
       onDragOver={handleDragOver}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
@@ -68,7 +70,7 @@ function DraggableContentBlock({
       {isDragOver && !isDragging && (
         <div className="absolute -top-2 left-0 right-0 h-1 bg-primary rounded-full z-10"></div>
       )}
-
+      
       <div className="flex items-start gap-2">
         {/* Drag Handle */}
         <div

@@ -4,11 +4,7 @@ import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 import { useNotifyStripePaymentSuccessMutation } from "@/services/api";
-import {
-  setPaymentStatus,
-  setOrderId,
-  clearCart,
-} from "@/store/slices/cartSlice";
+import { setPaymentStatus, setOrderId } from "@/store/slices/cartSlice";
 import { addCourseToUser } from "@/store/slices/authSlice";
 
 // Convert country name to ISO 3166-1 alpha-2 code

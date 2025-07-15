@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 
-function BlogDetailsForm({ blog, setBlog }) {
+function BlogDetailsForm({ blog, setBlog, disabled = false }) {
   const [currentTagInput, setCurrentTagInput] = useState("");
 
   // Handle changes for basic blog details (except title)
@@ -60,7 +60,8 @@ function BlogDetailsForm({ blog, setBlog }) {
             name="title"
             value={blog.title}
             onChange={handleSlugChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            disabled={disabled}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-100 disabled:cursor-not-allowed"
             required
           />
         </div>
@@ -95,7 +96,8 @@ function BlogDetailsForm({ blog, setBlog }) {
             name="category"
             value={blog.category}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            disabled={disabled}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-100 disabled:cursor-not-allowed"
             required
           />
         </div>
@@ -113,8 +115,9 @@ function BlogDetailsForm({ blog, setBlog }) {
             name="image"
             value={blog.image}
             onChange={handleChange}
+            disabled={disabled}
             placeholder="e.g., https://example.com/image.jpg"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-100 disabled:cursor-not-allowed"
             required
           />
         </div>
@@ -131,8 +134,9 @@ function BlogDetailsForm({ blog, setBlog }) {
             name="excerpt"
             value={blog.excerpt}
             onChange={handleChange}
+            disabled={disabled}
             rows="3"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-100 disabled:cursor-not-allowed"
             required
           ></textarea>
         </div>
@@ -156,13 +160,15 @@ function BlogDetailsForm({ blog, setBlog }) {
                   handleAddTag();
                 }
               }}
+              disabled={disabled}
               placeholder="Type tag and press Enter"
-              className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-gray-100 disabled:cursor-not-allowed"
             />
             <button
               type="button"
               onClick={handleAddTag}
-              className="p-2 bg-primary text-white rounded-md hover:bg-primary/90"
+              disabled={disabled}
+              className="p-2 bg-primary text-white rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label="Add tag"
             >
               <Plus className="h-5 w-5" />
@@ -178,7 +184,8 @@ function BlogDetailsForm({ blog, setBlog }) {
                 <button
                   type="button"
                   onClick={() => handleRemoveTag(tag)}
-                  className="ml-2 text-foreground/70 hover:text-red-600"
+                  disabled={disabled}
+                  className="ml-2 text-foreground/70 hover:text-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
                   aria-label={`Remove tag ${tag}`}
                 >
                   <Trash2 className="h-4 w-4" />

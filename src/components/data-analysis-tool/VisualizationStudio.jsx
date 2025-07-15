@@ -1,4 +1,6 @@
-import { useState } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -8,7 +10,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
   SelectContent,
@@ -16,14 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  BarChart3,
-  PieChart,
-  TrendingUp,
-  Activity,
-  Plus,
-  Settings,
-} from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Plus, Settings } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -38,8 +33,11 @@ import {
   Cell,
   AreaChart,
   Area,
+  Legend,
 } from "recharts";
+import { Checkbox } from "@/components/ui/checkbox";
 
+// Sample data for when no modeled data is available
 const sampleData = [
   { name: "Q1", applications: 2400, hired: 800, interviews: 1200 },
   { name: "Q2", applications: 2210, hired: 950, interviews: 1100 },
@@ -47,75 +45,195 @@ const sampleData = [
   { name: "Q4", applications: 2000, hired: 680, interviews: 1000 },
 ];
 
-const pieData = [
-  { name: "Engineering", value: 40, color: "#3b82f6" },
-  { name: "Sales", value: 25, color: "#10b981" },
-  { name: "Marketing", value: 20, color: "#f59e0b" },
-  { name: "Operations", value: 15, color: "#ef4444" },
-];
-
-const chartTypes = [
-  { name: "Bar Chart", icon: BarChart3, description: "Compare categories" },
-  {
-    name: "Line Chart",
-    icon: TrendingUp,
-    description: "Show trends over time",
-  },
-  { name: "Pie Chart", icon: PieChart, description: "Show proportions" },
-  {
-    name: "Area Chart",
-    icon: Activity,
-    description: "Visualize volume changes",
-  },
-];
-
-export const VisualizationStudio = () => {
+export const VisualizationStudio = ({ modeledData = [] }) => {
   const [selectedChart, setSelectedChart] = useState("bar");
-  const [selectedData, setSelectedData] = useState("quarterly");
+  const [selectedDataSource, setSelectedDataSource] = useState("sample");
+  const [availableDataSources, setAvailableDataSources] = useState([]);
+  const [chartData, setChartData] = useState(sampleData);
+  const [availableColumns, setAvailableColumns] = useState([]);
+  const [selectedXColumn, setSelectedXColumn] = useState("");
+  const [selectedYColumns, setSelectedYColumns] = useState([]);
+
+  const isModeledData = selectedDataSource.startsWith("modeled_");
+
+  // Update available data sources when modeled data changes
+  useEffect(() => {
+    const sources = [
+      { value: "sample", label: "Sample Data", data: sampleData },
+    ];
+
+    if (modeledData && modeledData.length > 0) {
+      modeledData.forEach((table) => {
+        if (table.data && table.data.length > 0) {
+          sources.push({
+            value: `modeled_${table.tableName}`,
+            label: `${table.tableName} (${table.data.length} records)`,
+            data: table.data,
+            columns: table.columns || Object.keys(table.data[0] || {}),
+          });
+        }
+      });
+    }
+
+    setAvailableDataSources(sources);
+  }, [modeledData]);
+
+  // Reset selections when data source changes
+  useEffect(() => {
+    const selectedSource = availableDataSources.find(
+      (source) => source.value === selectedDataSource
+    );
+    if (selectedSource) {
+      console.log("=== VISUALIZATION DEBUG ===");
+      console.log("Selected source:", selectedSource.value);
+      console.log("Raw data sample:", selectedSource.data?.slice(0, 2));
+
+      if (selectedSource.data && selectedSource.data.length > 0) {
+        const firstRow = selectedSource.data[0];
+        console.log("First row structure:", firstRow);
+        console.log("Available keys:", Object.keys(firstRow));
+
+        // Get all column names
+        const columns = Object.keys(firstRow);
+        setAvailableColumns(columns);
+
+        // Reset selections when switching data sources
+        setSelectedXColumn(columns[0] || "");
+        setSelectedYColumns([]);
+
+        // Auto-select numeric columns as Y-axis for modeled data
+        if (isModeledData) {
+          const numericColumns = columns.filter((col) => {
+            const sampleValues = selectedSource.data
+              .slice(0, 5)
+              .map((row) => row[col]);
+            return sampleValues.some(
+              (val) => !isNaN(Number(val)) && val !== "" && val !== null
+            );
+          });
+          setSelectedYColumns(numericColumns.slice(0, 2)); // Start with 2 columns
+        } else {
+          // For sample data, use predefined columns
+          setSelectedYColumns(["applications", "hired"]);
+        }
+
+        console.log("Available columns:", columns);
+        console.log(
+          "Auto-selected Y columns:",
+          isModeledData
+            ? columns
+                .filter((col) => {
+                  const sampleValues = selectedSource.data
+                    .slice(0, 5)
+                    .map((row) => row[col]);
+                  return sampleValues.some(
+                    (val) => !isNaN(Number(val)) && val !== "" && val !== null
+                  );
+                })
+                .slice(0, 2)
+            : ["applications", "hired"]
+        );
+      }
+
+      setChartData(selectedSource.data || sampleData);
+    }
+  }, [selectedDataSource, availableDataSources, isModeledData]);
+
+  // Process data for charts
+  const getProcessedChartData = () => {
+    if (!chartData || chartData.length === 0) return [];
+
+    if (!isModeledData) {
+      // Return sample data as-is
+      return chartData;
+    }
+
+    // For modeled data, process it properly
+    return chartData.slice(0, 50).map((item, index) => {
+      const result = {
+        name: selectedXColumn
+          ? String(item[selectedXColumn] || `Item ${index + 1}`)
+          : `Item ${index + 1}`,
+      };
+
+      // Add selected Y columns as numeric values
+      selectedYColumns.forEach((col) => {
+        const rawValue = item[col];
+        const numValue = Number(rawValue);
+        result[col] = isNaN(numValue) ? 0 : numValue;
+      });
+
+      return result;
+    });
+  };
+
+  const processedData = getProcessedChartData();
+
+  const handleYColumnToggle = (column, checked) => {
+    if (checked) {
+      if (selectedYColumns.length < 3) {
+        setSelectedYColumns((prev) => [...prev, column]);
+      }
+    } else {
+      setSelectedYColumns((prev) => prev.filter((col) => col !== column));
+    }
+  };
 
   const renderChart = () => {
+    const data = processedData;
+
     switch (selectedChart) {
       case "bar":
         return (
           <ResponsiveContainer width="100%" height={400}>
-            <BarChart data={sampleData}>
+            <BarChart data={data}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
-              <Bar
-                dataKey="applications"
-                fill="#3b82f6"
-                radius={[4, 4, 0, 0]}
-              />
-              <Bar dataKey="hired" fill="#10b981" radius={[4, 4, 0, 0]} />
+              <Legend />
+              {selectedYColumns.map((col, index) => (
+                <Bar
+                  key={col}
+                  dataKey={col}
+                  fill={`hsl(${(index * 120) % 360}, 70%, 50%)`}
+                  radius={[4, 4, 0, 0]}
+                  name={col}
+                />
+              ))}
             </BarChart>
           </ResponsiveContainer>
         );
       case "line":
         return (
           <ResponsiveContainer width="100%" height={400}>
-            <LineChart data={sampleData}>
+            <LineChart data={data}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
-              <Line
-                type="monotone"
-                dataKey="applications"
-                stroke="#3b82f6"
-                strokeWidth={3}
-              />
-              <Line
-                type="monotone"
-                dataKey="hired"
-                stroke="#10b981"
-                strokeWidth={3}
-              />
+              <Legend />
+              {selectedYColumns.map((col, index) => (
+                <Line
+                  key={col}
+                  type="monotone"
+                  dataKey={col}
+                  stroke={`hsl(${(index * 120) % 360}, 70%, 50%)`}
+                  strokeWidth={3}
+                  name={col}
+                />
+              ))}
             </LineChart>
           </ResponsiveContainer>
         );
       case "pie":
+        const pieData = data.slice(0, 8).map((item, index) => ({
+          name: item.name,
+          value:
+            selectedYColumns.length > 0 ? item[selectedYColumns[0]] || 0 : 0,
+          color: `hsl(${(index * 45) % 360}, 70%, 50%)`,
+        }));
+
         return (
           <ResponsiveContainer width="100%" height={400}>
             <RechartsPieChart>
@@ -131,33 +249,31 @@ export const VisualizationStudio = () => {
                 ))}
               </RechartsPieChart>
               <Tooltip />
+              <Legend />
             </RechartsPieChart>
           </ResponsiveContainer>
         );
       case "area":
         return (
           <ResponsiveContainer width="100%" height={400}>
-            <AreaChart data={sampleData}>
+            <AreaChart data={data}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
-              <Area
-                type="monotone"
-                dataKey="applications"
-                stackId="1"
-                stroke="#3b82f6"
-                fill="#3b82f6"
-                fillOpacity={0.6}
-              />
-              <Area
-                type="monotone"
-                dataKey="hired"
-                stackId="1"
-                stroke="#10b981"
-                fill="#10b981"
-                fillOpacity={0.6}
-              />
+              <Legend />
+              {selectedYColumns.map((col, index) => (
+                <Area
+                  key={col}
+                  type="monotone"
+                  dataKey={col}
+                  stackId="1"
+                  stroke={`hsl(${(index * 120) % 360}, 70%, 50%)`}
+                  fill={`hsl(${(index * 120) % 360}, 70%, 50%)`}
+                  fillOpacity={0.6}
+                  name={col}
+                />
+              ))}
             </AreaChart>
           </ResponsiveContainer>
         );
@@ -165,6 +281,11 @@ export const VisualizationStudio = () => {
         return null;
     }
   };
+
+  const currentSource = availableDataSources.find(
+    (source) => source.value === selectedDataSource
+  );
+  const hasModeledData = modeledData.length > 0;
 
   return (
     <div className="space-y-6">
@@ -174,234 +295,209 @@ export const VisualizationStudio = () => {
             Visualization Studio
           </h2>
           <p className="text-slate-600">
-            Create interactive charts and dashboards
+            Create interactive charts from your data
           </p>
         </div>
-        <Button>
-          <Plus className="w-4 h-4 mr-2" />
-          New Visualization
-        </Button>
+        <div className="flex items-center space-x-2">
+          {hasModeledData && (
+            <Badge
+              variant="default"
+              className="bg-emerald-100 text-emerald-800"
+            >
+              {modeledData.length} Data Sources Available
+            </Badge>
+          )}
+          <Button>
+            <Plus className="w-4 h-4 mr-2" />
+            Save Chart
+          </Button>
+        </div>
       </div>
 
-      <Tabs defaultValue="builder" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="builder">Chart Builder</TabsTrigger>
-          <TabsTrigger value="gallery">Chart Gallery</TabsTrigger>
-          <TabsTrigger value="templates">Templates</TabsTrigger>
-        </TabsList>
+      {/* Data Source Status */}
+      {!hasModeledData && (
+        <Card className="border-l-4 border-l-yellow-500">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold">No Modeled Data Available</h3>
+                <p className="text-sm text-slate-600">
+                  Import and model your data first to create visualizations with
+                  real data.
+                </p>
+              </div>
+              <Badge variant="secondary">Using Sample Data</Badge>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
-        <TabsContent value="builder" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            {/* Controls */}
-            <Card className="lg:col-span-1">
-              <CardHeader>
-                <CardTitle>Chart Configuration</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Controls */}
+        <Card className="lg:col-span-1">
+          <CardHeader>
+            <CardTitle>Chart Configuration</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label className="text-sm font-medium mb-2 block">
+                Data Source
+              </Label>
+              <Select
+                value={selectedDataSource}
+                onValueChange={setSelectedDataSource}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select data source" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableDataSources.map((source) => (
+                    <SelectItem key={source.value} value={source.value}>
+                      {source.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label className="text-sm font-medium mb-2 block">
+                Chart Type
+              </Label>
+              <Select value={selectedChart} onValueChange={setSelectedChart}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select chart type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="bar">Bar Chart</SelectItem>
+                  <SelectItem value="line">Line Chart</SelectItem>
+                  <SelectItem value="pie">Pie Chart</SelectItem>
+                  <SelectItem value="area">Area Chart</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Column Selection */}
+            {availableColumns.length > 0 && (
+              <>
                 <div>
-                  <label className="text-sm font-medium mb-2 block">
-                    Chart Type
-                  </label>
+                  <Label className="text-sm font-medium mb-2 block">
+                    X-Axis Column
+                  </Label>
                   <Select
-                    value={selectedChart}
-                    onValueChange={setSelectedChart}
+                    value={selectedXColumn}
+                    onValueChange={setSelectedXColumn}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select chart type" />
+                      <SelectValue placeholder="Select X column" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="bar">Bar Chart</SelectItem>
-                      <SelectItem value="line">Line Chart</SelectItem>
-                      <SelectItem value="pie">Pie Chart</SelectItem>
-                      <SelectItem value="area">Area Chart</SelectItem>
+                      {availableColumns.map((col) => (
+                        <SelectItem key={col} value={col}>
+                          {col}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">
-                    Data Source
-                  </label>
-                  <Select value={selectedData} onValueChange={setSelectedData}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select data source" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="quarterly">Quarterly Data</SelectItem>
-                      <SelectItem value="monthly">Monthly Data</SelectItem>
-                      <SelectItem value="department">
-                        Department Data
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Filters</label>
-                  <div className="space-y-2">
-                    <Badge variant="outline">Engineering</Badge>
-                    <Badge variant="outline">2024</Badge>
-                    <Badge variant="outline">Active</Badge>
+                  <Label className="text-sm font-medium mb-2 block">
+                    Y-Axis Columns
+                  </Label>
+                  <div className="space-y-3 max-h-40 overflow-y-auto border rounded-md p-2">
+                    {availableColumns.map((col) => (
+                      <div key={col} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`checkbox-${col}`}
+                          checked={selectedYColumns.includes(col)}
+                          onCheckedChange={(checked) =>
+                            handleYColumnToggle(col, checked)
+                          }
+                          disabled={
+                            !selectedYColumns.includes(col) &&
+                            selectedYColumns.length >= 3
+                          }
+                        />
+                        <Label
+                          htmlFor={`checkbox-${col}`}
+                          className="text-sm cursor-pointer flex-1"
+                        >
+                          {col}
+                        </Label>
+                      </div>
+                    ))}
                   </div>
+                  <p className="text-xs text-slate-500 mt-1">
+                    {selectedYColumns.length}/3 columns selected
+                  </p>
                 </div>
+              </>
+            )}
 
-                <Button variant="outline" className="w-full">
-                  <Settings className="w-4 h-4 mr-2" />
-                  Advanced Settings
+            {/* Data Preview */}
+            {currentSource && (
+              <div className="p-3 bg-slate-50 rounded-lg">
+                <h4 className="text-sm font-medium mb-2">Data Preview</h4>
+                <div className="text-xs text-slate-600">
+                  <div>{currentSource.data?.length || 0} records available</div>
+                  {processedData.length > 0 && (
+                    <div className="mt-2 p-2 bg-white rounded border">
+                      <div className="text-xs font-medium">
+                        Processed Data Sample:
+                      </div>
+                      <div className="text-xs mt-1 space-y-1">
+                        {Object.entries(processedData[0] || {})
+                          .slice(0, 4)
+                          .map(([key, value]) => (
+                            <div key={key} className="flex justify-between">
+                              <span className="font-medium">{key}:</span>
+                              <span className="text-slate-600">
+                                {value === null || value === undefined
+                                  ? "null"
+                                  : String(value)}
+                              </span>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Chart Display */}
+        <Card className="lg:col-span-3">
+          <CardHeader>
+            <div className="flex justify-between items-center">
+              <div>
+                <CardTitle>
+                  {currentSource?.label || "Data Visualization"}
+                </CardTitle>
+                <CardDescription>
+                  {selectedChart.charAt(0).toUpperCase() +
+                    selectedChart.slice(1)}{" "}
+                  chart
+                  {selectedXColumn && ` • X: ${selectedXColumn}`}
+                  {selectedYColumns.length > 0 &&
+                    ` • Y: ${selectedYColumns.join(", ")}`}
+                </CardDescription>
+              </div>
+              <div className="flex space-x-2">
+                <Button variant="outline" size="sm">
+                  Export
                 </Button>
-              </CardContent>
-            </Card>
-
-            {/* Chart Display */}
-            <Card className="lg:col-span-3">
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <div>
-                    <CardTitle>Career Applications Analysis</CardTitle>
-                    <CardDescription>
-                      Interactive visualization of hiring data
-                    </CardDescription>
-                  </div>
-                  <div className="flex space-x-2">
-                    <Button variant="outline" size="sm">
-                      Export
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      Save
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>{renderChart()}</CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="gallery" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {chartTypes.map((chart, index) => (
-              <Card
-                key={index}
-                className="hover:shadow-lg transition-all cursor-pointer group"
-              >
-                <CardHeader className="text-center">
-                  <div className="w-12 h-12 mx-auto rounded-lg bg-blue-100 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <chart.icon className="w-6 h-6 text-blue-600" />
-                  </div>
-                  <CardTitle className="text-lg">{chart.name}</CardTitle>
-                  <CardDescription>{chart.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="text-center">
-                  <Button variant="outline" className="w-full">
-                    Create Chart
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Sample Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Department Performance</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={sampleData.slice(0, 3)}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar
-                      dataKey="applications"
-                      fill="#3b82f6"
-                      radius={[4, 4, 0, 0]}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Hiring Trends</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={250}>
-                  <LineChart data={sampleData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line
-                      type="monotone"
-                      dataKey="hired"
-                      stroke="#10b981"
-                      strokeWidth={3}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="templates" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              {
-                name: "Executive Dashboard",
-                description: "High-level KPIs and metrics",
-                charts: 6,
-              },
-              {
-                name: "Department Analysis",
-                description: "Department-specific insights",
-                charts: 4,
-              },
-              {
-                name: "Recruitment Funnel",
-                description: "Application to hire journey",
-                charts: 5,
-              },
-              {
-                name: "Performance Review",
-                description: "Employee performance metrics",
-                charts: 7,
-              },
-              {
-                name: "Diversity Report",
-                description: "Diversity and inclusion metrics",
-                charts: 4,
-              },
-              {
-                name: "Cost Analysis",
-                description: "Hiring costs and ROI",
-                charts: 5,
-              },
-            ].map((template, index) => (
-              <Card
-                key={index}
-                className="hover:shadow-lg transition-shadow cursor-pointer"
-              >
-                <CardHeader>
-                  <CardTitle className="text-lg">{template.name}</CardTitle>
-                  <CardDescription>{template.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex justify-between items-center">
-                    <Badge variant="secondary">{template.charts} charts</Badge>
-                    <Button variant="outline" size="sm">
-                      Use Template
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-      </Tabs>
+                <Button variant="outline" size="sm">
+                  <Settings className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>{renderChart()}</CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

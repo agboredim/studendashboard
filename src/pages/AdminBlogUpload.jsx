@@ -3,7 +3,6 @@ import { useCreateBlogMutation } from "../services/blogsApi";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import BlogDetailsForm from "../components/BlogDetailsForm";
-import ContentBlockEditor from "../components/ContentBlockEditor";
 import DraggableContentBlock from "../components/DraggableContentBlock";
 import BlogPreview from "../components/BlogPreview";
 import {
@@ -53,6 +52,7 @@ function AdminBlogUpload() {
     if (isSuccess) {
       toast.success("Blog post uploaded successfully!");
       setBlog(initialBlogState); // Reset the form after successful upload
+      setIsPreviewMode(false); // Reset to edit mode
       navigate("/blog"); // Navigate to the blog listing page
     }
     if (isError) {
@@ -69,26 +69,29 @@ function AdminBlogUpload() {
 
   // Add a new content block to the blog's content array
   const addContentBlock = (type) => {
+    const id = Date.now().toString(); // Generate unique ID
     let newBlock;
+    
     // Initialize block based on its type to match JSON structure
     if (type === "heading") {
-      newBlock = { type: "heading", level: 2, id: "", value: "" }; // Default to h2
+      newBlock = { id, type: "heading", level: 2, headingId: "", value: "" }; // Default to h2
     } else if (["infoBox", "highlightBox", "warningBox"].includes(type)) {
-      newBlock = { type, title: "", value: "" }; // Simple text boxes
+      newBlock = { id, type, title: "", value: "" }; // Simple text boxes
     } else if (type === "primaryBox") {
-      newBlock = { type: "primaryBox", title: "", value: [] }; // Primary box can have nested paragraphs/links
+      newBlock = { id, type: "primaryBox", title: "", value: [] }; // Primary box can have nested paragraphs/links
     } else if (type === "alertBox") {
       newBlock = {
+        id,
         type: "alertBox",
         title: "",
         value: [{ type: "paragraph", value: "" }],
       }; // Alert box can have paragraphs or list items
     } else if (type === "list") {
-      newBlock = { type: "list", value: [{ value: "" }] }; // List block
+      newBlock = { id, type: "list", value: [{ value: "" }] }; // List block
     } else if (type === "image") {
-      newBlock = { type: "image", src: "", alt: "", caption: "" }; // Image block
+      newBlock = { id, type: "image", src: "", alt: "", caption: "" }; // Image block
     } else {
-      newBlock = { type, value: "" }; // Default for paragraph or other simple types
+      newBlock = { id, type, value: "" }; // Default for paragraph or other simple types
     }
     setBlog((prev) => ({
       ...prev,
@@ -101,9 +104,9 @@ function AdminBlogUpload() {
     const updatedContent = [...blog.content];
     updatedContent[index] = { ...updatedContent[index], [field]: value };
 
-    // Special logic for heading: auto-generate id from value
+    // Special logic for heading: auto-generate headingId from value
     if (field === "value" && updatedContent[index].type === "heading") {
-      updatedContent[index].id = value
+      updatedContent[index].headingId = value
         .toLowerCase()
         .replace(/[^a-z0-9\s-]/g, "")
         .replace(/\s+/g, "-")
@@ -172,19 +175,20 @@ function AdminBlogUpload() {
     }
   };
 
-  // Move a content block up or down in the list
+  // Move content block for drag and drop
   const moveContentBlock = (fromIndex, toIndex) => {
     const updatedContent = [...blog.content];
-    const [movedBlock] = updatedContent.splice(fromIndex, 1); // Remove the block from the original position
-    updatedContent.splice(toIndex, 0, movedBlock); // Insert it at the new position
+    const [movedBlock] = updatedContent.splice(fromIndex, 1);
+    updatedContent.splice(toIndex, 0, movedBlock);
     setBlog((prev) => ({ ...prev, content: updatedContent }));
   };
 
   // Handle form submission
   const handleSubmit = async (e) => {
     if (e && e.preventDefault) {
-      e.preventDefault();
+      e.preventDefault(); // Only prevent default if it's a form event
     }
+
     // Basic validation for main blog fields
     if (
       !blog.title ||
@@ -237,6 +241,7 @@ function AdminBlogUpload() {
           return;
         }
         if (
+          Array.isArray(block.value) &&
           block.value.some(
             (item) => item.type === "paragraph" && !item.value?.trim()
           )
@@ -247,6 +252,7 @@ function AdminBlogUpload() {
           return;
         }
         if (
+          Array.isArray(block.value) &&
           block.value.some(
             (item) => item.type === "listItem" && !item.value?.trim()
           )
@@ -257,6 +263,7 @@ function AdminBlogUpload() {
           return;
         }
         if (
+          Array.isArray(block.value) &&
           block.value.some(
             (item) =>
               item.type === "link" && (!item.text?.trim() || !item.href?.trim())
@@ -285,6 +292,8 @@ function AdminBlogUpload() {
         <h1 className="text-4xl font-bold text-primary">
           Upload New Blog Post
         </h1>
+        
+        {/* Preview Toggle Button */}
         <button
           type="button"
           onClick={() => setIsPreviewMode(!isPreviewMode)}
@@ -303,9 +312,13 @@ function AdminBlogUpload() {
           )}
         </button>
       </div>
+
       {isPreviewMode ? (
+        /* Preview Mode */
         <div className="max-w-4xl mx-auto">
           <BlogPreview blog={blog} />
+          
+          {/* Submit Button in Preview Mode */}
           <div className="mt-8 bg-white p-6 rounded-lg shadow-md">
             <button
               onClick={handleSubmit}
@@ -317,28 +330,36 @@ function AdminBlogUpload() {
           </div>
         </div>
       ) : (
+        /* Edit Mode */
         <form
           onSubmit={handleSubmit}
-          className="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto"
+          className={`bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto ${
+            isLoading ? "opacity-60 pointer-events-none" : ""
+          }`}
         >
           {/* Use the new BlogDetailsForm component */}
-          <BlogDetailsForm blog={blog} setBlog={setBlog} />
+          <BlogDetailsForm blog={blog} setBlog={setBlog} disabled={isLoading} />
 
           {/* Content Builder Section */}
           <h2 className="text-2xl font-semibold text-foreground mb-6">
             Blog Content Builder
+            {isLoading && (
+              <span className="ml-2 text-sm text-gray-500">Uploading...</span>
+            )}
           </h2>
+          
           {blog.content.length > 0 && (
             <p className="text-sm text-gray-600 mb-4 flex items-center gap-1">
               <GripVertical className="h-4 w-4" />
               Drag the grip handle to reorder content blocks
             </p>
           )}
+          
           <div className="space-y-6 mb-8 p-4 border border-gray-100 rounded-md bg-gray-50">
             {/* Render each content block dynamically */}
             {blog.content.map((block, blockIndex) => (
               <DraggableContentBlock
-                key={`${blockIndex}-${block.type}`}
+                key={block.id || `${blockIndex}-${block.type}`} // Use block ID for stable keys
                 block={block}
                 blockIndex={blockIndex}
                 updateContentBlock={updateContentBlock}
