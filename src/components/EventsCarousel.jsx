@@ -37,7 +37,7 @@ export function EventsCarousel() {
     {
       id: 1,
       title: "AML/KYC Compliance Workshop",
-      date: "2025-06-15",
+      date: "17 August 2025",
       time: "4:00 PM - 6:00 PM EST",
       location: "Virtual Event",
       description:
@@ -47,7 +47,7 @@ export function EventsCarousel() {
     {
       id: 2,
       title: "Business Analysis/Project Management Workshop",
-      date: "2025-06-15",
+      date: "04 October 2025",
       time: "4:00 PM - 6:00 PM EST",
       location: "Virtual Event",
       description:
@@ -57,7 +57,7 @@ export function EventsCarousel() {
     {
       id: 3,
       title: "Data Analytics Workshop",
-      date: "2025-06-15",
+      date: "09 August 2025",
       time: "4:00 PM - 6:00 PM EST",
       location: "Virtual Event",
       description:
@@ -67,7 +67,7 @@ export function EventsCarousel() {
     {
       id: 4,
       title: "Cybersecurity Workshop",
-      date: "2025-06-15",
+      date: "11 October 2025",
       time: "4:00 PM - 6:00 PM EST",
       location: "Virtual Event",
       description:
@@ -90,7 +90,7 @@ export function EventsCarousel() {
     "AML/KYC Compliance Workshop": "LUMI OTOLORIN",
     "Data Analytics Workshop": "TOBI OLADIPUPO",
     "Business Analysis/Project Management Workshop": "WUNMI NWOGU",
-    "Cybersecurity Workshop": "DR. JAMES BROWN",
+    "Cybersecurity Workshop": "FEMI OTOLORIN",
   };
 
   // Map each event to its corresponding backend course

@@ -26,81 +26,132 @@ export function WorkshopEvents() {
     {
       id: 1,
       title: "AML/KYC Compliance",
-      date: "01 June 2025",
+      date: "17 August 2025",
       time: "4:00 PM - 6:00 PM EST",
       description:
         "Master complex regulatory frameworks, implement robust risk assessment methodologies, and harness cutting-edge compliance technologies to protect your organization.",
       highlights: [
-        "Master sophisticated regulatory frameworks essential for global financial operations",
-        "Develop comprehensive risk assessment methodologies that ensure institutional protection",
-        "Implement intelligent detection systems that dramatically reduce false positives",
+        "Expert-led sessions covering core AML/KYC principles and regulations",
+        "Hands-on training using simulated KYC onboarding and transaction monitoring tools",
+        "Real-world case studies on financial crime investigations and red flags",
+        "Practical exercises on Customer Due Diligence (CDD) and Enhanced Due Diligence (EDD)",
+        "Step-by-step guidance on sanctions, PEP, and adverse media screening",
+        "SAR (Suspicious Activity Report) drafting workshops with feedback",
+        "Insights into UK regulatory expectations and global AML frameworks",
+        "CV and interview preparation tailored for AML/KYC roles",
+        "Downloadable templates, checklists, and compliance documentation samples",
+        "Certificate of completion to enhance your professional profile",
       ],
       instructor: {
         name: "LUMI OTOLORIN",
-        bio: "Leading authority in AML/KYC Compliance with 12+ years transforming regulatory frameworks at Global Finance. Author of 'Modern Approaches to Financial Compliance,' adopted by premier financial institutions worldwide.",
+        bio: "Lumi Otolorin is a dual-qualified lawyer and renowned compliance expert with over a decade of experience in anti-money laundering, counter-terrorist financing, and regulatory risk. With multiple advanced degrees and certifications, he is passionate about empowering the next generation of professionals through practical, high-impact compliance training",
       },
-      audience:
-        "AML/KYC Compliance Professionals seeking to transform regulatory frameworks with sophisticated machine learning systems",
+      audience: [
+        "Aspiring AML Analysts, KYC Officers, or Compliance Associates",
+        "Career changers looking to enter the financial crime or compliance sector",
+        "Banking, finance, or legal professionals seeking to expand their regulatory knowledge",
+        "Recent graduates aiming for entry-level roles in AML/KYC or financial services",
+        "Professionals in customer service, operations, or onboarding teams looking to upskill",
+        "Anyone interested in understanding how to detect, prevent, and report financial crime",
+      ].join("\n"),
       icon: <Shield className="h-6 w-6" />,
     },
     {
       id: 2,
       title: "Business Analysis/Project Management",
-      date: "05 July 2025",
+      date: "04 October 2025",
       time: "4:00 PM - 6:00 PM EST",
       description:
         "Develop critical skills in requirements gathering, process optimization, and stakeholder management to effectively bridge technical and business objectives.",
       highlights: [
-        "Implement industry-leading Agile methodologies that accelerate project delivery",
-        "Master stakeholder-focused requirements engineering techniques",
-        "Gain frameworks for stakeholder alignment and precise ROI measurement",
+        "Live, instructor-led sessions with real-world case studies",
+        "Hands-on training in requirements gathering, stakeholder engagement, and process mapping",
+        "Practical exposure to Agile, Scrum, and Waterfall methodologies",
+        "Interactive project simulations to apply what you’ve learned",
+        "CV and interview prep tailored for Business Analyst and Project Manager roles",
+        "Real-time feedback from experienced facilitators",
+        "Access to downloadable templates, documentation samples, and planning frameworks",
+        "Peer-to-peer collaboration and group projects",
+        "Certificate of completion to boost your job readiness",
       ],
       instructor: {
         name: "WUNMI NWOGU",
-        bio: "Senior Business Analyst and certified Project Management Professional at StrategyForge known for delivering projects with 98% stakeholder satisfaction across multiple sectors.",
+        bio: "Wunmi Nwogu is a seasoned Business Analyst and Project Manager renowned for delivering complex, cross-industry projects with precision and impact. With a talent for process improvement, stakeholder alignment, and strategic execution, she transforms challenges into clear, actionable outcomes that drive business success.",
       },
-      audience:
-        "Business Analysts & Project Managers committed to orchestrating seamless integration of ML solutions",
+      audience: [
+        "Aspiring Business Analysts, Project Managers, or Product Owners",
+        "Career changers looking to break into business and tech roles",
+        "Professionals in admin, operations, customer service, or IT seeking to upskill",
+        "Recent graduates aiming to stand out in competitive job markets",
+        "Junior analysts, coordinators, or team leads seeking structured training",
+        "Anyone looking to understand how to manage projects or improve business processes",
+      ].join("\n"),
       icon: <Briefcase className="h-6 w-6" />,
     },
     {
       id: 3,
       title: "Data Analytics",
-      date: "05 July 2025",
+      date: "09 August 2025",
       time: "4:00 PM - 6:00 PM EST",
       description:
         "Transform complex datasets into strategic insights using advanced analytical techniques and powerful visualization tools that drive informed business decisions.",
       highlights: [
-        "Acquire transformative predictive modeling skills",
-        "Design compelling data visualization solutions",
-        "Learn practical skills in predictive modeling and anomaly detection",
+        "Instructor-led training on core data analysis concepts and techniques",
+        "Hands-on projects using Excel, SQL, and Power BI or Tableau",
+        "Real-world case studies to develop problem-solving and data storytelling skills",
+        "Introduction to data cleaning, transformation, and visualization",
+        "Learn to build dashboards and reports that support business decisions",
+        "Basics of Python for data analysis (optional module)",
+        "CV and LinkedIn support tailored for data analyst roles",
+        "Downloadable templates, datasets, and project files",
+        "Practical tips on how to transition into a data analytics career",
+        "Certificate of completion to showcase your skills to employers",
       ],
       instructor: {
         name: "TOBI OLADIPUPO",
-        bio: "Innovative Data Analytics Director at AnalyticsPro whose breakthrough methodologies have generated over $500M in value for Fortune 100 companies.",
+        bio: "Tobi Oladipupo is a skilled Data Analyst with over 6 years of experience turning spatial and non-spatial data into strategic insights for organizations like WHO, eHealth Africa, and various consultancies. Holding an MSc in Information Management, he specialises in training aspiring analysts and professionals to use tools like Excel, SQL, Python, and Power BI to make smarter, data-driven decisions.",
       },
-      audience:
-        "Data Analytics Specialists eager to leverage state-of-the-art ML algorithms",
+      audience: [
+        "Aspiring Data Analysts and Business Intelligence professionals",
+        "Career changers looking to break into tech or data-driven roles",
+        "Professionals in operations, finance, marketing, or admin seeking to upskill",
+        "Graduates and job seekers who want to stand out in today’s data-driven job market",
+        "Junior analysts looking to strengthen their technical and analytical skills",
+        "Anyone interested in using data to make better business decisions",
+      ].join("\n"),
       icon: <BarChart2 className="h-6 w-6" />,
     },
     {
       id: 4,
       title: "Cybersecurity",
-      date: "12 July 2025",
+      date: "11 October 2025",
       time: "4:00 PM - 6:00 PM EST",
       description:
         "Build expertise in proactive threat detection, comprehensive vulnerability assessment, and implementation of enterprise-grade security protocols to safeguard critical assets.",
       highlights: [
-        "Deploy sophisticated proactive threat detection strategies",
-        "Architect resilient security frameworks",
-        "Learn advanced vulnerability assessment and threat modeling",
+        "Instructor-led sessions on core cybersecurity principles and threat landscapes",
+        "Hands-on training in threat detection, incident response, and system hardening",
+        "Real-world simulations of phishing, malware, and social engineering attacks",
+        "Introduction to network security, firewalls, and access control mechanisms",
+        "Basics of ethical hacking, vulnerability scanning, and penetration testing",
+        "Cloud security concepts with AWS-focused examples",
+        "CV and interview prep tailored for cybersecurity roles",
+        "Step-by-step guidance on preparing for entry-level certifications like CompTIA Security+",
+        "Downloadable tools, templates, and practice labs",
+        "Certificate of completion to validate your new skills",
       ],
       instructor: {
-        name: "DR. JAMES BROWN",
-        bio: "Chief Information Security Officer at SecureDefend with 15+ years protecting critical infrastructure, having engineered security architectures preventing over $2B in potential breach damages.",
+        name: "FEMI OTOLORIN",
+        bio: "Femi Otolorin is an accomplished Cloud Solutions and cybersecurity professional with extensive experience in software development, digital media, and IT infrastructure. As an AWS-certified expert and Cybersecurity Facilitator at Titans Careers, he empowers learners with practical skills and real-world insights to secure systems and advance in tech careers.",
       },
-      audience:
-        "Cybersecurity Experts dedicated to implementing advanced ML-powered defense systems",
+      audience: [
+        "Aspiring cybersecurity professionals looking to break into the field",
+        "Career changers from IT, customer service, or other industries interested in tech security",
+        "Graduates and job seekers aiming for roles in cybersecurity, risk, or IT support",
+        "Junior IT professionals or network admins seeking to expand into security",
+        "Tech-curious individuals who want to understand how to protect systems and data",
+        "Anyone preparing for certifications like CompTIA Security+, SSCP, or AWS Security",
+      ].join("\n"),
       icon: <Shield className="h-6 w-6" />,
     },
   ];
@@ -189,11 +240,13 @@ export function WorkshopEvents() {
                   {workshop.description}
                 </p>
                 <div className="flex flex-col gap-2 h-fit space-y-6 mt-4">
-                  <div className="h-36">
+                  <div className="h-full">
                     <h4 className="font-semibold mb-3 text-sm">
                       Workshop Highlights:
                     </h4>
-                    <ul className="space-y-2 text-muted-foreground">
+
+                    {/* The hight below controls the eveness of the cards below the highlight. It's intentionally not set to h-full to even out the boxes below the highlight */}
+                    <ul className="space-y-2 text-muted-foreground h-80">
                       {workshop.highlights.map((highlight, index) => (
                         <li key={index} className="flex items-start text-sm">
                           <span className="mr-2">•</span>
@@ -291,7 +344,7 @@ export function WorkshopEvents() {
                 approach..."
               </p>
               <p className="font-medium mt-2 text-blue-900">
-                — Wonderful Oladipupo, Lead Data Scientist
+                — Tobi Oladipupo, Lead Data Scientist
               </p>
             </div>
 
