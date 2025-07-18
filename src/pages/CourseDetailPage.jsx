@@ -25,8 +25,6 @@ import Spinner from "../components/Spinner";
 import AddToCartButton from "../components/AddToCartButton";
 import AwsVideoPlayer from "../components/AwsVideoPlayer";
 
-const baseUrl = import.meta.env.VITE_BASE_URL;
-
 function CourseDetailPage() {
   const { courseId } = useParams();
   const navigate = useNavigate();
@@ -158,11 +156,12 @@ function CourseDetailPage() {
 
             <div className="flex items-center mb-6">
               <img
-                src={`${baseUrl}${course.instructor.profile_picture}`}
+                src={course.instructor.profile_picture}
                 alt={course?.instructor?.first_name}
                 className="w-10 h-10 rounded-full mr-3 object-cover"
               />
               <div>
+                {console.log(course.instructor.profile_picture)}
                 <p className="font-medium text-foreground">
                   Instructor: {course?.instructor?.first_name}{" "}
                   {course?.instructor?.last_name}
