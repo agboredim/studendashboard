@@ -7,6 +7,7 @@ import bgImage from "@/assets/img/hero.png";
 
 export function Hero() {
   const [showVideoModal, setShowVideoModal] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const videoRef = useRef(null);
 
   // Handle when video player is ready
@@ -70,13 +71,24 @@ export function Hero() {
 
   return (
     <section className="relative h-[500px] w-full overflow-hidden">
+      {/* Blurred placeholder while image loads */}
       <div
-        className="absolute inset-0 bg-no-repeat bg-cover"
+        className={`absolute inset-0 bg-no-repeat bg-cover transition-all duration-700 ${
+          imageLoaded ? "" : "blur-lg scale-105 bg-gray-900"
+        }`}
         style={{
           backgroundImage: `url(${bgImage})`,
-          filter: "brightness(0.4)",
+          filter: imageLoaded ? "brightness(0.4)" : "brightness(0.3)",
         }}
-      />
+      >
+        {/* Hidden img tag to track load event */}
+        <img
+          src={bgImage}
+          alt="Hero background"
+          className="hidden"
+          onLoad={() => setImageLoaded(true)}
+        />
+      </div>
 
       {/* Content overlay */}
       <div className="relative z-10 flex h-full flex-col items-start justify-center px-6 md:px-12 lg:px-16">
