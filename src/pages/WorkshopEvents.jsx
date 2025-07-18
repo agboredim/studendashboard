@@ -250,17 +250,17 @@ export function WorkshopEvents() {
                       {workshop.highlights.map((highlight, index) => (
                         <li key={index} className="flex items-start text-sm">
                           <span className="mr-2">•</span>
-                          <span className="line-clamp-2">{highlight}</span>
+                          <span>{highlight}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
 
-                  <div className="h-20">
+                  <div className="h">
                     <h4 className="font-semibold mb-2 text-sm">
                       Who Should Attend:
                     </h4>
-                    <p className="text-muted-foreground text-sm line-clamp-2">
+                    <p className="text-muted-foreground text-sm">
                       {workshop.audience}
                     </p>
                   </div>
@@ -274,7 +274,7 @@ export function WorkshopEvents() {
                       <p className="font-medium text-sm mb-1">
                         {workshop.instructor.name}
                       </p>
-                      <p className="text-muted-foreground text-sm line-clamp-3">
+                      <p className="text-muted-foreground text-sm">
                         {workshop.instructor.bio}
                       </p>
                     </div>
@@ -328,10 +328,10 @@ export function WorkshopEvents() {
                 <span className="mr-2">•</span>
                 <span>Industry-recognized certificate of completion</span>
               </li>
-              <li className="flex items-start">
+              {/* <li className="flex items-start">
                 <span className="mr-2">•</span>
                 <span>Lifetime access to session recordings</span>
-              </li>
+              </li> */}
               <li className="flex items-start">
                 <span className="mr-2">•</span>
                 <span>Membership in our exclusive alumni network</span>

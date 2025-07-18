@@ -161,7 +161,7 @@ export function CommunityPage() {
                   icon: <BookOpen className="h-6 w-6" />,
                   title: "Master Essential Skills",
                   description:
-                    "12-week masterclass series featuring Fortune 500 CEOs sharing practical leadership strategies",
+                    "4 - 12 weeks masterclass series sharing practical leadership strategies",
                 },
                 {
                   icon: <Users className="h-6 w-6" />,
