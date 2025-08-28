@@ -1,31 +1,54 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { selectAccessToken } from "../store/slices/authSlice"; // ✅ Correct import
 
-const baseUrl = import.meta.env.VITE_BASE_URL;
+// Base API URL
+export const baseUrl =
+  import.meta.env.VITE_BASE_URL || "https://api.titanscareers.com";
 
-// Define our courses API
+// Helper: filter upcoming classes based on start date
+const filterUpcoming = (data) => {
+  if (!Array.isArray(data)) return [];
+  const now = new Date();
+  return data.filter((cls) => {
+    const dateValue =
+      cls.start_time || cls.date || cls.startDate || cls.start || null;
+    const start = dateValue ? new Date(dateValue) : null;
+    return start instanceof Date && !isNaN(start) && start > now;
+  });
+};
+
 export const coursesApi = createApi({
   reducerPath: "coursesApi",
   baseQuery: fetchBaseQuery({
     baseUrl,
     prepareHeaders: (headers, { getState }) => {
-      // Get the token from auth state
-      const token = getState().auth.user?.token;
-
-      // If we have a token, add it to the headers
-      if (token) {
-        headers.set("authorization", `Bearer ${token}`);
+      try {
+        const token = selectAccessToken(getState());
+        if (token) {
+          headers.set("Authorization", `Bearer ${token}`);
+        }
+      } catch (err) {
+        console.error("Error preparing headers:", err);
       }
-
       return headers;
     },
   }),
-  tagTypes: ["Course", "Assignment", "Order"],
+  tagTypes: [
+    "Course",
+    "Assignment",
+    "Order",
+    "Library",
+    "Certificate",
+    "Progress",
+    "Profile",
+    "LiveClass",
+  ],
   endpoints: (builder) => ({
-    // Get all courses
+    // 📚 Courses
     getAllCourses: builder.query({
       query: () => "/courses/courses",
       providesTags: (result) =>
-        result
+        result?.length
           ? [
               ...result.map(({ id }) => ({ type: "Course", id })),
               { type: "Course", id: "LIST" },
@@ -33,17 +56,15 @@ export const coursesApi = createApi({
           : [{ type: "Course", id: "LIST" }],
     }),
 
-    // Get a single course by ID
     getCourseById: builder.query({
       query: (id) => `/courses/courses/${id}`,
       providesTags: (result, error, id) => [{ type: "Course", id }],
     }),
 
-    // Get courses by category
     getCoursesByCategory: builder.query({
       query: (category) => `/courses/courses?category=${category}`,
       providesTags: (result) =>
-        result
+        result?.length
           ? [
               ...result.map(({ id }) => ({ type: "Course", id })),
               { type: "Course", id: "CATEGORY" },
@@ -51,22 +72,16 @@ export const coursesApi = createApi({
           : [{ type: "Course", id: "CATEGORY" }],
     }),
 
-    // Search courses
     searchCourses: builder.query({
       query: (searchTerm) => `/courses/courses?search=${searchTerm}`,
       providesTags: [{ type: "Course", id: "SEARCH" }],
     }),
 
-    // NEW ENDPOINTS
-
-    // Get all assignments
+    // 📝 Assignments
     getAllAssignments: builder.query({
-      query: () => ({
-        url: "/courses/assignments/",
-        method: "GET",
-      }),
+      query: () => "/courses/assignments/",
       providesTags: (result) =>
-        result
+        result?.length
           ? [
               ...result.map(({ id }) => ({ type: "Assignment", id })),
               { type: "Assignment", id: "LIST" },
@@ -74,33 +89,57 @@ export const coursesApi = createApi({
           : [{ type: "Assignment", id: "LIST" }],
     }),
 
-    // Get a single assignment by ID
     getAssignmentById: builder.query({
       query: (id) => `/courses/assignments/${id}/`,
       providesTags: (result, error, id) => [{ type: "Assignment", id }],
     }),
 
-    // Get student's enrolled courses (orders)
+    // ✅ New: Get assignments by course
+    getAssignmentsByCourseId: builder.query({
+      query: (courseId) => `/courses/assignments/by_course/${courseId}/`,
+      providesTags: (result, error, courseId) => [
+        { type: "Assignment", id: `COURSE-${courseId}` },
+      ],
+    }),
+
+    submitAssignment: builder.mutation({
+      query: (submissionData) => {
+        const formData = new FormData();
+        formData.append("assignment", submissionData.assignment);
+        formData.append("student", submissionData.student);
+        if (submissionData.file) formData.append("file", submissionData.file);
+        if (submissionData.feedback)
+          formData.append("feedback", submissionData.feedback);
+
+        return {
+          url: `/courses/submission/`,
+          method: "POST",
+          body: formData,
+        };
+      },
+      invalidatesTags: [{ type: "Assignment", id: "LIST" }],
+    }),
+
+    // 📦 Orders & Enrollment
     getEnrolledCourses: builder.query({
       query: (id) => `/customuser/student/${id}`,
       providesTags: ["Order"],
     }),
-    //  Get detailed course progress
+
+    // 📊 Progress
     getCourseProgressDetails: builder.query({
       query: ({ userId, courseId }) =>
-        `/customuser/users/${userId}/courses/${courseId}/progress/details/`,
+        `/customuser/user-course-progress/${userId}/${courseId}/`,
       providesTags: (result, error, { courseId }) => [
         { type: "Progress", id: courseId },
       ],
     }),
-    // }),
-    // / NEW LIBRARY ENDPOINTS
 
-    // Get all library materials
+    // 📚 Library
     getAllLibraryMaterials: builder.query({
       query: () => "/courses/courselibrary/",
       providesTags: (result) =>
-        result
+        result?.length
           ? [
               ...result.map(({ id }) => ({ type: "Library", id })),
               { type: "Library", id: "LIST" },
@@ -108,31 +147,17 @@ export const coursesApi = createApi({
           : [{ type: "Library", id: "LIST" }],
     }),
 
-    // Get a single library material by ID
     getLibraryMaterialById: builder.query({
       query: (id) => `/courses/courselibrary/${id}/`,
       providesTags: (result, error, id) => [{ type: "Library", id }],
     }),
-    // NEW CERTIFICATE ENDPOINT
-    // Generate and download certificate
+
+    // 🎓 Certificates
     generateCertificate: builder.mutation({
       query: () => ({
         url: "/courses/GenerateCertificate/",
         method: "GET",
-        // params: { course_id: courseId, user_id: userId },
-        // responseHandler: async (response) => {
-        //   // Handle PDF blob response
-        //   if (response.status === 200) {
-        //     const blob = await response.blob();
-        //     return {
-        //       blob,
-        //       filename: response.headers.get("content-disposition"),
-        //     };
-        //   }
-        //   throw new Error("Failed to generate certificate");
-        // },
         responseHandler: async (response) => {
-          // Handle blob response properly
           const blob = await response.blob();
           return {
             blob,
@@ -140,21 +165,14 @@ export const coursesApi = createApi({
           };
         },
       }),
-      // Transform response to avoid storing blob in Redux state
-      transformResponse: (response) => {
-        // Don't store the blob in Redux state
-        // Instead, return metadata only
-        return {
-          success: true,
-          filename: response.filename,
-          timestamp: new Date().toISOString(),
-        };
-      },
-      // Handle the blob separately in your component
-      onQueryStarted: async (arg, { queryFulfilled }) => {
+      transformResponse: (response) => ({
+        success: true,
+        filename: response.filename,
+        timestamp: new Date().toISOString(),
+      }),
+      onQueryStarted: async (_, { queryFulfilled }) => {
         try {
-          const { data } = await queryFulfilled;
-          // Handle blob download here instead of storing in state
+          await queryFulfilled;
         } catch (error) {
           console.error("Certificate generation failed:", error);
         }
@@ -170,7 +188,6 @@ export const coursesApi = createApi({
       invalidatesTags: [{ type: "Certificate", id: "LIST" }],
     }),
 
-    // Check if certificate is available for a course
     checkCertificateAvailability: builder.query({
       query: ({ courseId, userId }) => ({
         url: `/courses/certificates/check/${courseId}/${userId}/`,
@@ -180,23 +197,52 @@ export const coursesApi = createApi({
         { type: "Certificate", id: `${courseId}-${userId}` },
       ],
     }),
+
+    // 🎥 Live Classes
+    getAllLiveClasses: builder.query({
+      query: () => `/courses/CreateLiveClass/`,
+      providesTags: [{ type: "LiveClass", id: "ALL" }],
+    }),
+
+    getUpcomingLiveClasses: builder.query({
+      async queryFn(_arg, _queryApi, _extraOptions, baseQuery) {
+        const result = await baseQuery(`/courses/CreateLiveClass/`);
+        if (result.error) return { error: result.error };
+        return { data: filterUpcoming(result.data) };
+      },
+      providesTags: [{ type: "LiveClass", id: "UPCOMING" }],
+    }),
+
+    getLiveClassById: builder.query({
+      query: (id) => `/courses/CreateLiveClass/${id}/`,
+      providesTags: (result, error, id) => [{ type: "LiveClass", id }],
+    }),
+
+    // 👤 Student Profile
+    getStudentProfile: builder.query({
+      query: () => `/student_profile/profile/`,
+      providesTags: [{ type: "Profile", id: "CURRENT" }],
+    }),
   }),
 });
 
-// Export the auto-generated hooks
 export const {
   useGetAllCoursesQuery,
   useGetCourseByIdQuery,
   useGetCoursesByCategoryQuery,
   useSearchCoursesQuery,
-  // New hooks
   useGetAllAssignmentsQuery,
   useGetAssignmentByIdQuery,
+  useGetAssignmentsByCourseIdQuery, // ✅ New hook
+  useSubmitAssignmentMutation,
   useGetEnrolledCoursesQuery,
   useGetCourseProgressDetailsQuery,
-  // New library hooks
   useGetAllLibraryMaterialsQuery,
   useGetLibraryMaterialByIdQuery,
   useGenerateCertificateMutation,
   useCheckCertificateAvailabilityQuery,
+  useGetAllLiveClassesQuery,
+  useGetUpcomingLiveClassesQuery,
+  useGetLiveClassByIdQuery,
+  useGetStudentProfileQuery,
 } = coursesApi;

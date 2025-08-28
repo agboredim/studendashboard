@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "@/store/slices/authSlice";
+
 import Layout from "@/components/portal/layout";
 import {
   Card,
@@ -17,7 +20,10 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { useGetAssignmentByIdQuery } from "@/services/coursesApi";
+import {
+  useGetAssignmentByIdQuery,
+  useSubmitAssignmentMutation,
+} from "@/services/coursesApi";
 import {
   AlertCircle,
   ArrowLeft,
@@ -32,17 +38,30 @@ export default function AssignmentSubmission() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+
   const [comment, setComment] = useState("");
   const [file, setFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Fetch assignment details using the existing API hook
-  const { data: assignment, isLoading, error } = useGetAssignmentByIdQuery(id);
+  
+  const user = useSelector(selectCurrentUser);
+  const userId = user?.id || user?.pk;
 
+  
+  const {
+    data: assignment,
+    isLoading,
+    error,
+    refetch,
+  } = useGetAssignmentByIdQuery(id);
+
+  const [submitAssignment] = useSubmitAssignmentMutation();
+
+  
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
-      // Check file size (limit to 10MB)
       if (selectedFile.size > 10 * 1024 * 1024) {
         toast({
           title: "File too large",
@@ -55,17 +74,25 @@ export default function AssignmentSubmission() {
     }
   };
 
-  const handleRemoveFile = () => {
-    setFile(null);
-  };
+  const handleRemoveFile = () => setFile(null);
 
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!file) {
+    if (!userId) {
       toast({
-        title: "No file selected",
-        description: "Please upload a file for your assignment submission",
+        title: "Not logged in",
+        description: "Please log in before submitting.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!assignment?.id) {
+      toast({
+        title: "Invalid assignment",
+        description: "Assignment ID is missing. Please refresh and try again.",
         variant: "destructive",
       });
       return;
@@ -73,30 +100,29 @@ export default function AssignmentSubmission() {
 
     setIsSubmitting(true);
 
+    const formData = new FormData();
+    formData.append("assignment", assignment.id);
+    formData.append("student", userId);
+    if (file) formData.append("file", file);
+    if (comment) formData.append("feedback", comment);
+
     try {
-      // Here you would implement the actual submission logic
-      // For example, using a mutation from your API service
-      // const formData = new FormData()
-      // formData.append('file', file)
-      // formData.append('comment', comment)
-      // await submitAssignment({ assignmentId: id, formData }).unwrap()
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
+      await submitAssignment(formData).unwrap();
       toast({
-        title: "Assignment submitted",
-        description: "Your assignment has been submitted successfully",
+        title: "Success ",
+        description: "Assignment submitted successfully",
+        duration: 3000,
       });
 
-      // Navigate back to assignments page
-      navigate("/portal/assignments");
-    } catch (error) {
+      setIsSubmitted(true);
+    } catch (err) {
+      console.error("Submission error:", err);
       toast({
         title: "Submission failed",
         description:
-          "There was a problem submitting your assignment. Please try again.",
+          err?.data?.detail || JSON.stringify(err?.data) || "Please try again.",
         variant: "destructive",
+        duration: 4000,
       });
     } finally {
       setIsSubmitting(false);
@@ -106,13 +132,12 @@ export default function AssignmentSubmission() {
   const formatDueDate = (dueDate) => {
     try {
       return format(new Date(dueDate), "MMMM d, yyyy 'at' h:mm a");
-    } catch (error) {
+    } catch {
       return "Invalid date";
     }
   };
 
-  // Get course name - in a real implementation, you might need to fetch this
-  const courseName = "Course name not available";
+  const courseName = assignment?.course_title || "Course name not available";
 
   return (
     <Layout>
@@ -128,7 +153,8 @@ export default function AssignmentSubmission() {
           </Button>
         </div>
 
-        {isLoading ? (
+        {/* Loading state */}
+        {isLoading && (
           <Card>
             <CardHeader>
               <Skeleton className="h-8 w-3/4" />
@@ -138,31 +164,51 @@ export default function AssignmentSubmission() {
               <Skeleton className="h-32 w-full" />
             </CardContent>
           </Card>
-        ) : error ? (
+        )}
+
+        {/* Error fetching assignment */}
+        {error && (
           <Card className="border-red-200">
             <CardContent className="pt-6 pb-6 text-center">
               <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-3" />
-              <h3 className="text-lg font-medium mb-2">
-                Error loading assignment
-              </h3>
+              <h3 className="text-lg font-medium mb-2">Error loading assignment</h3>
               <p className="text-muted-foreground mb-4">
-                There was a problem fetching the assignment details. Please try
-                again.
+                There was a problem fetching the assignment details.
+              </p>
+              <div className="flex justify-center gap-2">
+                <Button onClick={() => refetch()}>Retry</Button>
+                <Button onClick={() => navigate("/portal/assignments")}>
+                  Back to Assignments
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Assignment not found */}
+        {!isLoading && !error && !assignment && (
+          <Card>
+            <CardContent className="pt-6 pb-6 text-center">
+              <AlertCircle className="h-12 w-12 text-amber-500 mx-auto mb-3" />
+              <h3 className="text-lg font-medium mb-2">Assignment not found</h3>
+              <p className="text-muted-foreground mb-4">
+                The assignment you're looking for doesn't exist or has been removed.
               </p>
               <Button onClick={() => navigate("/portal/assignments")}>
                 Back to Assignments
               </Button>
             </CardContent>
           </Card>
-        ) : assignment ? (
+        )}
+
+        {/* Assignment details & submission form */}
+        {assignment && (
           <>
             <Card>
               <CardHeader>
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
                   <div>
-                    <CardTitle className="text-xl">
-                      {assignment.title}
-                    </CardTitle>
+                    <CardTitle className="text-xl">{assignment.title}</CardTitle>
                     <CardDescription>Course: {courseName}</CardDescription>
                   </div>
                   <Badge
@@ -188,9 +234,7 @@ export default function AssignmentSubmission() {
                   <div className="flex items-center gap-2 p-3 bg-muted rounded-md">
                     <FileText className="h-5 w-5 text-blue-500" />
                     <div className="flex-1">
-                      <p className="text-sm font-medium">
-                        Assignment Instructions
-                      </p>
+                      <p className="text-sm font-medium">Assignment Instructions</p>
                       <p className="text-xs text-muted-foreground">
                         Download the file for detailed instructions
                       </p>
@@ -211,8 +255,7 @@ export default function AssignmentSubmission() {
               <CardHeader>
                 <CardTitle>Submit Your Assignment</CardTitle>
                 <CardDescription>
-                  Upload your completed assignment and add any comments for your
-                  instructor
+                  Upload your completed assignment and add any comments for your instructor
                 </CardDescription>
               </CardHeader>
               <form onSubmit={handleSubmit}>
@@ -221,10 +264,11 @@ export default function AssignmentSubmission() {
                     <Label htmlFor="comment">Comments (Optional)</Label>
                     <Textarea
                       id="comment"
-                      placeholder="Add any comments or notes about your submission..."
+                      placeholder="Add any comments or notes..."
                       value={comment}
                       onChange={(e) => setComment(e.target.value)}
                       rows={4}
+                      disabled={isSubmitted}
                     />
                   </div>
 
@@ -246,6 +290,7 @@ export default function AssignmentSubmission() {
                           variant="ghost"
                           size="sm"
                           onClick={handleRemoveFile}
+                          disabled={isSubmitted} 
                         >
                           <X className="h-4 w-4" />
                         </Button>
@@ -257,8 +302,7 @@ export default function AssignmentSubmission() {
                           Drag and drop your file here
                         </p>
                         <p className="text-xs text-muted-foreground mb-3">
-                          Supports PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX up to
-                          10MB
+                          Supports PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX up to 10MB
                         </p>
                         <Button
                           type="button"
@@ -266,6 +310,7 @@ export default function AssignmentSubmission() {
                           onClick={() =>
                             document.getElementById("file-upload").click()
                           }
+                          disabled={isSubmitted}
                         >
                           Select File
                         </Button>
@@ -275,11 +320,13 @@ export default function AssignmentSubmission() {
                           className="hidden"
                           accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx"
                           onChange={handleFileChange}
+                          disabled={isSubmitted}
                         />
                       </div>
                     )}
                   </div>
                 </CardContent>
+
                 <CardFooter className="flex justify-between border-t pt-4">
                   <Button
                     type="button"
@@ -288,8 +335,13 @@ export default function AssignmentSubmission() {
                   >
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={!file || isSubmitting}>
-                    {isSubmitting ? (
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting || isSubmitted} 
+                  >
+                    {isSubmitted ? (
+                      <>Submitted</>
+                    ) : isSubmitting ? (
                       <>Submitting...</>
                     ) : (
                       <>
@@ -302,20 +354,6 @@ export default function AssignmentSubmission() {
               </form>
             </Card>
           </>
-        ) : (
-          <Card>
-            <CardContent className="pt-6 pb-6 text-center">
-              <AlertCircle className="h-12 w-12 text-amber-500 mx-auto mb-3" />
-              <h3 className="text-lg font-medium mb-2">Assignment not found</h3>
-              <p className="text-muted-foreground mb-4">
-                The assignment you're looking for doesn't exist or has been
-                removed.
-              </p>
-              <Button onClick={() => navigate("/portal/assignments")}>
-                Back to Assignments
-              </Button>
-            </CardContent>
-          </Card>
         )}
       </div>
     </Layout>

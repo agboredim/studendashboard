@@ -20,7 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 import {
   useGetAllLiveClassesQuery,
   useGetUpcomingLiveClassesQuery,
-} from "@/services/live-classes-api";
+} from "@/services/coursesApi";
 import {
   Search,
   Clock,
@@ -50,45 +50,55 @@ export default function LiveClassesSchedule() {
     const timerId = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
     }, 500);
-
-    return () => {
-      clearTimeout(timerId);
-    };
+    return () => clearTimeout(timerId);
   }, [searchTerm]);
+
+  // ✅ Helper to normalize API responses
+  const normalizeData = (data) => {
+    if (!data) return [];
+    if (Array.isArray(data)) return data;
+    if (Array.isArray(data.results)) return data.results;
+    if (Array.isArray(data.classes)) return data.classes;
+    return [];
+  };
 
   // Fetch all live classes
   const {
-    data: allLiveClasses,
+    data: allLiveClassesRaw,
     isLoading: isAllClassesLoading,
     error: allClassesError,
   } = useGetAllLiveClassesQuery();
 
   // Fetch upcoming live classes
   const {
-    data: upcomingClasses,
+    data: upcomingClassesRaw,
     isLoading: isUpcomingLoading,
     error: upcomingError,
   } = useGetUpcomingLiveClassesQuery();
 
+  // ✅ Always arrays
+  const allLiveClasses = normalizeData(allLiveClassesRaw);
+  const upcomingClasses = normalizeData(upcomingClassesRaw);
+
   // Filter classes based on search term
   const getFilteredClasses = (classes) => {
-    if (!classes) return [];
+    if (!Array.isArray(classes)) return [];
     if (!debouncedSearchTerm) return classes;
 
     return classes.filter(
       (liveClass) =>
-        liveClass.teacher.first_name
-          .toLowerCase()
+        liveClass.teacher?.first_name
+          ?.toLowerCase()
           .includes(debouncedSearchTerm.toLowerCase()) ||
-        liveClass.teacher.last_name
-          .toLowerCase()
+        liveClass.teacher?.last_name
+          ?.toLowerCase()
           .includes(debouncedSearchTerm.toLowerCase())
     );
   };
 
   // Separate classes into upcoming and past
   const separateClasses = (classes) => {
-    if (!classes) return { upcoming: [], past: [] };
+    if (!Array.isArray(classes)) return { upcoming: [], past: [] };
 
     const now = new Date();
     const upcoming = [];
@@ -103,10 +113,7 @@ export default function LiveClassesSchedule() {
       }
     });
 
-    // Sort upcoming classes by start time (earliest first)
     upcoming.sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
-
-    // Sort past classes by start time (most recent first)
     past.sort((a, b) => new Date(b.start_time) - new Date(a.start_time));
 
     return { upcoming, past };
@@ -136,7 +143,7 @@ export default function LiveClassesSchedule() {
     };
 
     const formattedDate = date.toLocaleDateString("en-US", dateOptions);
-    const formattedTime = date.toLocaleDateString("en-US", timeOptions);
+    const formattedTime = date.toLocaleTimeString("en-US", timeOptions);
 
     let timeIndicator = "";
     if (diffInHours < 1 && diffInHours > 0) {
@@ -214,8 +221,9 @@ export default function LiveClassesSchedule() {
 
   const displayClasses = getDisplayClasses();
 
+  // ✅ Your entire JSX stays the same below...
   return (
-    <Layout>
+       <Layout>
       <div className="space-y-8">
         {/* Enhanced Header with gradient background */}
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary via-primary/80 to-primary/50 p-8 text-white">

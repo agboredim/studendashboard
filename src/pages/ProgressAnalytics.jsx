@@ -25,10 +25,11 @@ import {
 } from "lucide-react";
 import CourseProgressDetail from "@/components/dashboard/course-progress-detail";
 
+const placeholderImg = "/placeholder.png";
+
 export default function ProgressAnalytics() {
   const [activeTab, setActiveTab] = useState("courses");
   const navigate = useNavigate();
-  const { user } = useSelector((state) => state.auth);
   const currentUserId = useSelector((state) => state.auth.user?.id);
 
   const {
@@ -37,12 +38,12 @@ export default function ProgressAnalytics() {
     error,
   } = useGetEnrolledCoursesQuery(currentUserId);
 
-  // Extract courses from the enrolled data
   const enrolledCourses = enrolledData?.course || [];
 
   return (
     <Layout>
       <div className="space-y-6">
+        {/* Header */}
         <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
           <h1 className="text-2xl font-bold">Progress & Analytics</h1>
           <Button onClick={() => navigate("/portal/courses")}>
@@ -50,6 +51,7 @@ export default function ProgressAnalytics() {
           </Button>
         </div>
 
+        {/* Tabs */}
         <Tabs
           defaultValue="courses"
           value={activeTab}
@@ -61,6 +63,7 @@ export default function ProgressAnalytics() {
             <TabsTrigger value="achievements">Achievements</TabsTrigger>
           </TabsList>
 
+          {/* --- Course Progress --- */}
           <TabsContent value="courses" className="mt-0 space-y-6">
             <Card>
               <CardHeader>
@@ -71,13 +74,9 @@ export default function ProgressAnalytics() {
               </CardHeader>
               <CardContent>
                 {isLoading ? (
-                  Array(3)
-                    .fill(0)
-                    .map((_, i) => (
-                      <div key={i} className="mb-4">
-                        <Skeleton className="h-24 w-full" />
-                      </div>
-                    ))
+                  Array.from({ length: 3 }).map((_, i) => (
+                    <Skeleton key={i} className="h-24 w-full mb-4" />
+                  ))
                 ) : error ? (
                   <div className="text-center py-6">
                     <p className="text-red-500">Error loading your courses</p>
@@ -96,7 +95,7 @@ export default function ProgressAnalytics() {
                         key={course.id}
                         courseId={course.id}
                         courseName={course.name}
-                        courseImage={course.course_image}
+                        courseImage={course.course_image || placeholderImg}
                       />
                     ))}
                   </div>
@@ -114,6 +113,7 @@ export default function ProgressAnalytics() {
               </CardContent>
             </Card>
 
+            {/* --- Analytics Cards --- */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
@@ -145,6 +145,7 @@ export default function ProgressAnalytics() {
             </div>
           </TabsContent>
 
+          {/* --- Learning Analytics --- */}
           <TabsContent value="analytics" className="mt-0">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <Card>
@@ -191,6 +192,7 @@ export default function ProgressAnalytics() {
             </div>
           </TabsContent>
 
+          {/* --- Achievements --- */}
           <TabsContent value="achievements" className="mt-0">
             <Card>
               <CardHeader>

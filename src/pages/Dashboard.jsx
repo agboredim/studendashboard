@@ -276,8 +276,6 @@ export default function Dashboard() {
                 </CardContent>
               )}
             </Card>
-
-            {/* Detailed Course Progress */}
             <Card>
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
@@ -301,72 +299,7 @@ export default function Dashboard() {
                     .fill(0)
                     .map((_, i) => <Skeleton key={i} className="h-24 w-full" />)
                 ) : (
-                  // <>
-                  //   {Object.keys(mockProgressDetails)
-                  //     .slice(0, 2)
-                  //     .map((courseId) => {
-                  //       const progressDetail = mockProgressDetails[courseId];
-                  //       return (
-                  //         <div key={courseId} className="p-4 border rounded-lg">
-                  //           <div className="flex justify-between items-center mb-2">
-                  //             <h3 className="font-medium">
-                  //               {progressDetail.course_name}
-                  //             </h3>
-                  //             <span className="text-sm font-medium">
-                  //               {progressDetail.progress_percentage}% Complete
-                  //             </span>
-                  //           </div>
-                  //           <Progress
-                  //             value={progressDetail.progress_percentage}
-                  //             className="h-2 mb-4"
-                  //           />
-                  //           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-                  //             <div className="flex items-center gap-2">
-                  //               <Video className="h-4 w-4 text-blue-500" />
-                  //               <span>
-                  //                 Videos:{" "}
-                  //                 {progressDetail.details.videos.completed}/
-                  //                 {progressDetail.details.videos.total}
-                  //               </span>
-                  //             </div>
-                  //             <div className="flex items-center gap-2">
-                  //               <FileText className="h-4 w-4 text-green-500" />
-                  //               <span>
-                  //                 Notes:{" "}
-                  //                 {progressDetail.details.course_notes.opened}/
-                  //                 {progressDetail.details.course_notes.total}
-                  //               </span>
-                  //             </div>
-                  //             <div className="flex items-center gap-2">
-                  //               <BookOpen className="h-4 w-4 text-amber-500" />
-                  //               <span>
-                  //                 Assignments:{" "}
-                  //                 {progressDetail.details.assignments.submitted}
-                  //                 /{progressDetail.details.assignments.total}
-                  //               </span>
-                  //             </div>
-                  //             <div className="flex items-center gap-2">
-                  //               <FileText className="h-4 w-4 text-purple-500" />
-                  //               <span>
-                  //                 PDFs:{" "}
-                  //                 {progressDetail.details.blog_pdfs.viewed}/
-                  //                 {progressDetail.details.blog_pdfs.total}
-                  //               </span>
-                  //             </div>
-                  //           </div>
-                  //         </div>
-                  //       );
-                  //     })}
-                  //   <div className="text-center mt-2">
-                  //     <Button
-                  //       variant="outline"
-                  //       size="sm"
-                  //       onClick={() => navigate("/portal/progress")}
-                  //     >
-                  //       View All Course Progress
-                  //     </Button>
-                  //   </div>
-                  // </>
+                  
                   <>
                     {enrollments.map((course) => (
                       <CourseProgressDetail

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/portal/layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -16,55 +16,71 @@ import {
   ClockIcon,
   CheckCircleIcon,
   CalendarIcon,
-  GraduationCap,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 
+const placeholderImg = "/placeholder.png"; // ✅ Correct name
+
 export default function MyCourses() {
-  // const baseUrl = import.meta.env.VITE_BASE_URL;
   const [activeTab, setActiveTab] = useState("all");
   const navigate = useNavigate();
   const currentUserId = useSelector((state) => state.auth.user?.id);
-  //   console.log(currentUserId);
+  const [failedImages, setFailedImages] = useState({});
+  const [loadingImages, setLoadingImages] = useState({});
 
   const {
     data: enrolledData,
     isLoading,
     error,
   } = useGetEnrolledCoursesQuery(currentUserId);
-  console.log(enrolledData);
 
-  // Extract courses from the enrolled data
   const enrolledCourses = enrolledData?.course || [];
 
-  // Calculate progress for demo purposes (in a real app, this would come from the API)
+  useEffect(() => {
+    if (enrolledData) {
+      console.log("Enrolled Courses API Response:", enrolledData);
+    }
+  }, [enrolledData]);
+
   const getRandomProgress = (courseId) => {
-    // make the course id a string
-    courseId = String(courseId);
-    console.log(courseId);
-    // Use the course ID to generate a consistent progress value
-    const hash = courseId
+    if (!courseId) return 0;
+    const hash = String(courseId)
       .split("")
       .reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    return hash % 101; // 0-100
+    return hash % 101;
   };
 
-  // Filter courses based on active tab
   const filteredCourses = enrolledCourses.filter((course) => {
-    const progress = getRandomProgress(course.id);
-
-    if (activeTab === "in-progress") {
-      return progress > 0 && progress < 100;
-    } else if (activeTab === "not-started") {
-      return progress === 0;
-    } else if (activeTab === "completed") {
-      return progress === 100;
-    }
+    const progress = getRandomProgress(course?.id);
+    if (activeTab === "in-progress") return progress > 0 && progress < 100;
+    if (activeTab === "not-started") return progress === 0;
+    if (activeTab === "completed") return progress === 100;
     return true;
   });
 
   const handleStartCourse = (courseId) => {
     navigate(`/portal/learn/${courseId}`);
+  };
+
+  const getCourseImage = (course) => {
+    const rawImg = course?.course_image || course?.image || "";
+    return rawImg
+      ? (rawImg.startsWith("http")
+          ? rawImg
+          : `${import.meta.env.VITE_BASE_URL}${rawImg}`)
+      : placeholderImg;
+  };
+
+  const handleImgError = (id) => {
+    setFailedImages((prev) => ({ ...prev, [id]: true }));
+  };
+
+  const handleImgLoadStart = (id) => {
+    setLoadingImages((prev) => ({ ...prev, [id]: true }));
+  };
+
+  const handleImgLoad = (id) => {
+    setLoadingImages((prev) => ({ ...prev, [id]: false }));
   };
 
   return (
@@ -122,17 +138,35 @@ export default function MyCourses() {
             ) : filteredCourses.length > 0 ? (
               <div className="grid gap-6">
                 {filteredCourses.map((course) => {
-                  const progress = getRandomProgress(course.id);
+                  const progress = getRandomProgress(course?.id);
+                  const categoryName = course?.category?.name || "General";
+                  const levelName = course?.level || "Beginner";
+                  const instructorName = course?.instructor
+                    ? `${course.instructor.first_name || ""} ${
+                        course.instructor.last_name || ""
+                      }`.trim()
+                    : "No instructor";
+                  const imgSrc = failedImages[course.id]
+                    ? placeholderImg
+                    : getCourseImage(course);
+
                   return (
                     <Card key={course.id}>
                       <CardContent className="p-0">
                         <div className="flex flex-col md:flex-row">
-                          <div className="relative h-40 md:w-64 bg-muted">
+                          <div className="relative ml-3 mt-5 h-48 md:w-64 bg-muted overflow-hidden rounded-lg">
+                            {loadingImages[course.id] && (
+                              <Skeleton className="absolute inset-0" />
+                            )}
                             <img
-                              // src={`${baseUrl}${course.course_image}`}
-                              src={course.course_image}
-                              alt={course.name}
-                              className="h-full w-full object-cover"
+                              src={imgSrc}
+                              alt={course?.name || "Course image"}
+                              className={`h-full w-full object-cover transform hover:scale-105 transition-transform duration-500 ${
+                                loadingImages[course.id] ? "opacity-0" : "opacity-100"
+                              }`}
+                              onError={() => handleImgError(course.id)}
+                              onLoadStart={() => handleImgLoadStart(course.id)}
+                              onLoad={() => handleImgLoad(course.id)}
                             />
                             {progress === 100 && (
                               <div className="absolute inset-0 bg-green-500/20 flex items-center justify-center">
@@ -143,38 +177,44 @@ export default function MyCourses() {
                           <div className="p-6 flex-1">
                             <div className="flex flex-wrap gap-2 mb-2">
                               <Badge variant="outline" className="bg-muted/50">
-                                {course.category?.name.charAt(0).toUpperCase() +
-                                  course.category?.name.slice(1)}
+                                {categoryName.charAt(0).toUpperCase() +
+                                  categoryName.slice(1)}
                               </Badge>
                               <Badge variant="outline">
-                                {course.level.charAt(0).toUpperCase() +
-                                  course.level.slice(1)}
+                                {levelName.charAt(0).toUpperCase() +
+                                  levelName.slice(1)}
                               </Badge>
                             </div>
 
-                            <h3 className="text-xl font-bold">{course.name}</h3>
+                            <h3 className="text-xl font-bold">
+                              {course?.name || "Untitled Course"}
+                            </h3>
                             <p className="text-sm text-muted-foreground mb-4">
-                              {course.instructor?.first_name}{" "}
-                              {course.instructor?.last_name}
+                              {instructorName}
                             </p>
 
                             <div className="flex items-center gap-4 mb-4 text-sm text-muted-foreground">
                               <div className="flex items-center">
                                 <BookOpenIcon className="h-4 w-4 mr-1" />
-                                {course.curriculum?.reduce(
+                                {course?.curriculum?.reduce(
                                   (total, module) =>
-                                    total + (module.video?.length || 0),
+                                    total + (module?.video?.length || 0),
                                   0
                                 ) || 0}{" "}
                                 lessons
                               </div>
                               <div className="flex items-center">
                                 <ClockIcon className="h-4 w-4 mr-1" />
-                                {course.estimated_time}
+                                {course?.estimated_time || "N/A"}
                               </div>
                               <div className="flex items-center">
                                 <CalendarIcon className="h-4 w-4 mr-1" />
-                                Enrolled: {new Date().toLocaleDateString()}
+                                Enrolled:{" "}
+                                {course?.enrolled_date
+                                  ? new Date(
+                                      course.enrolled_date
+                                    ).toLocaleDateString()
+                                  : new Date().toLocaleDateString()}
                               </div>
                             </div>
 

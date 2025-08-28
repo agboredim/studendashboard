@@ -512,10 +512,10 @@ export default function StudentProfile() {
                                 {course.category?.name.charAt(0).toUpperCase() +
                                   course.category?.name.slice(1)}
                               </Badge>
-                              <Badge variant="outline">
-                                {course.level.charAt(0).toUpperCase() +
-                                  course.level.slice(1)}
-                              </Badge>
+                            <Badge variant="outline">
+  {course.level?.charAt(0).toUpperCase() + course.level?.slice(1) || "N/A"}
+</Badge>
+
                             </div>
                             <h3 className="text-lg font-medium">
                               {course.name}

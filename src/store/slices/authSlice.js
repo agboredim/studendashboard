@@ -15,7 +15,7 @@ const loadTokensFromStorage = () => {
       isAuthenticated: !!accessToken,
     };
   } catch (error) {
-    console.log(error);
+    console.error("Failed to load tokens:", error);
     return {
       accessToken: null,
       refreshToken: null,
@@ -31,7 +31,7 @@ const initialState = {
   refreshToken: null,
   isAuthenticated: false,
   isLoading: false,
-  ...loadTokensFromStorage(), // Load persisted state
+  ...loadTokensFromStorage(),
 };
 
 const authSlice = createSlice({
@@ -79,18 +79,12 @@ const authSlice = createSlice({
       if (refresh) localStorage.setItem("refresh_token", refresh);
     },
 
-    // NEW: Add course to user's enrolled courses
     addCourseToUser: (state, action) => {
       if (state.user) {
-        // Initialize course array if it doesn't exist
         if (!state.user.course) {
           state.user.course = [];
         }
-
-        // Add the new course to the array
         state.user.course.push(action.payload);
-
-        // Update localStorage
         localStorage.setItem("user", JSON.stringify(state.user));
       }
     },
@@ -98,65 +92,52 @@ const authSlice = createSlice({
 
   extraReducers: (builder) => {
     builder
-      // Handle login - match backend response structure
+      // Handle login
       .addMatcher(api.endpoints.login.matchFulfilled, (state, { payload }) => {
         const { access, refresh, user_info } = payload;
-
         state.user = user_info;
         state.accessToken = access;
         state.refreshToken = refresh;
         state.isAuthenticated = true;
 
-        // Persist to localStorage
         localStorage.setItem("access_token", access);
         localStorage.setItem("refresh_token", refresh);
         localStorage.setItem("user", JSON.stringify(user_info));
       })
 
-      // Handle register - match backend response structure
-      .addMatcher(
-        api.endpoints.register.matchFulfilled,
-        (state, { payload }) => {
-          const { access, refresh, user_info } = payload;
+      // Handle register
+      .addMatcher(api.endpoints.register.matchFulfilled, (state, { payload }) => {
+        const { access, refresh, user_info } = payload;
+        state.user = user_info;
+        state.accessToken = access;
+        state.refreshToken = refresh;
+        state.isAuthenticated = true;
 
-          state.user = user_info;
-          state.accessToken = access;
-          state.refreshToken = refresh;
-          state.isAuthenticated = true;
-
-          // Persist to localStorage
-          localStorage.setItem("access_token", access);
-          localStorage.setItem("refresh_token", refresh);
-          localStorage.setItem("user", JSON.stringify(user_info));
-        }
-      )
+        localStorage.setItem("access_token", access);
+        localStorage.setItem("refresh_token", refresh);
+        localStorage.setItem("user", JSON.stringify(user_info));
+      })
 
       // Handle Google auth
-      .addMatcher(
-        api.endpoints.googleAuth.matchFulfilled,
-        (state, { payload }) => {
-          const { access, refresh, user_info } = payload;
+      .addMatcher(api.endpoints.googleAuth.matchFulfilled, (state, { payload }) => {
+        const { access, refresh, user_info } = payload;
+        state.user = user_info;
+        state.accessToken = access;
+        state.refreshToken = refresh;
+        state.isAuthenticated = true;
 
-          state.user = user_info;
-          state.accessToken = access;
-          state.refreshToken = refresh;
-          state.isAuthenticated = true;
+        localStorage.setItem("access_token", access);
+        localStorage.setItem("refresh_token", refresh);
+        localStorage.setItem("user", JSON.stringify(user_info));
+      })
 
-          // Persist to localStorage
-          localStorage.setItem("access_token", access);
-          localStorage.setItem("refresh_token", refresh);
-          localStorage.setItem("user", JSON.stringify(user_info));
-        }
-      )
-
-      // Handle logout
+      // Handle logout (auto clear)
       .addMatcher(api.endpoints.logout.matchFulfilled, (state) => {
         state.user = null;
         state.accessToken = null;
         state.refreshToken = null;
         state.isAuthenticated = false;
 
-        // Clear localStorage
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
         localStorage.removeItem("user");
@@ -164,8 +145,13 @@ const authSlice = createSlice({
   },
 });
 
-export const { login, logout, setUser, updateTokens, addCourseToUser } =
-  authSlice.actions;
+export const {
+  login,
+  logout,
+  setUser,
+  updateTokens,
+  addCourseToUser,
+} = authSlice.actions;
 
 // Selectors
 export const selectCurrentUser = (state) => state.auth.user;
