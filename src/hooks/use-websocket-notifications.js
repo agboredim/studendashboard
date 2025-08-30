@@ -44,8 +44,8 @@ export function useWebSocketNotifications(userId, courseId) {
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
 
     const endpoint = courseId
-      ? `${protocol}://api.titanscareers.com/ws/liveclass/${courseId}/?token=${token}`
-      : `${protocol}://api.titanscareers.com/ws/notifications/?token=${token}`;
+      ? `wss://api.titanscareers.com/ws/liveclass/${courseId}/?token=${token}`
+      : `wss://api.titanscareers.com/ws/notifications/?token=${token}`;
 
     console.log("Connecting to WS:", endpoint);
 

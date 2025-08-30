@@ -94,14 +94,40 @@ export const coursesApi = createApi({
       providesTags: (result, error, id) => [{ type: "Assignment", id }],
     }),
 
-    // ✅ New: Get assignments by course
-    getAssignmentsByCourseId: builder.query({
-      query: (courseId) => `/courses/assignments/by_course/${courseId}/`,
-      providesTags: (result, error, courseId) => [
-        { type: "Assignment", id: `COURSE-${courseId}` },
+    // ✅ Get assignments for a student in a specific course (with submitted flag)
+    getAssignmentsForStudentCourse: builder.query({
+      async queryFn({ userId, courseId }, _queryApi, _extraOptions, baseQuery) {
+        // 1️⃣ Fetch student details (enrolled courses + submissions)
+        const studentRes = await baseQuery(`/customuser/student/${userId}`);
+        if (studentRes.error) return { error: studentRes.error };
+
+        // 2️⃣ Fetch all assignments
+        const assignmentRes = await baseQuery(`/courses/assignments/`);
+        if (assignmentRes.error) return { error: assignmentRes.error };
+
+        const studentCourses = studentRes.data?.enrolled_courses || [];
+        const studentSubmissions = studentRes.data?.submissions || [];
+        const allAssignments = assignmentRes.data || [];
+
+        // 3️⃣ Filter assignments for this course
+        const filteredAssignments = allAssignments
+          .filter((a) => String(a.course?.id) === String(courseId))
+          .map((assignment) => {
+            // 4️⃣ Mark submitted if found in student submissions
+            const submitted = studentSubmissions.some(
+              (s) => String(s.assignment) === String(assignment.id)
+            );
+            return { ...assignment, submitted };
+          });
+
+        return { data: filteredAssignments };
+      },
+      providesTags: (result, error, { courseId }) => [
+        { type: "Assignment", id: `STUDENT-COURSE-${courseId}` },
       ],
     }),
 
+    // ✅ Submit assignment + trigger refetch for this student's course assignments
     submitAssignment: builder.mutation({
       query: (submissionData) => {
         const formData = new FormData();
@@ -117,7 +143,10 @@ export const coursesApi = createApi({
           body: formData,
         };
       },
-      invalidatesTags: [{ type: "Assignment", id: "LIST" }],
+      invalidatesTags: (result, error, { courseId }) => [
+        { type: "Assignment", id: "LIST" },
+        { type: "Assignment", id: `STUDENT-COURSE-${courseId}` },
+      ],
     }),
 
     // 📦 Orders & Enrollment
@@ -226,6 +255,7 @@ export const coursesApi = createApi({
   }),
 });
 
+// ✅ Export hooks
 export const {
   useGetAllCoursesQuery,
   useGetCourseByIdQuery,
@@ -233,7 +263,7 @@ export const {
   useSearchCoursesQuery,
   useGetAllAssignmentsQuery,
   useGetAssignmentByIdQuery,
-  useGetAssignmentsByCourseIdQuery, // ✅ New hook
+  useGetAssignmentsForStudentCourseQuery,
   useSubmitAssignmentMutation,
   useGetEnrolledCoursesQuery,
   useGetCourseProgressDetailsQuery,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/portal/layout";
 import {
@@ -17,7 +17,6 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { useGetAllAssignmentsQuery } from "@/services/coursesApi";
 import {
   Calendar,
   Clock,
@@ -38,6 +37,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "@/store/slices/authSlice";
+import { useGetAssignmentsForStudentCourseQuery } from "@/services/coursesApi";
 
 export default function Assignments() {
   const navigate = useNavigate();
@@ -46,47 +48,76 @@ export default function Assignments() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [sortBy, setSortBy] = useState("due-date");
 
-  // Fetch assignments using the existing API hook
+  const currentUser = useSelector(selectCurrentUser);
+
+  // ✅ safely extract first enrolled course ID
+  const courseId = currentUser?.course?.[0]?.id;
+
+  // ✅ Fetch assignments for user + course
   const {
-    data: assignments,
+    data: assignments = [],
     isLoading,
     error,
     refetch,
-  } = useGetAllAssignmentsQuery();
+  } = useGetAssignmentsForStudentCourseQuery(
+    { userId: currentUser?.id, courseId },
+    { skip: !currentUser?.id || !courseId }
+  );
 
-  // Filter assignments based on search term, and status filter
+  // 🔍 Debug logs
+  useEffect(() => {
+    console.log("👤 Current User:", currentUser);
+    console.log("📚 Course ID:", courseId);
+    console.log("🎯 Raw Assignments API result:", assignments);
+    console.log("⏳ Loading:", isLoading, "❌ Error:", error);
+  }, [assignments, currentUser, courseId, isLoading, error]);
+
+  // 🔹 Apply filtering: only show assignments for enrolled courses & assigned to this user
   const filteredAssignments = assignments
-    ? assignments
-        .filter((assignment) => {
-          // Filter by search term
-          if (
-            searchTerm &&
-            !assignment.title.toLowerCase().includes(searchTerm.toLowerCase())
-          ) {
-            return false;
-          }
+    .filter((assignment) => {
+      // ✅ Check if assignment belongs to one of user's enrolled courses
+      const isUserCourse = currentUser?.course?.some(
+        (c) => c.id === assignment.course?.id
+      );
 
-          // Filter by status
-          if (statusFilter === "pending") {
-            return !isPast(new Date(assignment.due_date));
-          } else if (statusFilter === "overdue") {
-            return isPast(new Date(assignment.due_date));
-          }
+      // ✅ Check if explicitly assigned to user (if backend sends assigned_to field)
+      const isAssignedToUser = assignment.assigned_to
+        ? assignment.assigned_to.includes(currentUser?.id)
+        : true;
 
-          return true;
-        })
-        .sort((a, b) => {
-          // Sort assignments
-          if (sortBy === "due-date") {
-            return new Date(a.due_date) - new Date(b.due_date);
-          } else if (sortBy === "title") {
-            return a.title.localeCompare(b.title);
-          } else if (sortBy === "marks") {
-            return b.total_marks - a.total_marks;
-          }
-          return 0;
-        })
-    : [];
+      return isUserCourse && isAssignedToUser;
+    })
+    .filter((assignment) => {
+      // ✅ Apply search filter
+      if (
+        searchTerm &&
+        !assignment.title.toLowerCase().includes(searchTerm.toLowerCase())
+      ) {
+        return false;
+      }
+      // ✅ Apply status filter
+      if (statusFilter === "pending") {
+        return !isPast(new Date(assignment.due_date));
+      } else if (statusFilter === "overdue") {
+        return isPast(new Date(assignment.due_date));
+      }
+      return true;
+    })
+    .sort((a, b) => {
+      // ✅ Sorting
+      if (sortBy === "due-date") {
+        return new Date(a.due_date) - new Date(b.due_date);
+      } else if (sortBy === "title") {
+        return a.title.localeCompare(b.title);
+      } else if (sortBy === "marks") {
+        return b.total_marks - a.total_marks;
+      }
+      return 0;
+    });
+
+  useEffect(() => {
+    console.log("📋 Filtered Assignments:", filteredAssignments);
+  }, [filteredAssignments]);
 
   const handleDownloadAssignment = (assignment) => {
     if (!assignment.file) {
@@ -97,19 +128,25 @@ export default function Assignments() {
       });
       return;
     }
-
-    // Logic to download the assignment file
     window.open(assignment.file, "_blank");
   };
 
   const handleSubmitAssignment = (assignmentId) => {
-    // Navigate to submission page
     navigate(`/portal/assignments/${assignmentId}/submit`);
   };
 
-  const getStatusBadge = (dueDate) => {
+  const getStatusBadge = (dueDate, submitted) => {
+    if (submitted) {
+      return (
+        <Badge
+          variant="outline"
+          className="flex items-center gap-1 bg-green-50 text-green-700 border-green-200"
+        >
+          ✅ Submitted
+        </Badge>
+      );
+    }
     const isOverdue = isPast(new Date(dueDate));
-
     if (isOverdue) {
       return (
         <Badge variant="destructive" className="flex items-center gap-1">
@@ -118,7 +155,6 @@ export default function Assignments() {
         </Badge>
       );
     }
-
     return (
       <Badge
         variant="outline"
@@ -130,11 +166,10 @@ export default function Assignments() {
     );
   };
 
-  const getTeacherInitials = (teacher) => {
-    return teacher
+  const getTeacherInitials = (teacher) =>
+    teacher
       ? `${teacher.first_name?.[0] || ""}${teacher.last_name?.[0] || ""}`
       : "TO";
-  };
 
   const formatDueDate = (dueDate) => {
     try {
@@ -143,17 +178,15 @@ export default function Assignments() {
         formatted: format(date, "MMM d, yyyy 'at' h:mm a"),
         relative: formatDistanceToNow(date, { addSuffix: true }),
       };
-    } catch (error) {
-      return {
-        formatted: "Invalid date",
-        relative: "Unknown",
-      };
+    } catch {
+      return { formatted: "Invalid date", relative: "Unknown" };
     }
   };
 
   return (
     <Layout>
       <div className="space-y-6">
+        {/* 🔹 Header + Search + Filters */}
         <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
           <h1 className="text-2xl font-bold">Assignments</h1>
           <div className="flex flex-col sm:flex-row gap-3">
@@ -204,7 +237,7 @@ export default function Assignments() {
           </div>
         </div>
 
-        {/* Status filters */}
+        {/* 🔹 Status Pills */}
         <div className="flex flex-wrap gap-2">
           {statusFilter !== "all" && (
             <Badge variant="outline" className="flex items-center gap-1">
@@ -236,10 +269,9 @@ export default function Assignments() {
           )}
         </div>
 
-        {/* Assignments List */}
+        {/* 🔹 Assignments List */}
         <div className="space-y-4">
           {isLoading ? (
-            // Loading state
             Array(3)
               .fill(0)
               .map((_, i) => (
@@ -263,7 +295,6 @@ export default function Assignments() {
                 </Card>
               ))
           ) : error ? (
-            // Error state
             <Card className="border-red-200">
               <CardContent className="pt-6 pb-6 text-center">
                 <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-3" />
@@ -278,7 +309,6 @@ export default function Assignments() {
               </CardContent>
             </Card>
           ) : filteredAssignments.length === 0 ? (
-            // Empty state
             <Card>
               <CardContent className="pt-6 pb-6 text-center">
                 <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
@@ -295,12 +325,8 @@ export default function Assignments() {
               </CardContent>
             </Card>
           ) : (
-            // Assignments list
             filteredAssignments.map((assignment) => {
               const dueDate = formatDueDate(assignment.due_date);
-
-              // Get course name - in a real implementation, you might need to fetch this
-              const courseName = "Course name not available";
 
               return (
                 <Card key={assignment.id} className="overflow-hidden">
@@ -310,10 +336,15 @@ export default function Assignments() {
                         <CardTitle className="text-lg">
                           {assignment.title}
                         </CardTitle>
-                        <CardDescription>Course: {courseName}</CardDescription>
+                        <CardDescription>
+                          Course: {assignment.course?.title || "N/A"}
+                        </CardDescription>
                       </div>
                       <div className="flex items-center gap-2">
-                        {getStatusBadge(assignment.due_date)}
+                        {getStatusBadge(
+                          assignment.due_date,
+                          assignment.submitted
+                        )}
                         <Badge
                           variant="outline"
                           className="bg-blue-50 text-blue-700 border-blue-200"
@@ -374,13 +405,15 @@ export default function Assignments() {
                       {assignment.file ? "Download" : "No file"}
                     </Button>
 
-                    <Button
-                      size="sm"
-                      onClick={() => handleSubmitAssignment(assignment.id)}
-                    >
-                      <Upload className="h-4 w-4 mr-2" />
-                      Submit Assignment
-                    </Button>
+                    {!assignment.submitted && (
+                      <Button
+                        size="sm"
+                        onClick={() => handleSubmitAssignment(assignment.id)}
+                      >
+                        <Upload className="h-4 w-4 mr-2" />
+                        Submit Assignment
+                      </Button>
+                    )}
                   </CardFooter>
                 </Card>
               );
