@@ -127,27 +127,26 @@ export const coursesApi = createApi({
       ],
     }),
 
-    // ✅ Submit assignment + trigger refetch for this student's course assignments
-    submitAssignment: builder.mutation({
-      query: (submissionData) => {
-        const formData = new FormData();
-        formData.append("assignment", submissionData.assignment);
-        formData.append("student", submissionData.student);
-        if (submissionData.file) formData.append("file", submissionData.file);
-        if (submissionData.feedback)
-          formData.append("feedback", submissionData.feedback);
+submitAssignment: builder.mutation({
+  query: (submissionData) => {
+    const formData = new FormData();
+    formData.append("assignment_id", submissionData.assignment); // 👈 use assignment_id
+    if (submissionData.file) formData.append("file", submissionData.file);
+    if (submissionData.feedback)
+      formData.append("feedback", submissionData.feedback);
 
-        return {
-          url: `/courses/submission/`,
-          method: "POST",
-          body: formData,
-        };
-      },
-      invalidatesTags: (result, error, { courseId }) => [
-        { type: "Assignment", id: "LIST" },
-        { type: "Assignment", id: `STUDENT-COURSE-${courseId}` },
-      ],
-    }),
+    return {
+      url: `/courses/submission/`,
+      method: "POST",
+      body: formData,
+    };
+  },
+  invalidatesTags: (result, error, { courseId }) => [
+    { type: "Assignment", id: "LIST" },
+    { type: "Assignment", id: `STUDENT-COURSE-${courseId}` },
+  ],
+}),
+
 
     // 📦 Orders & Enrollment
     getEnrolledCourses: builder.query({

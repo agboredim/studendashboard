@@ -20,22 +20,31 @@ import {
   useGetAssignmentByIdQuery,
   useSubmitAssignmentMutation,
 } from "@/services/coursesApi";
-import { AlertCircle, ArrowLeft, Calendar, FileText, Upload, X } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowLeft,
+  Calendar,
+  FileText,
+  Upload,
+  X,
+} from "lucide-react";
 import { format } from "date-fns";
-import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/store/slices/authSlice";
 
 export default function AssignmentSubmission() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const user = useSelector(selectCurrentUser);
 
   const [file, setFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const { data: assignment, isLoading, error, refetch } = useGetAssignmentByIdQuery(id);
+  const {
+    data: assignment,
+    isLoading,
+    error,
+    refetch,
+  } = useGetAssignmentByIdQuery(id);
   const [submitAssignment] = useSubmitAssignmentMutation();
 
   const handleFileChange = (e) => {
@@ -79,25 +88,24 @@ export default function AssignmentSubmission() {
     setIsSubmitting(true);
 
     try {
+      // ✅ Build FormData manually
       const formData = new FormData();
-      formData.append("assignment_id", assignment.id);
+      formData.append("assignment_id", assignment.id); // backend expects assignment_id
       formData.append("file", file);
 
-      // Log FormData contents
-      console.log("FormData payload:");
+      // 👀 Debug: log form data contents
+      console.group("📤 Submitting Assignment");
       for (let [key, value] of formData.entries()) {
-        if (value instanceof File) {
-          console.log(key, value.name, value.size + " bytes");
-        } else {
-          console.log(key, value);
-        }
+        console.log(`${key}:`, value);
       }
+      console.groupEnd();
 
+      // ✅ Call the mutation
       await submitAssignment({
-        body: formData,
-        headers: {
-          Authorization: `Bearer ${user?.access_token || ""}`,
-        },
+        assignment: assignment.id, // still pass assignment for cache invalidation
+        file,
+        courseId: assignment.course,
+        formData, // <-- pass our built formData
       }).unwrap();
 
       toast({
@@ -109,10 +117,22 @@ export default function AssignmentSubmission() {
       setFile(null);
       setSubmitted(true);
     } catch (err) {
-      console.error("Submission error:", err);
+      console.error("❌ Submission error:", err);
+
+      let description = "Please try again.";
+      if (err?.data) {
+        if (typeof err.data === "string") {
+          description = err.data;
+        } else {
+          description = Object.entries(err.data)
+            .map(([field, msgs]) => `${field}: ${msgs.join(", ")}`)
+            .join("\n");
+        }
+      }
+
       toast({
         title: "Submission failed",
-        description: err?.data?.detail || JSON.stringify(err?.data) || "Please try again.",
+        description,
         variant: "destructive",
         duration: 4000,
       });
@@ -145,6 +165,7 @@ export default function AssignmentSubmission() {
           </Button>
         </div>
 
+        {/* Skeleton loader */}
         {isLoading && (
           <Card>
             <CardHeader>
@@ -157,11 +178,14 @@ export default function AssignmentSubmission() {
           </Card>
         )}
 
+        {/* Error State */}
         {error && (
           <Card className="border-red-200">
             <CardContent className="pt-6 pb-6 text-center">
               <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-3" />
-              <h3 className="text-lg font-medium mb-2">Error loading assignment</h3>
+              <h3 className="text-lg font-medium mb-2">
+                Error loading assignment
+              </h3>
               <p className="text-muted-foreground mb-4">
                 There was a problem fetching the assignment details.
               </p>
@@ -175,13 +199,15 @@ export default function AssignmentSubmission() {
           </Card>
         )}
 
+        {/* Not Found */}
         {!isLoading && !error && !assignment && (
           <Card>
             <CardContent className="pt-6 pb-6 text-center">
               <AlertCircle className="h-12 w-12 text-amber-500 mx-auto mb-3" />
               <h3 className="text-lg font-medium mb-2">Assignment not found</h3>
               <p className="text-muted-foreground mb-4">
-                The assignment you're looking for doesn't exist or has been removed.
+                The assignment you're looking for doesn't exist or has been
+                removed.
               </p>
               <Button onClick={() => navigate("/portal/assignments")}>
                 Back to Assignments
@@ -190,13 +216,16 @@ export default function AssignmentSubmission() {
           </Card>
         )}
 
+        {/* Assignment Details + Submission Form */}
         {assignment && (
           <>
             <Card>
               <CardHeader>
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
                   <div>
-                    <CardTitle className="text-xl">{assignment.title}</CardTitle>
+                    <CardTitle className="text-xl">
+                      {assignment.title}
+                    </CardTitle>
                     <CardDescription>Course: {courseName}</CardDescription>
                   </div>
                   <Badge
@@ -222,7 +251,9 @@ export default function AssignmentSubmission() {
                   <div className="flex items-center gap-2 p-3 bg-muted rounded-md">
                     <FileText className="h-5 w-5 text-blue-500" />
                     <div className="flex-1">
-                      <p className="text-sm font-medium">Assignment Instructions</p>
+                      <p className="text-sm font-medium">
+                        Assignment Instructions
+                      </p>
                       <p className="text-xs text-muted-foreground">
                         Download the file for detailed instructions
                       </p>
@@ -278,7 +309,8 @@ export default function AssignmentSubmission() {
                           Drag and drop your file here
                         </p>
                         <p className="text-xs text-muted-foreground mb-3">
-                          Supports PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX up to 10MB
+                          Supports PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX up to
+                          10MB
                         </p>
                         <Button
                           type="button"
@@ -316,10 +348,12 @@ export default function AssignmentSubmission() {
                       ? "Submitting..."
                       : submitted
                       ? "Submitted"
-                      : <>
+                      : (
+                        <>
                           <Upload className="h-4 w-4 mr-2" />
                           Submit Assignment
-                        </>}
+                        </>
+                        )}
                   </Button>
                 </CardFooter>
               </form>
