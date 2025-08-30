@@ -38,6 +38,8 @@ export default function AssignmentSubmission() {
   const [file, setFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [message, setMessage] = useState(null);
+  const [messageType, setMessageType] = useState(null); // "success" | "error"
 
   const {
     data: assignment,
@@ -68,58 +70,46 @@ export default function AssignmentSubmission() {
     e.preventDefault();
 
     if (!assignment?.id) {
-      toast({
-        title: "Invalid assignment",
-        description: "Assignment ID is missing. Please refresh and try again.",
-        variant: "destructive",
-      });
+      setMessage("❌ Assignment ID is missing. Please refresh and try again.");
+      setMessageType("error");
       return;
     }
 
     if (!file) {
-      toast({
-        title: "No file selected",
-        description: "Please select a file to submit.",
-        variant: "destructive",
-      });
+      setMessage("❌ Please select a file to submit.");
+      setMessageType("error");
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      // ✅ Build FormData manually
       const formData = new FormData();
-      formData.append("assignment_id", assignment.id); // backend expects assignment_id
+      formData.append("assignment_id", assignment.id);
       formData.append("file", file);
 
-      // 👀 Debug: log form data contents
       console.group("📤 Submitting Assignment");
       for (let [key, value] of formData.entries()) {
         console.log(`${key}:`, value);
       }
       console.groupEnd();
 
-      // ✅ Call the mutation
       await submitAssignment({
-        assignment: assignment.id, // still pass assignment for cache invalidation
+        assignment: assignment.id,
         file,
         courseId: assignment.course,
-        formData, // <-- pass our built formData
+        formData,
       }).unwrap();
 
-      toast({
-        title: "Success",
-        description: "Assignment submitted successfully",
-        duration: 3000,
-      });
+      setMessage("✅ Assignment submitted successfully!");
+      setMessageType("success");
 
       setFile(null);
       setSubmitted(true);
     } catch (err) {
       console.error("❌ Submission error:", err);
 
-      let description = "Please try again.";
+      let description = "❌ Failed to submit assignment. Please try again.";
       if (err?.data) {
         if (typeof err.data === "string") {
           description = err.data;
@@ -130,12 +120,8 @@ export default function AssignmentSubmission() {
         }
       }
 
-      toast({
-        title: "Submission failed",
-        description,
-        variant: "destructive",
-        duration: 4000,
-      });
+      setMessage(description);
+      setMessageType("error");
     } finally {
       setIsSubmitting(false);
     }
@@ -164,6 +150,19 @@ export default function AssignmentSubmission() {
             Back to Assignments
           </Button>
         </div>
+
+        {/* Inline Message Renderer */}
+        {message && (
+          <div
+            className={`p-3 rounded-md ${
+              messageType === "success"
+                ? "bg-green-100 text-green-700 border border-green-300"
+                : "bg-red-100 text-red-700 border border-red-300"
+            }`}
+          >
+            {message}
+          </div>
+        )}
 
         {/* Skeleton loader */}
         {isLoading && (
